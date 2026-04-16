@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Sistema MAAH</title>
+<link rel="icon" href="favicon.ico">
+<meta name="theme-color" content="#1a3f6f">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Sistema MAAH">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100vh;color:#2d3748;}
+.screen{display:none;min-height:100vh;}
+.screen.active{display:block;}
+
+/* LOGIN */
+#screen-login{background:#1a3f6f;display:flex;align-items:center;justify-content:center;}
+#screen-login.active{display:flex;}
+.login-card{background:#fff;border-radius:16px;padding:36px 32px;width:340px;max-width:95vw;box-shadow:0 20px 60px rgba(0,0,0,.3);}
+.login-logo{text-align:center;margin-bottom:24px;}
+.logo-circle{width:64px;height:64px;background:#1a3f6f;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;color:#fff;margin-bottom:10px;}
+.login-logo h1{font-size:18px;font-weight:800;color:#1a3f6f;}
+.login-logo p{font-size:11px;color:#718096;margin-top:2px;}
+.lfg{margin-bottom:14px;}
+.lfg label{display:block;font-size:11px;font-weight:700;color:#4a5568;margin-bottom:5px;text-transform:uppercase;letter-spacing:.4px;}
+.lfg input{width:100%;font-size:14px;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:8px;color:#2d3748;transition:border-color .15s;}
+.lfg input:focus{outline:none;border-color:#1a3f6f;box-shadow:0 0 0 3px rgba(26,63,111,.1);}
+.btn-login{width:100%;padding:12px;font-size:13px;font-weight:700;background:#1a3f6f;color:#fff;border:none;border-radius:8px;cursor:pointer;margin-top:6px;}
+.btn-login:hover{background:#15325a;}
+.login-error{background:#ffebee;color:#c62828;font-size:11px;padding:8px 12px;border-radius:6px;margin-top:10px;display:none;text-align:center;}
+
+/* HEADER */
+.app-header{background:#1a3f6f;color:#fff;padding:9px 20px;display:flex;align-items:center;justify-content:space-between;}
+.app-header h1{font-size:13px;font-weight:700;letter-spacing:.5px;}
+.header-right{display:flex;align-items:center;gap:10px;}
+.user-badge{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);padding:3px 12px;border-radius:20px;font-size:11px;font-weight:600;}
+.btn-logout{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.3);color:#fff;padding:3px 10px;border-radius:5px;font-size:10px;cursor:pointer;}
+
+/* INFO BAR */
+.info-bar{background:#15325a;padding:18px 28px;display:flex;align-items:center;justify-content:space-between;gap:20px;}
+.info-left{display:flex;align-items:center;gap:20px;}
+.clock-block{display:flex;flex-direction:column;min-width:130px;}
+.hora-mil{font-size:52px;font-weight:700;color:#fff;letter-spacing:3px;font-variant-numeric:tabular-nums;line-height:1;}
+.fecha-mil{font-size:13px;color:rgba(255,255,255,.65);letter-spacing:1px;margin-top:6px;text-transform:uppercase;}
+.info-div{width:1px;align-self:stretch;background:rgba(255,255,255,.2);margin:0 8px;}
+.clima-hoy{display:flex;align-items:center;gap:14px;}
+.clima-icon{font-size:42px;line-height:1;}
+.clima-temp{font-size:44px;font-weight:700;color:#fff;line-height:1;}
+.clima-details{display:flex;flex-direction:column;gap:6px;}
+.clima-city{font-size:14px;color:rgba(255,255,255,.85);font-weight:600;letter-spacing:.5px;}
+.clima-pills{display:flex;gap:7px;flex-wrap:wrap;}
+.clima-pill{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:20px;padding:4px 11px;font-size:13px;color:rgba(255,255,255,.92);}
+.clima-desc{display:none;}
+.clima-man{display:flex;flex-direction:column;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:12px 18px;min-width:150px;gap:4px;}
+.man-label{font-size:11px;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:1px;}
+.man-top{display:flex;align-items:center;gap:8px;margin-top:2px;}
+.man-temp{font-size:24px;font-weight:700;color:#fff;}
+.man-minmax{font-size:12px;color:rgba(255,255,255,.6);}
+.man-desc{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px;}
+.man-pill{font-size:11px;background:rgba(255,255,255,.08);border-radius:10px;padding:2px 8px;color:rgba(255,255,255,.75);}
+
+/* FRASE BAR */
+.frase-bar{background:#1a3f6f;border-top:1px solid rgba(255,255,255,.08);padding:7px 20px;display:flex;gap:16px;align-items:center;}
+.frase-item{display:flex;align-items:center;gap:8px;flex:1;}
+.frase-icon{font-size:15px;flex-shrink:0;}
+.frase-txt{font-size:16px;font-family:'Times New Roman',Times,serif;color:rgba(255,255,255,.85);line-height:1.4;}
+.frase-txt strong{color:#fff;font-family:'Times New Roman',Times,serif;}
+.frase-div{width:1px;height:28px;background:rgba(255,255,255,.2);}
+
+/* NAV */
+.nav-tabs{background:#0f2744;display:flex;overflow-x:auto;}
+.tab{padding:9px 16px;font-size:11px;font-weight:600;color:rgba(255,255,255,.55);cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;flex-shrink:0;}
+.tab.active{color:#fff;border-bottom:3px solid #fff;background:rgba(255,255,255,.08);}
+
+/* TAB CONTENT */
+.tab-content{display:none;padding:14px 20px;}
+.tab-content.active{display:block;}
+
+/* AGENDA LAYOUT */
+.agenda-layout{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.form-card,.timeline-card{background:#fff;border-radius:10px;border:0.5px solid #dde3ed;padding:14px;}
+.card-title{font-size:12px;font-weight:700;color:#fff;background:#1a3f6f;padding:7px 12px;border-radius:4px;margin-bottom:14px;letter-spacing:.5px;text-transform:uppercase;font-family:'Times New Roman',Times,serif;}
+.date-row{display:flex;align-items:center;gap:8px;margin-bottom:12px;background:#f0f4ff;border:1px solid #c6d4f0;border-radius:6px;padding:9px 12px;}
+.date-row label{font-size:13px;font-weight:700;color:#1a3f6f;font-family:'Times New Roman',Times,serif;}
+.date-row input{font-size:14px;font-weight:700;color:#1a3f6f;border:none;background:transparent;outline:none;font-family:'Times New Roman',Times,serif;}
+
+/* TABLA ACTIVIDADES */
+.acts-table{width:100%;border-collapse:collapse;margin-bottom:10px;}
+.acts-table thead th{background:#1a3f6f;color:#fff;font-size:12px;font-weight:700;padding:10px 10px;text-align:left;text-transform:uppercase;letter-spacing:.3px;font-family:'Times New Roman',Times,serif;}
+.acts-table thead th:first-child{width:110px;}
+.acts-table thead th:last-child{width:36px;}
+.acts-table tbody tr{border-bottom:0.5px solid #eef2f7;}
+.acts-table td{padding:6px 6px;vertical-align:middle;}
+.acts-table td input{width:100%;font-size:14px;padding:9px 10px;border:1px solid #e2e8f0;border-radius:5px;color:#2d3748;font-family:'Times New Roman',Times,serif;}
+.acts-table td input[type=time]{text-align:center;font-weight:700;color:#1a3f6f;font-size:15px;font-family:'Times New Roman',Times,serif;}
+.acts-table td.obs-td input{background:#fffde7;}
+.del-r{background:none;border:none;color:#ccc;cursor:pointer;font-size:14px;padding:4px 7px;border-radius:3px;}
+.del-r:hover{color:#c62828;}
+.btn-addrow{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:#1a3f6f;background:#eef3ff;border:1px dashed #1a3f6f;border-radius:5px;padding:10px 12px;cursor:pointer;width:100%;justify-content:center;margin-bottom:10px;font-family:'Times New Roman',Times,serif;}
+.btn-guardar{width:100%;padding:12px;font-size:14px;font-weight:700;background:#1a3f6f;color:#fff;border:none;border-radius:5px;cursor:pointer;font-family:'Times New Roman',Times,serif;}
+
+/* TELEGRAM BOX */
+.tg-box{background:#f0fff4;border:1px solid #9ae6b4;border-radius:7px;padding:14px 16px;margin-top:12px;}
+.tg-title{font-size:13px;font-weight:700;color:#2f855a;margin-bottom:10px;font-family:'Times New Roman',Times,serif;}
+.tg-row{display:flex;align-items:center;gap:8px;font-size:13px;color:#276749;margin-bottom:8px;flex-wrap:wrap;font-family:'Times New Roman',Times,serif;}
+.tg-row input[type=time]{font-size:14px;padding:6px 10px;border:1px solid #9ae6b4;border-radius:5px;font-family:'Times New Roman',Times,serif;}
+.tg-row input[type=checkbox]{width:17px;height:17px;cursor:pointer;}
+.btn-tg{width:100%;padding:12px;font-size:14px;font-weight:700;background:#25a244;color:#fff;border:none;border-radius:5px;cursor:pointer;margin-top:10px;font-family:'Times New Roman',Times,serif;}
+
+/* TIMELINE */
+.tl-header{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.tl-num{font-size:30px;font-weight:800;color:#1a3f6f;line-height:1;}
+.tl-info{border-left:3px solid #1a3f6f;padding-left:9px;}
+.tl-nombre{font-size:12px;font-weight:700;color:#2d3748;}
+.tl-sub{font-size:10px;color:#718096;}
+.nav-days{display:flex;gap:4px;margin-bottom:10px;flex-wrap:wrap;}
+.day-pill{padding:3px 8px;border-radius:12px;font-size:10px;font-weight:600;border:1px solid #dde3ed;cursor:pointer;color:#4a5568;background:#fff;}
+.day-pill.active{background:#1a3f6f;color:#fff;border-color:#1a3f6f;}
+.day-pill.has{border-color:#1a3f6f;color:#1a3f6f;}
+.timeline{position:relative;}
+.tl-item{display:flex;gap:9px;margin-bottom:12px;position:relative;}
+.tl-item::before{content:'';position:absolute;left:16px;top:32px;bottom:-12px;width:2px;background:#e2e8f0;}
+.tl-item:last-child::before{display:none;}
+.tl-left{display:flex;flex-direction:column;align-items:center;min-width:32px;}
+.tl-circle{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:800;color:#fff;text-align:center;line-height:1.2;}
+.tl-ampm{font-size:8px;color:#a0aec0;margin-top:1px;font-weight:600;}
+.tl-card-item{flex:1;background:#f7fafc;border-radius:7px;padding:7px 10px;border:0.5px solid #dde3ed;}
+.tl-card-item h4{font-size:11px;font-weight:700;color:#2d3748;margin-bottom:2px;}
+.tl-card-item .meta{font-size:10px;color:#718096;}
+.obs-tag{display:inline-block;background:#fffde7;color:#856900;font-size:9px;padding:1px 6px;border-radius:5px;margin-top:3px;font-weight:600;}
+.tl-actions{display:flex;gap:3px;margin-top:5px;}
+.tl-btn{font-size:9px;padding:2px 7px;border-radius:4px;border:0.5px solid #dde3ed;cursor:pointer;background:#fff;color:#4a5568;}
+.tl-btn:hover{background:#eef3fa;color:#1a3f6f;}
+.tl-btn.del:hover{background:#fff0f0;color:#c62828;}
+.empty-tl{text-align:center;padding:30px;color:#a0aec0;font-size:12px;}
+
+/* MODALES */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal-box{background:#fff;border-radius:10px;padding:22px;width:360px;max-width:95vw;box-shadow:0 20px 60px rgba(0,0,0,.25);}
+.modal-box h3{font-size:13px;font-weight:700;color:#1a3f6f;margin-bottom:14px;}
+.mfg{margin-bottom:10px;}
+.mfg label{display:block;font-size:10px;color:#4a5568;margin-bottom:3px;font-weight:600;}
+.mfg input,.mfg select{width:100%;font-size:12px;padding:7px 10px;border:1px solid #cbd5e0;border-radius:5px;color:#2d3748;}
+.mfg input:focus{outline:none;border-color:#1a3f6f;}
+.modal-btns{display:flex;gap:8px;margin-top:14px;}
+.modal-btns button{flex:1;padding:9px;border-radius:6px;border:none;cursor:pointer;font-size:12px;font-weight:600;}
+.btn-cancel-m{background:#e2e8f0;color:#4a5568;}
+.btn-save-m{background:#1a3f6f;color:#fff;}
+
+/* ADMIN */
+.admin-grid{display:grid;grid-template-columns:300px 1fr;gap:16px;}
+.admin-card{background:#fff;border-radius:10px;border:0.5px solid #dde3ed;padding:14px;}
+.fg{margin-bottom:9px;}
+.fg label{display:block;font-size:10px;color:#4a5568;margin-bottom:3px;font-weight:600;}
+.fg input,.fg select{width:100%;font-size:11px;padding:6px 9px;border:1px solid #cbd5e0;border-radius:5px;color:#2d3748;background:#fff;}
+.fg input:focus,.fg select:focus{outline:none;border-color:#1a3f6f;}
+.btn-primary{width:100%;padding:9px;font-size:12px;font-weight:700;background:#1a3f6f;color:#fff;border:none;border-radius:5px;cursor:pointer;margin-top:5px;}
+.user-list-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:7px;border:0.5px solid #dde3ed;margin-bottom:6px;background:#f7fafc;}
+.user-avatar{width:32px;height:32px;border-radius:50%;background:#1a3f6f;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;}
+.user-avatar.adm{background:#c8960a;}
+.user-info{flex:1;}
+.uname{font-size:12px;font-weight:600;color:#2d3748;}
+.urole{font-size:10px;color:#718096;}
+.user-actions{display:flex;gap:4px;}
+.ubtn{font-size:10px;padding:3px 8px;border-radius:4px;border:0.5px solid #dde3ed;cursor:pointer;background:#fff;color:#4a5568;}
+.ubtn:hover{background:#eef3fa;color:#1a3f6f;}
+.ubtn.del:hover{background:#fff0f0;color:#c62828;}
+
+/* GASTOS */
+.gastos-grid{display:grid;grid-template-columns:300px 1fr;gap:16px;}
+.stat-gastos{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px;}
+.stat-g{background:#f7fafc;border-radius:7px;border:0.5px solid #dde3ed;padding:10px;text-align:center;}
+.sg-val{font-size:16px;font-weight:800;color:#1a3f6f;}
+.sg-lbl{font-size:9px;color:#718096;margin-top:2px;}
+.fg-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.gastos-table{width:100%;border-collapse:collapse;}
+.gastos-table thead th{background:#1a3f6f;color:#fff;font-size:9px;font-weight:700;padding:7px 10px;text-align:left;text-transform:uppercase;}
+.gastos-table tbody tr{border-bottom:0.5px solid #eef2f7;}
+.gastos-table tbody tr:hover{background:#f7fafc;}
+.gastos-table td{padding:8px 10px;font-size:11px;color:#2d3748;}
+.cat-badge{display:inline-block;font-size:9px;padding:2px 7px;border-radius:8px;font-weight:600;}
+
+@media(max-width:900px){
+  .agenda-layout,.admin-grid,.gastos-grid{grid-template-columns:1fr;}
+  .tab-content{padding:10px 12px;}
+}
+@media(max-width:600px){
+  .app-header{flex-direction:column;gap:5px;align-items:flex-start;padding:8px 12px;}
+  .header-right{width:100%;justify-content:space-between;}
+  .info-bar{padding:12px;flex-direction:column;align-items:flex-start;gap:12px;}
+  .hora-mil{font-size:36px;}
+  .clima-temp{font-size:30px;}
+  .clima-icon{font-size:28px;}
+  .frase-bar{flex-direction:column;gap:8px;padding:8px 12px;}
+  .frase-div{display:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="screen-login" class="screen active">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="logo-circle">M</div>
+      <h1>Sistema MAAH</h1>
+      <p>Ingrese sus credenciales de acceso</p>
+    </div>
+    <div class="lfg">
+      <label>Usuario</label>
+      <input type="text" id="login-user" placeholder="Nombre de usuario" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <div class="lfg">
+      <label>Contraseña</label>
+      <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="btn-login" onclick="doLogin()">Ingresar al sistema</button>
+    <div class="login-error" id="login-error">Usuario o contraseña incorrectos</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="screen-app" class="screen">
+
+  <div class="app-header">
+    <h1>&#9632;&nbsp; SISTEMA MAAH</h1>
+    <div class="header-right">
+      <span class="user-badge" id="header-username"></span>
+      <button class="btn-logout" onclick="doLogout()">&#128275; Salir</button>
+    </div>
+  </div>
+
+  <!-- INFO BAR: hora + clima -->
+  <div class="info-bar">
+    <div class="info-left">
+      <div class="clock-block">
+        <div class="hora-mil" id="hora-mil">00:00</div>
+        <div class="fecha-mil" id="fecha-mil">--</div>
+      </div>
+      <div class="info-div"></div>
+      <div class="clima-hoy">
+        <div class="clima-icon" id="clima-icon">⛅</div>
+        <div class="clima-temp" id="clima-temp">--°C</div>
+        <div class="clima-details">
+          <div class="clima-city">Punta Arenas, Chile</div>
+          <div class="clima-pills" id="clima-pills">
+            <div class="clima-pill">💨 --</div>
+            <div class="clima-pill">🌧 --</div>
+            <div class="clima-pill">❄️ --</div>
+            <div class="clima-pill">☀️ UV --</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="clima-man">
+      <div class="man-label">Mañana</div>
+      <div class="man-top">
+        <span id="man-icon">🌡</span>
+        <span class="man-temp" id="man-temp">--°C</span>
+      </div>
+      <div class="man-minmax" id="man-minmax">--</div>
+      <div class="man-desc" id="man-desc"></div>
+    </div>
+  </div>
+
+  <!-- FRASE DEL DÍA -->
+  <div class="frase-bar">
+    <div class="frase-item">
+      <span class="frase-icon">&#128218;</span>
+      <div class="frase-txt" id="frase-proverbio"><strong>Cargando...</strong></div>
+    </div>
+    <div class="frase-div"></div>
+    <div class="frase-item">
+      <span class="frase-icon">&#129504;</span>
+      <div class="frase-txt" id="frase-estoica"><strong>Cargando...</strong></div>
+    </div>
+  </div>
+
+  <div class="nav-tabs" id="nav-tabs">
+    <div class="tab active" onclick="showTab('agenda',this)">&#128197; Mi Agenda</div>
+    <div class="tab" onclick="showTab('gantt',this)">&#128200; Carta Gantt</div>
+    <div class="tab" id="tab-gastos-btn" onclick="showTab('gastos',this)" style="display:none;">&#128181; Gastos</div>
+    <div class="tab" id="tab-admin-btn" onclick="showTab('admin',this)" style="display:none;">&#9881; Administrador</div>
+  </div>
+
+  <!-- AGENDA -->
+  <div class="tab-content active" id="tab-content-agenda">
+    <div class="agenda-layout">
+
+      <div class="form-card">
+        <div class="card-title">+ Ingresar actividades del día</div>
+        <div class="date-row">
+          <label>&#128197; Fecha:</label>
+          <input type="date" id="agenda-fecha">
+        </div>
+        <table class="acts-table">
+          <thead><tr><th>Hora</th><th>Actividad</th><th>OBS</th><th></th></tr></thead>
+          <tbody id="acts-body"></tbody>
+        </table>
+        <button class="btn-addrow" onclick="addActRow()">+ Agregar otra actividad</button>
+        <button class="btn-guardar" onclick="guardarAgenda()">&#10003; Guardar agenda del día</button>
+
+        <div class="tg-box">
+          <div class="tg-title">&#128276; Notificación Telegram — BD26MAAHBOT</div>
+          <div class="tg-row">
+            <input type="checkbox" id="tg-auto" checked>
+            <label>Envío automático diario a las</label>
+            <input type="time" id="tg-hora" value="08:00">
+          </div>
+          <div class="tg-row">
+            <input type="checkbox" id="tg-frase" checked>
+            <label>Incluir frase del día siempre (aunque no haya actividades)</label>
+          </div>
+          <button class="btn-tg" onclick="enviarTelegram()">&#9992; Enviar resumen ahora</button>
+        </div>
+      </div>
+
+      <div class="timeline-card">
+        <div class="tl-header">
+          <div class="tl-num" id="tl-num">--</div>
+          <div class="tl-info">
+            <div class="tl-nombre" id="tl-nombre">Seleccione una fecha</div>
+            <div class="tl-sub" id="tl-sub">y guarde para ver la agenda</div>
+          </div>
+        </div>
+        <div class="nav-days" id="nav-days-week"></div>
+        <div class="timeline" id="timeline-view">
+          <div class="empty-tl">No hay actividades para este día.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CARTA GANTT -->
+  <div class="tab-content" id="tab-content-gantt">
+    <div style="background:#fff;border-radius:10px;border:0.5px solid #dde3ed;padding:24px;text-align:center;">
+      <p style="font-size:13px;color:#4a5568;margin-bottom:14px;">La Carta Gantt MAAH se abre en su propia página.</p>
+      <a href="https://maah1996.github.io/Carta-Gantt-Maah/" target="_blank"
+         style="display:inline-block;padding:12px 24px;background:#1a3f6f;color:#fff;border-radius:8px;font-size:13px;font-weight:700;text-decoration:none;">
+        &#128200; Abrir Carta Gantt MAAH
+      </a>
+    </div>
+  </div>
+
+  <!-- GASTOS -->
+  <div class="tab-content" id="tab-content-gastos">
+    <div class="gastos-grid">
+      <div class="admin-card">
+        <div class="card-title">+ Nuevo movimiento</div>
+        <div class="fg"><label>Tipo</label>
+          <select id="g-tipo"><option value="gasto">Gasto</option><option value="ingreso">Ingreso</option></select>
+        </div>
+        <div class="fg"><label>Fecha</label><input type="date" id="g-fecha"></div>
+        <div class="fg"><label>Descripción</label><input type="text" id="g-desc" placeholder="Descripción..." oninput="this.value=this.value.toUpperCase()"></div>
+        <div class="fg-row">
+          <div class="fg"><label>Categoría</label>
+            <select id="g-cat"><option>Operaciones</option><option>Personal</option><option>Equipamiento</option><option>Servicios</option><option>Otros</option></select>
+          </div>
+          <div class="fg"><label>Monto ($)</label><input type="number" id="g-monto" placeholder="0"></div>
+        </div>
+        <button class="btn-primary" onclick="guardarGasto()">+ Agregar movimiento</button>
+        <div class="stat-gastos">
+          <div class="stat-g"><div class="sg-val" id="sg-ing">$0</div><div class="sg-lbl">Ingresos</div></div>
+          <div class="stat-g"><div class="sg-val" style="color:#c62828;" id="sg-gas">$0</div><div class="sg-lbl">Gastos</div></div>
+          <div class="stat-g"><div class="sg-val" id="sg-bal">$0</div><div class="sg-lbl">Balance</div></div>
+        </div>
+      </div>
+      <div class="admin-card">
+        <div class="card-title">Registro de movimientos</div>
+        <table class="gastos-table">
+          <thead><tr><th>Fecha</th><th>Descripción</th><th>Categoría</th><th>Monto</th><th></th></tr></thead>
+          <tbody id="gastos-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADMIN -->
+  <div class="tab-content" id="tab-content-admin">
+    <div class="admin-grid">
+      <div class="admin-card">
+        <div class="card-title">+ Crear usuario</div>
+        <div class="fg"><label>Nombre de usuario</label><input type="text" id="nu-nombre" placeholder="Ej: JUAN" oninput="this.value=this.value.toUpperCase()"></div>
+        <div class="fg"><label>Contraseña</label><input type="password" id="nu-pass" placeholder="Clave de acceso"></div>
+        <div class="fg"><label>Rol</label>
+          <select id="nu-rol"><option value="usuario">Usuario</option><option value="admin">Administrador</option></select>
+        </div>
+        <div class="fg"><label>Chat ID Telegram (opcional)</label><input type="text" id="nu-tgid" placeholder="Para recibir notificaciones"></div>
+        <button class="btn-primary" onclick="crearUsuario()">+ Crear usuario</button>
+        <div id="admin-msg" style="margin-top:8px;font-size:11px;text-align:center;display:none;"></div>
+      </div>
+      <div class="admin-card">
+        <div class="card-title">Usuarios del sistema</div>
+        <div id="user-list"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL EDITAR ACTIVIDAD -->
+<div class="modal-overlay" id="modal-edit-act">
+  <div class="modal-box">
+    <h3>&#9998; Editar actividad</h3>
+    <div class="mfg"><label>Hora</label><input type="time" id="edit-act-hora"></div>
+    <div class="mfg"><label>Actividad</label><input type="text" id="edit-act-desc" oninput="this.value=this.value.toUpperCase()"></div>
+    <div class="mfg"><label>OBS</label><input type="text" id="edit-act-obs" oninput="this.value=this.value.toUpperCase()"></div>
+    <div class="modal-btns">
+      <button class="btn-cancel-m" onclick="closeModal('modal-edit-act')">Cancelar</button>
+      <button class="btn-save-m" onclick="saveEditAct()">Guardar cambios</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR USUARIO -->
+<div class="modal-overlay" id="modal-edit-user">
+  <div class="modal-box">
+    <h3>&#9998; Editar usuario</h3>
+    <div class="mfg"><label>Nombre</label><input type="text" id="eu-nombre" oninput="this.value=this.value.toUpperCase()"></div>
+    <div class="mfg"><label>Nueva contraseña (dejar vacío para no cambiar)</label><input type="password" id="eu-pass" placeholder="Nueva clave..."></div>
+    <div class="mfg"><label>Rol</label><select id="eu-rol"><option value="usuario">Usuario</option><option value="admin">Administrador</option></select></div>
+    <div class="mfg"><label>Chat ID Telegram</label><input type="text" id="eu-tgid"></div>
+    <div class="modal-btns">
+      <button class="btn-cancel-m" onclick="closeModal('modal-edit-user')">Cancelar</button>
+      <button class="btn-save-m" onclick="saveEditUser()">Guardar cambios</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<script>
+// ── FIREBASE ─────────────────────────────────────────────────
+const FB_CONFIG={
+  apiKey:"AIzaSyB0f_Sh2xiDgvB9_-nyp76Ol-XvhhyvcXA",
+  authDomain:"gantt-maah.firebaseapp.com",
+  databaseURL:"https://gantt-maah-default-rtdb.firebaseio.com",
+  projectId:"gantt-maah",
+  storageBucket:"gantt-maah.firebasestorage.app",
+  messagingSenderId:"299934642229",
+  appId:"1:299934642229:web:87681b489cdc2a5452c17c"
+};
+firebase.initializeApp(FB_CONFIG);
+const db=firebase.database();
+
+// ── TELEGRAM ─────────────────────────────────────────────────
+const TG_TOKEN='8439566682:AAHSM9JXlNDwh-WK3GP5b205fdGGHfikUpY';
+const TG_ADMIN_CHATID='8290529563';
+
+function sendTG(chatId,text){
+  fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage`,{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({chat_id:chatId,text:text,parse_mode:'HTML'})
+  }).catch(()=>{});
+}
+
+// ── FRASES ───────────────────────────────────────────────────
+const PROVERBIOS=[
+  'PROVERBIOS 14:23 — En todo trabajo hay ganancia, pero el solo hablar lleva a la pobreza.',
+  'PROVERBIOS 16:3 — Encomienda a Dios tus obras y tus planes se cumplirán.',
+  'PROVERBIOS 3:5 — Confía en el Señor con todo tu corazón y no te apoyes en tu propia prudencia.',
+  'PROVERBIOS 21:5 — Los planes del diligente ciertamente llevan a la abundancia.',
+  'PROVERBIOS 27:1 — No te jactes del día de mañana, porque no sabes lo que traerá.',
+  'PROVERBIOS 12:24 — La mano diligente gobernará, pero la indolencia es servidumbre.',
+  'PROVERBIOS 19:21 — Muchos son los planes en el corazón del hombre, pero el propósito del Señor prevalecerá.',
+];
+const ESTOICAS=[
+  '<strong>Marco Aurelio</strong> — Haz lo correcto, no lo cómodo. El obstáculo es el camino.',
+  '<strong>Epicteto</strong> — No busques que los acontecimientos sucedan como tú quieres. Desea que sucedan como son.',
+  '<strong>Séneca</strong> — No es pobre quien tiene poco, sino quien desea más.',
+  '<strong>Marco Aurelio</strong> — Pierde el tiempo el que busca lo que no puede encontrar.',
+  '<strong>Epicteto</strong> — El hombre no es perturbado por los hechos, sino por su opinión de los hechos.',
+  '<strong>Séneca</strong> — Comienza. El audaz tiene la suerte de su parte.',
+  '<strong>Marco Aurelio</strong> — Nunca estimes que algo te es provechoso si te obliga a romper tu palabra.',
+];
+
+function getFrasesHoy(){
+  const idx=new Date().getDay();
+  return {proverbio:PROVERBIOS[idx], estoica:ESTOICAS[idx]};
+}
+
+function mostrarFrases(){
+  const {proverbio,estoica}=getFrasesHoy();
+  document.getElementById('frase-proverbio').innerHTML='<strong>'+proverbio.split('—')[0]+'</strong>— '+proverbio.split('—').slice(1).join('—');
+  document.getElementById('frase-estoica').innerHTML=estoica;
+}
+
+// ── RELOJ MILITAR ────────────────────────────────────────────
+const DIAS_ES=['DOMINGO','LUNES','MARTES','MIÉRCOLES','JUEVES','VIERNES','SÁBADO'];
+const MESES_ES=['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
+function updateClock(){
+  const n=new Date();
+  document.getElementById('hora-mil').textContent=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
+  document.getElementById('fecha-mil').textContent=DIAS_ES[n.getDay()]+' '+String(n.getDate()).padStart(2,'0')+'/'+MESES_ES[n.getMonth()]+'/'+n.getFullYear();
+}
+updateClock(); setInterval(updateClock,1000);
+
+// ── CLIMA ─────────────────────────────────────────────────────
+const CLIMA_ICONS={'0':'☀️','1':'🌤','2':'⛅','3':'☁️','45':'🌫','48':'🌫','51':'🌦','53':'🌦','55':'🌧','61':'🌧','63':'🌧','65':'🌧','71':'🌨','73':'❄️','75':'❄️','77':'🌨','80':'🌦','81':'🌧','82':'⛈','85':'🌨','86':'❄️','95':'⛈','96':'⛈','99':'⛈'};
+function iconFromCode(c){return CLIMA_ICONS[String(c)]||'🌡';}
+function uvLabel(uv){if(uv<=2)return'Bajo';if(uv<=5)return'Moderado';if(uv<=7)return'Alto';if(uv<=10)return'Muy alto';return'Extremo';}
+function makePill(icon,val){const d=document.createElement('div');d.className='clima-pill';d.textContent=icon+' '+val;return d;}
+function makeManPill(txt){const s=document.createElement('span');s.className='man-pill';s.textContent=txt;return s;}
+function loadClima(){
+  fetch('https://api.open-meteo.com/v1/forecast?latitude=-53.15&longitude=-70.92&current=temperature_2m,weathercode,windspeed_10m,precipitation,snowfall,uv_index&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,snowfall_sum,windspeed_10m_max,uv_index_max&timezone=America%2FSantiago&forecast_days=2')
+    .then(r=>r.json()).then(d=>{
+      const cur=d.current;
+      const temp=Math.round(cur.temperature_2m);
+      const code=cur.weathercode;
+      const wind=Math.round(cur.windspeed_10m);
+      const rain=cur.precipitation.toFixed(1);
+      const snow=cur.snowfall.toFixed(1);
+      const uv=parseFloat(cur.uv_index.toFixed(1));
+      const manTemp=Math.round(d.daily.temperature_2m_max[1]);
+      const manMin=Math.round(d.daily.temperature_2m_min[1]);
+      const manCode=d.daily.weathercode[1];
+      const manRain=d.daily.precipitation_sum[1].toFixed(1);
+      const manSnow=d.daily.snowfall_sum[1].toFixed(1);
+      const manWind=Math.round(d.daily.windspeed_10m_max[1]);
+      const manUV=d.daily.uv_index_max[1].toFixed(1);
+
+      document.getElementById('clima-icon').textContent=iconFromCode(code);
+      document.getElementById('clima-temp').textContent=temp+'°C';
+
+      const pills=document.getElementById('clima-pills');
+      pills.innerHTML='';
+      pills.appendChild(makePill('💨',wind+' km/h'));
+      pills.appendChild(makePill('🌧',rain+' mm'));
+      pills.appendChild(makePill('❄️',snow+' cm'));
+      pills.appendChild(makePill('☀️','UV '+uv+' — '+uvLabel(uv)));
+
+      document.getElementById('man-icon').textContent=iconFromCode(manCode);
+      document.getElementById('man-temp').textContent=manTemp+'°C';
+      document.getElementById('man-minmax').textContent='Mín '+manMin+'°C · Máx '+manTemp+'°C';
+
+      const mdesc=document.getElementById('man-desc');
+      mdesc.innerHTML='';
+      mdesc.appendChild(makeManPill('💨 '+manWind+' km/h'));
+      mdesc.appendChild(makeManPill('🌧 '+manRain+' mm'));
+      mdesc.appendChild(makeManPill('❄️ '+manSnow+' cm'));
+      mdesc.appendChild(makeManPill('UV '+manUV));
+    }).catch(()=>{
+      document.getElementById('clima-temp').textContent='Sin datos';
+    });
+}
+
+// ── ESTADO ───────────────────────────────────────────────────
+const TODAY=new Date(); TODAY.setHours(0,0,0,0);
+let currentUser=null;
+let editingActKey=null, editingActDate=null, editingActOld=null;
+let editingUserId=null;
+
+const MSHORT=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+const DNAMES=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+const DSHORT=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+
+function fmtDateKey(d){return d.toISOString().slice(0,10);}
+function fmtDateLabel(d){return String(d.getDate()).padStart(2,'0')+'/'+MSHORT[d.getMonth()]+'/'+String(d.getFullYear()).slice(2);}
+function fmt$(n){return '$'+Math.round(n).toLocaleString('es-CL');}
+function getWeekNum(d){const j=new Date(d.getFullYear(),0,1);return Math.ceil((((d-j)/86400000)+j.getDay()+1)/7);}
+
+// ── LOGIN ─────────────────────────────────────────────────────
+function doLogin(){
+  const user=document.getElementById('login-user').value.trim().toUpperCase();
+  const pass=document.getElementById('login-pass').value.trim();
+  if(!user||!pass){showLoginErr('Complete los campos.');return;}
+  db.ref('maah_usuarios').orderByChild('nombre').equalTo(user).once('value',snap=>{
+    if(!snap.exists()){showLoginErr('Usuario o contraseña incorrectos');return;}
+    let found=null;
+    snap.forEach(c=>{if(c.val().pass===pass)found={id:c.key,...c.val()};});
+    if(!found){showLoginErr('Usuario o contraseña incorrectos');return;}
+    currentUser=found; startApp();
+  });
+}
+function showLoginErr(msg){const e=document.getElementById('login-error');e.textContent=msg;e.style.display='block';setTimeout(()=>e.style.display='none',3000);}
+function doLogout(){currentUser=null;document.getElementById('screen-app').classList.remove('active');document.getElementById('screen-login').classList.add('active');document.getElementById('login-user').value='';document.getElementById('login-pass').value='';}
+
+function startApp(){
+  document.getElementById('screen-login').classList.remove('active');
+  document.getElementById('screen-app').classList.add('active');
+  document.getElementById('header-username').textContent=currentUser.nombre+(currentUser.rol==='admin'?' ★':'');
+  if(currentUser.rol==='admin'){
+    document.getElementById('tab-gastos-btn').style.display='block';
+    document.getElementById('tab-admin-btn').style.display='block';
+    loadGastos(); loadUserList();
+    document.getElementById('g-fecha').value=fmtDateKey(TODAY);
+  }
+  mostrarFrases();
+  loadClima();
+  const hoy=fmtDateKey(TODAY);
+  document.getElementById('agenda-fecha').value=hoy;
+  addActRow();
+  renderWeekNav(TODAY);
+  loadAgendaForDate(hoy);
+}
+
+// ── TABS ─────────────────────────────────────────────────────
+function showTab(tab,el){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-content-'+tab).classList.add('active');
+  el.classList.add('active');
+}
+
+// ── AGENDA ───────────────────────────────────────────────────
+function addActRow(){
+  const tbody=document.getElementById('acts-body');
+  const tr=document.createElement('tr');
+  tr.innerHTML=`<td><input type="time" value="08:00"></td>
+    <td><input type="text" placeholder="Actividad..." oninput="this.value=this.value.toUpperCase()"></td>
+    <td class="obs-td"><input type="text" placeholder="OBS..." oninput="this.value=this.value.toUpperCase()"></td>
+    <td><button class="del-r" onclick="this.closest('tr').remove()">&#10005;</button></td>`;
+  tbody.appendChild(tr);
+  tr.querySelectorAll('input')[1].focus();
+}
+
+function guardarAgenda(){
+  const fecha=document.getElementById('agenda-fecha').value;
+  if(!fecha){alert('Seleccione una fecha.');return;}
+  const rows=[...document.querySelectorAll('#acts-body tr')];
+  const acts=rows.map(r=>{
+    const ins=r.querySelectorAll('input');
+    return {hora:ins[0].value,act:(ins[1].value||'').toUpperCase().trim(),obs:(ins[2].value||'').toUpperCase().trim()};
+  }).filter(a=>a.act);
+  if(!acts.length){alert('Ingrese al menos una actividad.');return;}
+  const obj=acts.reduce((o,a,i)=>{o[i]=a;return o;},{});
+  db.ref(`maah_agenda/${currentUser.id}/${fecha}`).set(obj,()=>{
+    loadAgendaForDate(fecha);
+    const d=new Date(fecha+'T12:00:00');
+    renderWeekNav(d);
+    document.getElementById('acts-body').innerHTML='';
+    addActRow();
+  });
+}
+
+function loadAgendaForDate(fecha){
+  db.ref(`maah_agenda/${currentUser.id}/${fecha}`).once('value',snap=>{
+    const data=snap.val();
+    const acts=data?Object.values(data):[];
+    acts.sort((a,b)=>a.hora.localeCompare(b.hora));
+    renderTimeline(fecha,acts);
+  });
+}
+
+const TL_COLORS=['#2c5282','#1a3f6f','#E65100','#c8960a','#c62828','#2e7d32','#6b46c1'];
+
+function renderTimeline(fecha,acts){
+  const d=new Date(fecha+'T12:00:00');
+  document.getElementById('tl-num').textContent=d.getDate();
+  document.getElementById('tl-nombre').textContent=DNAMES[d.getDay()]+' — Semana '+getWeekNum(d);
+  document.getElementById('tl-sub').textContent=fmtDateLabel(d)+' · '+acts.length+' actividad'+(acts.length!==1?'es':'');
+  const tl=document.getElementById('timeline-view');
+  if(!acts.length){tl.innerHTML='<div class="empty-tl">No hay actividades para este día.</div>';return;}
+  tl.innerHTML=acts.map((a,i)=>{
+    const col=TL_COLORS[i%TL_COLORS.length];
+    const ampm=parseInt(a.hora)>=12?'PM':'AM';
+    return `<div class="tl-item">
+      <div class="tl-left">
+        <div class="tl-circle" style="background:${col};">${a.hora}</div>
+        <div class="tl-ampm">${ampm}</div>
+      </div>
+      <div class="tl-card-item">
+        <h4>${a.act}</h4>
+        <div class="meta">${a.hora}</div>
+        ${a.obs?`<div class="obs-tag">${a.obs}</div>`:''}
+        <div class="tl-actions">
+          <button class="tl-btn" onclick="openEditAct('${fecha}',${i},'${a.hora}','${a.act.replace(/'/g,"\\'")}','${(a.obs||'').replace(/'/g,"\\'")}')">&#9998; Editar</button>
+          <button class="tl-btn del" onclick="deleteAct('${fecha}',${i},'${a.hora}','${a.act.replace(/'/g,"\\'")}','${(a.obs||'').replace(/'/g,"\\'")}')">&#10005; Eliminar</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// EDITAR ACTIVIDAD
+function openEditAct(fecha,idx,hora,act,obs){
+  editingActKey=idx; editingActDate=fecha;
+  editingActOld={hora,act,obs};
+  document.getElementById('edit-act-hora').value=hora;
+  document.getElementById('edit-act-desc').value=act;
+  document.getElementById('edit-act-obs').value=obs;
+  document.getElementById('modal-edit-act').classList.add('open');
+}
+
+function saveEditAct(){
+  const hora=document.getElementById('edit-act-hora').value;
+  const act=document.getElementById('edit-act-desc').value.toUpperCase().trim();
+  const obs=document.getElementById('edit-act-obs').value.toUpperCase().trim();
+  if(!act){alert('Ingrese una descripción.');return;}
+  db.ref(`maah_agenda/${currentUser.id}/${editingActDate}/${editingActKey}`).set({hora,act,obs},()=>{
+    closeModal('modal-edit-act');
+    loadAgendaForDate(editingActDate);
+    const d=new Date(editingActDate+'T12:00:00');
+    const chatId=currentUser.tgid||TG_ADMIN_CHATID;
+    // Notificar corrección en Telegram
+    sendTG(chatId,
+      `✏️ <b>ACTIVIDAD MODIFICADA — AGENDA MAAH</b>\n`+
+      `👤 ${currentUser.nombre}\n`+
+      `❌ <s>Anterior: ${editingActDate} · ${editingActOld.hora} — ${editingActOld.act}${editingActOld.obs?' ('+editingActOld.obs+')':''}</s>\n`+
+      `✅ Nueva: ${fmtDateLabel(d)} · ${hora} — ${act}${obs?' ('+obs+')':''}`
+    );
+  });
+}
+
+// ELIMINAR ACTIVIDAD
+function deleteAct(fecha,idx,hora,act,obs){
+  if(!confirm('¿Eliminar esta actividad?')) return;
+  db.ref(`maah_agenda/${currentUser.id}/${fecha}/${idx}`).remove(()=>{
+    loadAgendaForDate(fecha);
+    const d=new Date(fecha+'T12:00:00');
+    const chatId=currentUser.tgid||TG_ADMIN_CHATID;
+    // Notificar eliminación en Telegram
+    sendTG(chatId,
+      `🗑 <b>ACTIVIDAD ELIMINADA — AGENDA MAAH</b>\n`+
+      `👤 ${currentUser.nombre}\n`+
+      `❌ ${fmtDateLabel(d)} · ${hora} — ${act}${obs?' ('+obs+')':''}`
+    );
+  });
+}
+
+// NAV SEMANA
+function renderWeekNav(refDate){
+  const container=document.getElementById('nav-days-week');
+  const start=new Date(refDate);
+  start.setDate(refDate.getDate()-refDate.getDay());
+  const days=Array.from({length:7},(_,i)=>{const d=new Date(start);d.setDate(start.getDate()+i);return d;});
+  const fechaActual=document.getElementById('agenda-fecha').value;
+  Promise.all(days.map(d=>db.ref(`maah_agenda/${currentUser.id}/${fmtDateKey(d)}`).once('value').then(s=>({d,has:s.exists()})))).then(results=>{
+    container.innerHTML=results.map(({d,has})=>{
+      const key=fmtDateKey(d);
+      const cls='day-pill'+(key===fechaActual?' active':has?' has':'');
+      return `<div class="${cls}" onclick="selectDay('${key}')">${DSHORT[d.getDay()]} ${d.getDate()}</div>`;
+    }).join('');
+  });
+}
+
+function selectDay(fecha){
+  document.getElementById('agenda-fecha').value=fecha;
+  const d=new Date(fecha+'T12:00:00');
+  renderWeekNav(d);
+  loadAgendaForDate(fecha);
+  document.getElementById('acts-body').innerHTML='';
+  addActRow();
+}
+
+// ── TELEGRAM ENVÍO ───────────────────────────────────────────
+function enviarTelegram(){
+  const fecha=document.getElementById('agenda-fecha').value;
+  if(!fecha){alert('Seleccione una fecha.');return;}
+  const chatId=currentUser.tgid||TG_ADMIN_CHATID;
+  const {proverbio,estoica}=getFrasesHoy();
+  const inclFrase=document.getElementById('tg-frase').checked;
+
+  db.ref(`maah_agenda/${currentUser.id}/${fecha}`).once('value',snap=>{
+    const data=snap.val();
+    const acts=data?Object.values(data):[];
+    acts.sort((a,b)=>a.hora.localeCompare(b.hora));
+    const d=new Date(fecha+'T12:00:00');
+    const emojis=['🔴','🟠','🟡','🟢','🔵','🟣','⚫'];
+
+    let msg=`📋 <b>AGENDA MAAH — ${currentUser.nombre}</b>\n`;
+    msg+=`📅 ${DNAMES[d.getDay()]} ${d.getDate()} de ${['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'][d.getMonth()]} ${d.getFullYear()}\n\n`;
+
+    if(!acts.length){
+      msg+='✅ No hay actividades agendadas para hoy.\n';
+    } else {
+      acts.forEach((a,i)=>{
+        msg+=`${emojis[i%emojis.length]} <b>${a.hora}</b> — ${a.act}`;
+        if(a.obs) msg+=` <i>(${a.obs})</i>`;
+        msg+='\n';
+      });
+      msg+=`\n📊 <i>${acts.length} actividad${acts.length!==1?'es':''} programada${acts.length!==1?'s':''}</i>\n`;
+    }
+
+    if(inclFrase){
+      msg+='\n──────────────────\n';
+      msg+=`📖 <i>${proverbio}</i>\n`;
+      msg+=`🧠 <i>${estoica.replace(/<[^>]+>/g,'')}</i>`;
+    }
+
+    sendTG(chatId,msg);
+    alert('Resumen enviado a Telegram.');
+  });
+}
+
+// ── GASTOS ───────────────────────────────────────────────────
+let gastos=[];
+function loadGastos(){
+  db.ref('maah_gastos').on('value',snap=>{
+    gastos=[];
+    snap.forEach(c=>gastos.push({id:c.key,...c.val()}));
+    gastos.sort((a,b)=>b.fecha.localeCompare(a.fecha));
+    renderGastos();
+  });
+}
+function guardarGasto(){
+  const tipo=document.getElementById('g-tipo').value;
+  const fecha=document.getElementById('g-fecha').value;
+  const desc=document.getElementById('g-desc').value.trim().toUpperCase();
+  const cat=document.getElementById('g-cat').value;
+  const monto=parseFloat(document.getElementById('g-monto').value)||0;
+  if(!fecha||!desc||!monto){alert('Complete todos los campos.');return;}
+  db.ref('maah_gastos').push({tipo,fecha,desc,cat,monto});
+  document.getElementById('g-desc').value='';
+  document.getElementById('g-monto').value='';
+}
+function renderGastos(){
+  let ing=0,gas=0;
+  gastos.forEach(g=>{if(g.tipo==='ingreso')ing+=g.monto;else gas+=g.monto;});
+  document.getElementById('sg-ing').textContent=fmt$(ing);
+  document.getElementById('sg-gas').textContent=fmt$(gas);
+  const bal=ing-gas;
+  const be=document.getElementById('sg-bal');
+  be.textContent=fmt$(Math.abs(bal));
+  be.style.color=bal>=0?'#2e7d32':'#c62828';
+  const catC={'Operaciones':'#e3f2fd','Personal':'#f3e5f5','Equipamiento':'#e8f5e9','Servicios':'#fff8e1','Otros':'#f5f5f5'};
+  document.getElementById('gastos-tbody').innerHTML=gastos.map(g=>`<tr>
+    <td>${fmtDateLabel(new Date(g.fecha+'T12:00:00'))}</td>
+    <td>${g.desc}</td>
+    <td><span class="cat-badge" style="background:${catC[g.cat]||'#f5f5f5'};color:#2d3748;">${g.cat}</span></td>
+    <td style="font-weight:700;color:${g.tipo==='ingreso'?'#2e7d32':'#c62828'};">${g.tipo==='ingreso'?'+':'-'}${fmt$(g.monto)}</td>
+    <td><button class="tl-btn del" onclick="deleteGasto('${g.id}')">&#10005;</button></td>
+  </tr>`).join('');
+}
+function deleteGasto(id){if(confirm('¿Eliminar este movimiento?'))db.ref('maah_gastos/'+id).remove();}
+
+// ── USUARIOS ─────────────────────────────────────────────────
+function crearUsuario(){
+  const nombre=document.getElementById('nu-nombre').value.trim().toUpperCase();
+  const pass=document.getElementById('nu-pass').value.trim();
+  const rol=document.getElementById('nu-rol').value;
+  const tgid=document.getElementById('nu-tgid').value.trim();
+  if(!nombre||!pass){showAdminMsg('Complete nombre y contraseña.','#c62828');return;}
+  db.ref('maah_usuarios').orderByChild('nombre').equalTo(nombre).once('value',snap=>{
+    if(snap.exists()){showAdminMsg('Ese nombre ya existe.','#c62828');return;}
+    db.ref('maah_usuarios').push({nombre,pass,rol,tgid}).then(()=>{
+      showAdminMsg('Usuario creado.','#2e7d32');
+      document.getElementById('nu-nombre').value='';
+      document.getElementById('nu-pass').value='';
+      document.getElementById('nu-tgid').value='';
+    });
+  });
+}
+function showAdminMsg(msg,color){const e=document.getElementById('admin-msg');e.textContent=msg;e.style.color=color;e.style.display='block';setTimeout(()=>e.style.display='none',3000);}
+function loadUserList(){
+  db.ref('maah_usuarios').on('value',snap=>{
+    const users=[];
+    snap.forEach(c=>users.push({id:c.key,...c.val()}));
+    document.getElementById('user-list').innerHTML=users.map(u=>`
+      <div class="user-list-item">
+        <div class="user-avatar ${u.rol==='admin'?'adm':''}">${u.nombre.slice(0,2)}</div>
+        <div class="user-info">
+          <div class="uname">${u.nombre}</div>
+          <div class="urole">${u.rol==='admin'?'Administrador':'Usuario'}${u.tgid?' · TG:'+u.tgid:''}</div>
+        </div>
+        <div class="user-actions">
+          <button class="ubtn" onclick="openEditUser('${u.id}','${u.nombre}','${u.rol}','${u.tgid||''}')">&#9998;</button>
+          <button class="ubtn del" onclick="deleteUser('${u.id}','${u.nombre}')">&#10005;</button>
+        </div>
+      </div>`).join('');
+  });
+}
+function openEditUser(id,nombre,rol,tgid){
+  editingUserId=id;
+  document.getElementById('eu-nombre').value=nombre;
+  document.getElementById('eu-rol').value=rol;
+  document.getElementById('eu-tgid').value=tgid;
+  document.getElementById('eu-pass').value='';
+  document.getElementById('modal-edit-user').classList.add('open');
+}
+function saveEditUser(){
+  const nombre=document.getElementById('eu-nombre').value.trim().toUpperCase();
+  const pass=document.getElementById('eu-pass').value.trim();
+  const rol=document.getElementById('eu-rol').value;
+  const tgid=document.getElementById('eu-tgid').value.trim();
+  if(!nombre){alert('Ingrese un nombre.');return;}
+  const upd={nombre,rol,tgid};
+  if(pass) upd.pass=pass;
+  db.ref('maah_usuarios/'+editingUserId).update(upd,()=>closeModal('modal-edit-user'));
+}
+function deleteUser(id,nombre){
+  if(id===currentUser.id){alert('No puedes eliminar tu propio usuario.');return;}
+  if(confirm('¿Eliminar al usuario '+nombre+'?'))db.ref('maah_usuarios/'+id).remove();
+}
+
+// ── MODALES ──────────────────────────────────────────────────
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.modal-overlay.open').forEach(m=>m.classList.remove('open'));});
+
+// ── ADMIN INICIAL ─────────────────────────────────────────────
+db.ref('maah_usuarios').once('value',snap=>{
+  if(!snap.exists()) db.ref('maah_usuarios').push({nombre:'ADMIN',pass:'1996',rol:'admin',tgid:TG_ADMIN_CHATID});
+});
+</script>
+</body>
+</html>
