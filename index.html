@@ -9,11 +9,9 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Sistema MAAH">
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Segoe UI',Arial,sans-serif;background:#eef2f7;min-height:100vh;color:#2d3748;}
+body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100vh;color:#2d3748;}
 .screen{display:none;min-height:100vh;}
 .screen.active{display:block;}
 
@@ -41,26 +39,34 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#eef2f7;min-height:100vh
 .btn-logout{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.3);color:#fff;padding:3px 10px;border-radius:5px;font-size:10px;cursor:pointer;}
 
 /* INFO BAR */
-.info-bar{background:#15325a;padding:7px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
-.info-left{display:flex;align-items:center;gap:14px;}
-.hora-mil{font-size:22px;font-weight:800;color:#fff;letter-spacing:2px;font-variant-numeric:tabular-nums;line-height:1;}
-.fecha-mil{font-size:10px;color:rgba(255,255,255,.7);letter-spacing:.5px;margin-top:2px;}
-.info-div{width:1px;height:34px;background:rgba(255,255,255,.2);}
-.clima-hoy{display:flex;align-items:center;gap:6px;}
-.clima-icon{font-size:20px;}
-.clima-temp{font-size:18px;font-weight:700;color:#fff;}
-.clima-desc{font-size:10px;color:rgba(255,255,255,.7);}
-.clima-man{display:flex;flex-direction:column;align-items:center;background:rgba(255,255,255,.08);border-radius:6px;padding:4px 10px;}
-.man-label{font-size:9px;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.3px;}
-.man-temp{font-size:13px;font-weight:700;color:#fff;}
-.man-desc{font-size:9px;color:rgba(255,255,255,.7);}
+.info-bar{background:#15325a;padding:18px 28px;display:flex;align-items:center;justify-content:space-between;gap:20px;}
+.info-left{display:flex;align-items:center;gap:20px;}
+.clock-block{display:flex;flex-direction:column;min-width:130px;}
+.hora-mil{font-size:52px;font-weight:700;color:#fff;letter-spacing:3px;font-variant-numeric:tabular-nums;line-height:1;}
+.fecha-mil{font-size:13px;color:rgba(255,255,255,.65);letter-spacing:1px;margin-top:6px;text-transform:uppercase;}
+.info-div{width:1px;align-self:stretch;background:rgba(255,255,255,.2);margin:0 8px;}
+.clima-hoy{display:flex;align-items:center;gap:14px;}
+.clima-icon{font-size:42px;line-height:1;}
+.clima-temp{font-size:44px;font-weight:700;color:#fff;line-height:1;}
+.clima-details{display:flex;flex-direction:column;gap:6px;}
+.clima-city{font-size:14px;color:rgba(255,255,255,.85);font-weight:600;letter-spacing:.5px;}
+.clima-pills{display:flex;gap:7px;flex-wrap:wrap;}
+.clima-pill{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:20px;padding:4px 11px;font-size:13px;color:rgba(255,255,255,.92);}
+.clima-desc{display:none;}
+.clima-man{display:flex;flex-direction:column;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:12px 18px;min-width:150px;gap:4px;}
+.man-label{font-size:11px;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:1px;}
+.man-top{display:flex;align-items:center;gap:8px;margin-top:2px;}
+.man-temp{font-size:24px;font-weight:700;color:#fff;}
+.man-minmax{font-size:12px;color:rgba(255,255,255,.6);}
+.man-desc{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px;}
+.man-pill{font-size:11px;background:rgba(255,255,255,.08);border-radius:10px;padding:2px 8px;color:rgba(255,255,255,.75);}
 
 /* FRASE BAR */
 .frase-bar{background:#1a3f6f;border-top:1px solid rgba(255,255,255,.08);padding:7px 20px;display:flex;gap:16px;align-items:center;}
 .frase-item{display:flex;align-items:center;gap:8px;flex:1;}
 .frase-icon{font-size:15px;flex-shrink:0;}
-.frase-txt{font-size:10px;color:rgba(255,255,255,.85);line-height:1.4;}
-.frase-txt strong{color:#fff;}
+.frase-txt{font-size:16px;font-family:'Times New Roman',Times,serif;color:rgba(255,255,255,.85);line-height:1.4;}
+.frase-txt strong{color:#fff;font-family:'Times New Roman',Times,serif;}
 .frase-div{width:1px;height:28px;background:rgba(255,255,255,.2);}
 
 /* NAV */
@@ -75,33 +81,33 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#eef2f7;min-height:100vh
 /* AGENDA LAYOUT */
 .agenda-layout{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
 .form-card,.timeline-card{background:#fff;border-radius:10px;border:0.5px solid #dde3ed;padding:14px;}
-.card-title{font-size:9px;font-weight:700;color:#fff;background:#1a3f6f;padding:5px 10px;border-radius:4px;margin-bottom:12px;letter-spacing:.5px;text-transform:uppercase;}
-.date-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;background:#f0f4ff;border:1px solid #c6d4f0;border-radius:6px;padding:7px 10px;}
-.date-row label{font-size:10px;font-weight:700;color:#1a3f6f;}
-.date-row input{font-size:12px;font-weight:700;color:#1a3f6f;border:none;background:transparent;outline:none;}
+.card-title{font-size:12px;font-weight:700;color:#fff;background:#1a3f6f;padding:7px 12px;border-radius:4px;margin-bottom:14px;letter-spacing:.5px;text-transform:uppercase;font-family:'Times New Roman',Times,serif;}
+.date-row{display:flex;align-items:center;gap:8px;margin-bottom:12px;background:#f0f4ff;border:1px solid #c6d4f0;border-radius:6px;padding:9px 12px;}
+.date-row label{font-size:13px;font-weight:700;color:#1a3f6f;font-family:'Times New Roman',Times,serif;}
+.date-row input{font-size:14px;font-weight:700;color:#1a3f6f;border:none;background:transparent;outline:none;font-family:'Times New Roman',Times,serif;}
 
 /* TABLA ACTIVIDADES */
-.acts-table{width:100%;border-collapse:collapse;margin-bottom:8px;}
-.acts-table thead th{background:#1a3f6f;color:#fff;font-size:9px;font-weight:700;padding:6px 7px;text-align:left;text-transform:uppercase;letter-spacing:.3px;}
-.acts-table thead th:first-child{width:66px;}
-.acts-table thead th:last-child{width:22px;}
+.acts-table{width:100%;border-collapse:collapse;margin-bottom:10px;}
+.acts-table thead th{background:#1a3f6f;color:#fff;font-size:12px;font-weight:700;padding:10px 10px;text-align:left;text-transform:uppercase;letter-spacing:.3px;font-family:'Times New Roman',Times,serif;}
+.acts-table thead th:first-child{width:110px;}
+.acts-table thead th:last-child{width:36px;}
 .acts-table tbody tr{border-bottom:0.5px solid #eef2f7;}
-.acts-table td{padding:4px 4px;vertical-align:middle;}
-.acts-table td input{width:100%;font-size:11px;padding:5px 6px;border:1px solid #e2e8f0;border-radius:4px;color:#2d3748;}
-.acts-table td input[type=time]{text-align:center;font-weight:600;color:#1a3f6f;width:64px;}
+.acts-table td{padding:6px 6px;vertical-align:middle;}
+.acts-table td input{width:100%;font-size:14px;padding:9px 10px;border:1px solid #e2e8f0;border-radius:5px;color:#2d3748;font-family:'Times New Roman',Times,serif;}
+.acts-table td input[type=time]{text-align:center;font-weight:700;color:#1a3f6f;font-size:15px;font-family:'Times New Roman',Times,serif;}
 .acts-table td.obs-td input{background:#fffde7;}
-.del-r{background:none;border:none;color:#ccc;cursor:pointer;font-size:10px;padding:2px 5px;border-radius:3px;}
+.del-r{background:none;border:none;color:#ccc;cursor:pointer;font-size:14px;padding:4px 7px;border-radius:3px;}
 .del-r:hover{color:#c62828;}
-.btn-addrow{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:#1a3f6f;background:#eef3ff;border:1px dashed #1a3f6f;border-radius:5px;padding:6px 12px;cursor:pointer;width:100%;justify-content:center;margin-bottom:8px;}
-.btn-guardar{width:100%;padding:9px;font-size:12px;font-weight:700;background:#1a3f6f;color:#fff;border:none;border-radius:5px;cursor:pointer;}
+.btn-addrow{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:#1a3f6f;background:#eef3ff;border:1px dashed #1a3f6f;border-radius:5px;padding:10px 12px;cursor:pointer;width:100%;justify-content:center;margin-bottom:10px;font-family:'Times New Roman',Times,serif;}
+.btn-guardar{width:100%;padding:12px;font-size:14px;font-weight:700;background:#1a3f6f;color:#fff;border:none;border-radius:5px;cursor:pointer;font-family:'Times New Roman',Times,serif;}
 
 /* TELEGRAM BOX */
-.tg-box{background:#f0fff4;border:1px solid #9ae6b4;border-radius:7px;padding:9px 12px;margin-top:8px;}
-.tg-title{font-size:10px;font-weight:700;color:#2f855a;margin-bottom:6px;}
-.tg-row{display:flex;align-items:center;gap:6px;font-size:10px;color:#276749;margin-bottom:4px;flex-wrap:wrap;}
-.tg-row input[type=time]{font-size:11px;padding:2px 6px;border:1px solid #9ae6b4;border-radius:4px;}
-.tg-row input[type=checkbox]{width:13px;height:13px;}
-.btn-tg{width:100%;padding:8px;font-size:11px;font-weight:700;background:#25a244;color:#fff;border:none;border-radius:5px;cursor:pointer;margin-top:6px;}
+.tg-box{background:#f0fff4;border:1px solid #9ae6b4;border-radius:7px;padding:14px 16px;margin-top:12px;}
+.tg-title{font-size:13px;font-weight:700;color:#2f855a;margin-bottom:10px;font-family:'Times New Roman',Times,serif;}
+.tg-row{display:flex;align-items:center;gap:8px;font-size:13px;color:#276749;margin-bottom:8px;flex-wrap:wrap;font-family:'Times New Roman',Times,serif;}
+.tg-row input[type=time]{font-size:14px;padding:6px 10px;border:1px solid #9ae6b4;border-radius:5px;font-family:'Times New Roman',Times,serif;}
+.tg-row input[type=checkbox]{width:17px;height:17px;cursor:pointer;}
+.btn-tg{width:100%;padding:12px;font-size:14px;font-weight:700;background:#25a244;color:#fff;border:none;border-radius:5px;cursor:pointer;margin-top:10px;font-family:'Times New Roman',Times,serif;}
 
 /* TIMELINE */
 .tl-header{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
@@ -184,7 +190,10 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#eef2f7;min-height:100vh
 @media(max-width:600px){
   .app-header{flex-direction:column;gap:5px;align-items:flex-start;padding:8px 12px;}
   .header-right{width:100%;justify-content:space-between;}
-  .info-bar{padding:6px 12px;}
+  .info-bar{padding:12px;flex-direction:column;align-items:flex-start;gap:12px;}
+  .hora-mil{font-size:36px;}
+  .clima-temp{font-size:30px;}
+  .clima-icon{font-size:28px;}
   .frase-bar{flex-direction:column;gap:8px;padding:8px 12px;}
   .frase-div{display:none;}
 }
@@ -227,24 +236,33 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#eef2f7;min-height:100vh
   <!-- INFO BAR: hora + clima -->
   <div class="info-bar">
     <div class="info-left">
-      <div>
+      <div class="clock-block">
         <div class="hora-mil" id="hora-mil">00:00</div>
         <div class="fecha-mil" id="fecha-mil">--</div>
       </div>
       <div class="info-div"></div>
       <div class="clima-hoy">
-        <div class="clima-icon" id="clima-icon">&#9729;</div>
-        <div>
-          <div class="clima-temp" id="clima-temp">--°C</div>
-          <div class="clima-desc" id="clima-desc">Cargando clima...</div>
+        <div class="clima-icon" id="clima-icon">⛅</div>
+        <div class="clima-temp" id="clima-temp">--°C</div>
+        <div class="clima-details">
+          <div class="clima-city">Punta Arenas, Chile</div>
+          <div class="clima-pills" id="clima-pills">
+            <div class="clima-pill">💨 --</div>
+            <div class="clima-pill">🌧 --</div>
+            <div class="clima-pill">❄️ --</div>
+            <div class="clima-pill">☀️ UV --</div>
+          </div>
         </div>
       </div>
-      <div class="info-div"></div>
-      <div class="clima-man">
-        <div class="man-label">Mañana</div>
-        <div class="man-temp" id="man-temp">--°C</div>
-        <div class="man-desc" id="man-desc">--</div>
+    </div>
+    <div class="clima-man">
+      <div class="man-label">Mañana</div>
+      <div class="man-top">
+        <span id="man-icon">🌡</span>
+        <span class="man-temp" id="man-temp">--°C</span>
       </div>
+      <div class="man-minmax" id="man-minmax">--</div>
+      <div class="man-desc" id="man-desc"></div>
     </div>
   </div>
 
@@ -413,6 +431,8 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#eef2f7;min-height:100vh
   </div>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 <script>
 // ── FIREBASE ─────────────────────────────────────────────────
 const FB_CONFIG={
@@ -480,22 +500,51 @@ function updateClock(){
 updateClock(); setInterval(updateClock,1000);
 
 // ── CLIMA ─────────────────────────────────────────────────────
-const CLIMA_ICONS={'0':'☀️','1':'🌤','2':'⛅','3':'☁️','45':'🌫','48':'🌫','51':'🌦','61':'🌧','71':'❄️','80':'🌦','95':'⛈'};
+const CLIMA_ICONS={'0':'☀️','1':'🌤','2':'⛅','3':'☁️','45':'🌫','48':'🌫','51':'🌦','53':'🌦','55':'🌧','61':'🌧','63':'🌧','65':'🌧','71':'🌨','73':'❄️','75':'❄️','77':'🌨','80':'🌦','81':'🌧','82':'⛈','85':'🌨','86':'❄️','95':'⛈','96':'⛈','99':'⛈'};
 function iconFromCode(c){return CLIMA_ICONS[String(c)]||'🌡';}
+function uvLabel(uv){if(uv<=2)return'Bajo';if(uv<=5)return'Moderado';if(uv<=7)return'Alto';if(uv<=10)return'Muy alto';return'Extremo';}
+function makePill(icon,val){const d=document.createElement('div');d.className='clima-pill';d.textContent=icon+' '+val;return d;}
+function makeManPill(txt){const s=document.createElement('span');s.className='man-pill';s.textContent=txt;return s;}
 function loadClima(){
-  fetch('https://api.open-meteo.com/v1/forecast?latitude=-33.45&longitude=-70.65&current=temperature_2m,weathercode&daily=temperature_2m_max,weathercode&timezone=America/Santiago&forecast_days=2')
+  fetch('https://api.open-meteo.com/v1/forecast?latitude=-53.15&longitude=-70.92&current=temperature_2m,weathercode,windspeed_10m,precipitation,snowfall,uv_index&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,snowfall_sum,windspeed_10m_max,uv_index_max&timezone=America%2FSantiago&forecast_days=2')
     .then(r=>r.json()).then(d=>{
-      const temp=Math.round(d.current.temperature_2m);
-      const code=d.current.weathercode;
+      const cur=d.current;
+      const temp=Math.round(cur.temperature_2m);
+      const code=cur.weathercode;
+      const wind=Math.round(cur.windspeed_10m);
+      const rain=cur.precipitation.toFixed(1);
+      const snow=cur.snowfall.toFixed(1);
+      const uv=parseFloat(cur.uv_index.toFixed(1));
       const manTemp=Math.round(d.daily.temperature_2m_max[1]);
+      const manMin=Math.round(d.daily.temperature_2m_min[1]);
       const manCode=d.daily.weathercode[1];
+      const manRain=d.daily.precipitation_sum[1].toFixed(1);
+      const manSnow=d.daily.snowfall_sum[1].toFixed(1);
+      const manWind=Math.round(d.daily.windspeed_10m_max[1]);
+      const manUV=d.daily.uv_index_max[1].toFixed(1);
+
       document.getElementById('clima-icon').textContent=iconFromCode(code);
       document.getElementById('clima-temp').textContent=temp+'°C';
-      document.getElementById('clima-desc').textContent='Santiago, Chile';
-      document.getElementById('man-temp').textContent=iconFromCode(manCode)+' '+manTemp+'°C';
-      document.getElementById('man-desc').textContent='Mañana';
+
+      const pills=document.getElementById('clima-pills');
+      pills.innerHTML='';
+      pills.appendChild(makePill('💨',wind+' km/h'));
+      pills.appendChild(makePill('🌧',rain+' mm'));
+      pills.appendChild(makePill('❄️',snow+' cm'));
+      pills.appendChild(makePill('☀️','UV '+uv+' — '+uvLabel(uv)));
+
+      document.getElementById('man-icon').textContent=iconFromCode(manCode);
+      document.getElementById('man-temp').textContent=manTemp+'°C';
+      document.getElementById('man-minmax').textContent='Mín '+manMin+'°C · Máx '+manTemp+'°C';
+
+      const mdesc=document.getElementById('man-desc');
+      mdesc.innerHTML='';
+      mdesc.appendChild(makeManPill('💨 '+manWind+' km/h'));
+      mdesc.appendChild(makeManPill('🌧 '+manRain+' mm'));
+      mdesc.appendChild(makeManPill('❄️ '+manSnow+' cm'));
+      mdesc.appendChild(makeManPill('UV '+manUV));
     }).catch(()=>{
-      document.getElementById('clima-desc').textContent='Sin datos de clima';
+      document.getElementById('clima-temp').textContent='Sin datos';
     });
 }
 
