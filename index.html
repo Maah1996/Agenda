@@ -1,0 +1,2418 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Sistema MAAH</title>
+<link rel="icon" href="favicon.ico">
+<meta name="theme-color" content="#1a3f6f">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Sistema MAAH">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
+body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100vh;min-height:100dvh;color:#2d3748;}
+
+/* Pantallas: ocultas por defecto, se muestran con .active */
+.screen{display:none !important;min-height:100vh;min-height:100dvh;}
+#screen-login.active{display:flex !important;background:#1a3f6f;align-items:center;justify-content:center;}
+#screen-app.active{display:block !important;}
+.login-card{background:#fff;border-radius:16px;padding:36px 32px;width:340px;max-width:95vw;box-shadow:0 20px 60px rgba(0,0,0,.3);}
+.login-logo{text-align:center;margin-bottom:24px;}
+.logo-circle{width:64px;height:64px;background:#1a3f6f;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;color:#fff;margin-bottom:10px;}
+.login-logo h1{font-size:18px;font-weight:800;color:#1a3f6f;}
+.login-logo p{font-size:11px;color:#718096;margin-top:2px;}
+.lfg{margin-bottom:14px;}
+.lfg label{display:block;font-size:11px;font-weight:700;color:#4a5568;margin-bottom:5px;text-transform:uppercase;letter-spacing:.4px;}
+.lfg input{width:100%;font-size:16px;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:8px;color:#2d3748;transition:border-color .15s;}
+.lfg input:focus{outline:none;border-color:#1a3f6f;box-shadow:0 0 0 3px rgba(26,63,111,.1);}
+.btn-login{width:100%;padding:12px;font-size:13px;font-weight:700;background:#1a3f6f;color:#fff;border:none;border-radius:8px;cursor:pointer;margin-top:6px;}
+.btn-login:hover{background:#15325a;}
+.login-error{background:#ffebee;color:#c62828;font-size:11px;padding:8px 12px;border-radius:6px;margin-top:10px;display:none;text-align:center;}
+
+/* HEADER */
+.app-header{background:#1a3f6f;color:#fff;padding:9px 20px;display:flex;align-items:center;justify-content:space-between;}
+.app-header h1{font-size:13px;font-weight:700;letter-spacing:.5px;}
+.header-right{display:flex;align-items:center;gap:10px;}
+.user-badge{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);padding:3px 12px;border-radius:20px;font-size:11px;font-weight:600;}
+.btn-logout{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.3);color:#fff;padding:3px 10px;border-radius:5px;font-size:10px;cursor:pointer;}
+
+/* INFO BAR */
+.info-bar{background:#15325a;padding:18px 28px;display:flex;align-items:center;justify-content:space-between;gap:20px;}
+.info-left{display:flex;align-items:center;gap:20px;}
+.clock-block{display:flex;flex-direction:column;min-width:130px;}
+.hora-mil{font-size:52px;font-weight:700;color:#fff;letter-spacing:3px;font-variant-numeric:tabular-nums;line-height:1;}
+.fecha-mil{font-size:13px;color:rgba(255,255,255,.65);letter-spacing:1px;margin-top:6px;text-transform:uppercase;}
+.info-div{width:1px;align-self:stretch;background:rgba(255,255,255,.2);margin:0 8px;}
+.clima-hoy{display:flex;align-items:center;gap:14px;}
+.clima-icon{font-size:42px;line-height:1;}
+.clima-temp{font-size:44px;font-weight:700;color:#fff;line-height:1;}
+.clima-details{display:flex;flex-direction:column;gap:6px;}
+.clima-city{font-size:14px;color:rgba(255,255,255,.85);font-weight:600;letter-spacing:.5px;}
+.clima-pills{display:flex;gap:7px;flex-wrap:wrap;}
+.clima-pill{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:20px;padding:4px 11px;font-size:13px;color:rgba(255,255,255,.92);}
+.clima-desc{display:none;}
+.clima-man{display:flex;flex-direction:column;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:12px 18px;min-width:150px;gap:4px;}
+.man-label{font-size:11px;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:1px;}
+.man-top{display:flex;align-items:center;gap:8px;margin-top:2px;}
+.man-temp{font-size:24px;font-weight:700;color:#fff;}
+.man-minmax{font-size:12px;color:rgba(255,255,255,.6);}
+.man-desc{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px;}
+.man-pill{font-size:11px;background:rgba(255,255,255,.08);border-radius:10px;padding:2px 8px;color:rgba(255,255,255,.75);}
+
+/* FRASE BAR */
+.frase-bar{background:#1a3f6f;border-top:1px solid rgba(255,255,255,.08);padding:7px 20px;display:flex;gap:16px;align-items:center;}
+.frase-item{display:flex;align-items:center;gap:8px;flex:1;}
+.frase-icon{font-size:15px;flex-shrink:0;}
+.frase-txt{font-size:16px;font-family:'Times New Roman',Times,serif;color:rgba(255,255,255,.85);line-height:1.4;}
+.frase-txt strong{color:#fff;font-family:'Times New Roman',Times,serif;}
+.frase-div{width:1px;height:28px;background:rgba(255,255,255,.2);}
+
+/* NAV */
+.nav-tabs{background:#0f2744;display:flex;overflow-x:auto;}
+.tab{padding:9px 16px;font-size:11px;font-weight:600;color:rgba(255,255,255,.55);cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;flex-shrink:0;}
+.tab.active{color:#fff;border-bottom:3px solid #fff;background:rgba(255,255,255,.08);}
+
+/* TAB CONTENT */
+.tab-content{display:none;padding:14px 20px;}
+.tab-content.active{display:block;}
+
+/* AGENDA LAYOUT */
+.agenda-layout{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.form-card,.timeline-card{background:#fff;border-radius:10px;border:0.5px solid #dde3ed;padding:14px;}
+.card-title{font-size:12px;font-weight:700;color:#fff;background:#1a3f6f;padding:7px 12px;border-radius:4px;margin-bottom:14px;letter-spacing:.5px;text-transform:uppercase;font-family:'Times New Roman',Times,serif;}
+.date-row{display:flex;align-items:center;gap:8px;margin-bottom:12px;background:#f0f4ff;border:1px solid #c6d4f0;border-radius:6px;padding:9px 12px;}
+.date-row label{font-size:13px;font-weight:700;color:#1a3f6f;font-family:'Times New Roman',Times,serif;}
+.date-row input{font-size:14px;font-weight:700;color:#1a3f6f;border:none;background:transparent;outline:none;font-family:'Times New Roman',Times,serif;}
+
+/* TABLA ACTIVIDADES */
+.acts-table{width:100%;border-collapse:collapse;margin-bottom:10px;}
+.acts-table thead th{background:#1a3f6f;color:#fff;font-size:12px;font-weight:700;padding:10px 10px;text-align:left;text-transform:uppercase;letter-spacing:.3px;font-family:'Times New Roman',Times,serif;}
+.acts-table thead th:first-child{width:110px;}
+.acts-table thead th:last-child{width:36px;}
+.acts-table tbody tr{border-bottom:0.5px solid #eef2f7;}
+.acts-table td{padding:6px 6px;vertical-align:middle;}
+.acts-table td input{width:100%;font-size:14px;padding:9px 10px;border:1px solid #e2e8f0;border-radius:5px;color:#2d3748;font-family:'Times New Roman',Times,serif;}
+.acts-table td input[type=time]{text-align:center;font-weight:700;color:#1a3f6f;font-size:15px;font-family:'Times New Roman',Times,serif;}
+.acts-table td.obs-td input{background:#fffde7;}
+.acts-table td.obs-td textarea{width:100%;font-size:14px;padding:9px 10px;border:1px solid #e2e8f0;border-radius:5px;color:#2d3748;font-family:'Times New Roman',Times,serif;background:#fffde7;resize:vertical;min-height:40px;line-height:1.4;}
+.acts-table td.obs-td textarea:focus{outline:none;border-color:#1a3f6f;}
+.del-r{background:none;border:none;color:#ccc;cursor:pointer;font-size:14px;padding:4px 7px;border-radius:3px;}
+.del-r:hover{color:#c62828;}
+.btn-addrow{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:#1a3f6f;background:#eef3ff;border:1px dashed #1a3f6f;border-radius:5px;padding:10px 12px;cursor:pointer;width:100%;justify-content:center;margin-bottom:10px;font-family:'Times New Roman',Times,serif;}
+.btn-guardar{width:100%;padding:12px;font-size:14px;font-weight:700;background:#1a3f6f;color:#fff;border:none;border-radius:5px;cursor:pointer;font-family:'Times New Roman',Times,serif;}
+
+/* TELEGRAM BOX */
+.tg-box{background:#f0fff4;border:1px solid #9ae6b4;border-radius:7px;padding:14px 16px;margin-top:12px;}
+.tg-title{font-size:13px;font-weight:700;color:#2f855a;margin-bottom:10px;font-family:'Times New Roman',Times,serif;}
+.tg-row{display:flex;align-items:center;gap:8px;font-size:13px;color:#276749;margin-bottom:8px;flex-wrap:wrap;font-family:'Times New Roman',Times,serif;}
+.tg-row input[type=time]{font-size:14px;padding:6px 10px;border:1px solid #9ae6b4;border-radius:5px;font-family:'Times New Roman',Times,serif;}
+.tg-row input[type=checkbox]{width:17px;height:17px;cursor:pointer;}
+.btn-tg{width:100%;padding:12px;font-size:14px;font-weight:700;background:#25a244;color:#fff;border:none;border-radius:5px;cursor:pointer;margin-top:10px;font-family:'Times New Roman',Times,serif;}
+
+/* TIMELINE */
+.tl-header{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.tl-num-wrap{position:relative;flex-shrink:0;}
+.tl-num{font-size:36px;font-weight:800;color:#1a3f6f;line-height:1;cursor:pointer;user-select:none;min-width:48px;display:block;}
+.tl-num:hover{color:#15325a;}
+.tl-dropdown{display:none;position:absolute;top:100%;left:0;background:#fff;border:1px solid #dde3ed;border-radius:8px;z-index:100;min-width:160px;box-shadow:0 4px 16px rgba(0,0,0,.12);}
+.tl-dropdown.open{display:block;}
+.tl-dd-item{padding:10px 14px;font-size:13px;color:#2d3748;cursor:pointer;border-bottom:0.5px solid #eef2f7;font-family:'Times New Roman',Times,serif;}
+.tl-dd-item:last-child{border-bottom:none;}
+.tl-dd-item:hover{background:#f0f4ff;color:#1a3f6f;}
+.tl-dd-item.active{background:#1a3f6f;color:#fff;}
+.tl-info{border-left:3px solid #1a3f6f;padding-left:9px;flex:1;}
+.tl-nombre{font-size:12px;font-weight:700;color:#2d3748;}
+.tl-sub{font-size:10px;color:#718096;}
+.tl-nav-wrap{display:flex;align-items:center;gap:5px;}
+.tl-nav-arr{width:26px;height:26px;border-radius:50%;border:1px solid #dde3ed;background:#fff;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;color:#1a3f6f;font-weight:700;}
+.tl-nav-arr:hover{background:#1a3f6f;color:#fff;}
+.tl-mode-badge{font-size:10px;background:#eef3ff;color:#1a3f6f;border:1px solid #c6d4f0;border-radius:12px;padding:2px 9px;font-weight:600;min-width:46px;text-align:center;}
+.nav-days{display:flex;gap:4px;margin-bottom:10px;flex-wrap:wrap;}
+.day-pill{padding:3px 8px;border-radius:12px;font-size:10px;font-weight:600;border:1px solid #dde3ed;cursor:pointer;color:#4a5568;background:#fff;}
+.day-pill.active{background:#1a3f6f;color:#fff;border-color:#1a3f6f;}
+.day-pill.has{border-color:#1a3f6f;color:#1a3f6f;}
+.week-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:10px;}
+.wc{border:0.5px solid #dde3ed;border-radius:6px;padding:5px 3px;text-align:center;cursor:pointer;background:#fff;}
+.wc:hover{background:#f0f4ff;}
+.wc.active{background:#1a3f6f;border-color:#1a3f6f;}
+.wc .wd{font-size:9px;color:#718096;font-weight:600;}
+.wc .wn{font-size:14px;font-weight:800;color:#2d3748;margin-top:1px;}
+.wc.active .wd,.wc.active .wn{color:#fff;}
+.wc.has .wn{color:#1a3f6f;}
+.wc.has{border-color:#b5d4f4;}
+.month-hdr{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px;}
+.month-hdr span{text-align:center;font-size:9px;font-weight:700;color:#718096;}
+.month-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:10px;}
+.mc{border:0.5px solid #eef2f7;border-radius:4px;padding:3px;text-align:center;cursor:pointer;min-height:26px;}
+.mc:hover{background:#f0f4ff;}
+.mc.active{background:#1a3f6f;}
+.mc.active .mn{color:#fff;}
+.mc .mn{font-size:11px;font-weight:600;color:#2d3748;}
+.mc.has .mn{color:#1a3f6f;font-weight:800;}
+.mc.dot::after{content:'';display:block;width:4px;height:4px;border-radius:50%;background:#1a3f6f;margin:1px auto 0;}
+.mc.active::after{background:#fff;}
+.mc.empty{border-color:transparent;cursor:default;}
+.timeline{position:relative;}
+.tl-item{display:flex;gap:9px;margin-bottom:12px;position:relative;}
+.tl-item::before{content:'';position:absolute;left:16px;top:32px;bottom:-12px;width:2px;background:#e2e8f0;}
+.tl-item:last-child::before{display:none;}
+.tl-left{display:flex;flex-direction:column;align-items:center;min-width:32px;}
+.tl-circle{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:800;color:#fff;text-align:center;line-height:1.2;}
+.tl-ampm{font-size:8px;color:#a0aec0;margin-top:1px;font-weight:600;}
+.tl-card-item{flex:1;background:#f7fafc;border-radius:7px;padding:7px 10px;border:0.5px solid #dde3ed;}
+.tl-card-item h4{font-size:11px;font-weight:700;color:#2d3748;margin-bottom:2px;}
+.tl-card-item .meta{font-size:10px;color:#718096;}
+.obs-tag{display:inline-block;background:#fffde7;color:#856900;font-size:9px;padding:1px 6px;border-radius:5px;margin-top:3px;font-weight:600;white-space:pre-wrap;}
+.tl-actions{display:flex;gap:3px;margin-top:5px;}
+.tl-btn{font-size:9px;padding:2px 7px;border-radius:4px;border:0.5px solid #dde3ed;cursor:pointer;background:#fff;color:#4a5568;}
+.tl-btn:hover{background:#eef3fa;color:#1a3f6f;}
+.tl-btn.del:hover{background:#fff0f0;color:#c62828;}
+.empty-tl{text-align:center;padding:30px;color:#a0aec0;font-size:12px;}
+
+/* EXPORTAR */
+.export-wrap{position:relative;}
+.export-btn{display:flex;align-items:center;gap:5px;background:#1a3f6f;color:#fff;border:none;border-radius:7px;padding:6px 12px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Times New Roman',Times,serif;white-space:nowrap;}
+.export-btn:hover{background:#15325a;}
+.export-arrow{font-size:9px;transition:transform .2s;}
+.export-btn.open .export-arrow{transform:rotate(180deg);}
+.export-menu{display:none;position:absolute;right:0;top:calc(100% + 6px);background:#fff;border:1px solid #dde3ed;border-radius:10px;min-width:230px;box-shadow:0 8px 24px rgba(0,0,0,.14);z-index:200;overflow:hidden;}
+.export-menu.open{display:block;}
+.exp-item{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;border-bottom:0.5px solid #eef2f7;}
+.exp-item:last-child{border-bottom:none;}
+.exp-item:hover{background:#f0f4ff;}
+.exp-icon{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.exp-text .exp-title{font-size:12px;font-weight:700;color:#2d3748;font-family:'Times New Roman',Times,serif;}
+.exp-text .exp-sub{font-size:10px;color:#718096;margin-top:1px;font-family:'Times New Roman',Times,serif;}
+.exp-divider{height:0.5px;background:#eef2f7;}
+
+/* MODALES */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal-box{background:#fff;border-radius:10px;padding:22px;width:360px;max-width:95vw;box-shadow:0 20px 60px rgba(0,0,0,.25);}
+.modal-box h3{font-size:13px;font-weight:700;color:#1a3f6f;margin-bottom:14px;}
+.mfg{margin-bottom:10px;}
+.mfg label{display:block;font-size:10px;color:#4a5568;margin-bottom:3px;font-weight:600;}
+.mfg input,.mfg select{width:100%;font-size:12px;padding:7px 10px;border:1px solid #cbd5e0;border-radius:5px;color:#2d3748;}
+.mfg input:focus{outline:none;border-color:#1a3f6f;}
+.modal-btns{display:flex;gap:8px;margin-top:14px;}
+.modal-btns button{flex:1;padding:9px;border-radius:6px;border:none;cursor:pointer;font-size:12px;font-weight:600;}
+.btn-cancel-m{background:#e2e8f0;color:#4a5568;}
+.btn-save-m{background:#1a3f6f;color:#fff;}
+
+/* ADMIN */
+.admin-grid{display:grid;grid-template-columns:300px 1fr;gap:16px;}
+.admin-card{background:#fff;border-radius:10px;border:0.5px solid #dde3ed;padding:14px;}
+.fg{margin-bottom:9px;}
+.fg label{display:block;font-size:10px;color:#4a5568;margin-bottom:3px;font-weight:600;}
+.fg input,.fg select{width:100%;font-size:11px;padding:6px 9px;border:1px solid #cbd5e0;border-radius:5px;color:#2d3748;background:#fff;}
+.fg input:focus,.fg select:focus{outline:none;border-color:#1a3f6f;}
+.btn-primary{width:100%;padding:9px;font-size:12px;font-weight:700;background:#1a3f6f;color:#fff;border:none;border-radius:5px;cursor:pointer;margin-top:5px;}
+.user-list-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:7px;border:0.5px solid #dde3ed;margin-bottom:6px;background:#f7fafc;}
+.user-avatar{width:32px;height:32px;border-radius:50%;background:#1a3f6f;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;}
+.user-avatar.adm{background:#c8960a;}
+.user-info{flex:1;}
+.uname{font-size:12px;font-weight:600;color:#2d3748;}
+.urole{font-size:10px;color:#718096;}
+.user-actions{display:flex;gap:4px;}
+.ubtn{font-size:10px;padding:4px 9px;border-radius:4px;border:0.5px solid #dde3ed;cursor:pointer;background:#fff;color:#4a5568;font-family:'Times New Roman',Times,serif;font-weight:700;white-space:nowrap;}
+.ubtn:hover{background:#eef3fa;color:#1a3f6f;}
+.ubtn.del:hover{background:#fff0f0;color:#c62828;}
+
+/* GASTOS */
+.gastos-grid{display:grid;grid-template-columns:300px 1fr;gap:16px;}
+.stat-gastos{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px;}
+.stat-g{background:#f7fafc;border-radius:7px;border:0.5px solid #dde3ed;padding:10px;text-align:center;}
+.sg-val{font-size:16px;font-weight:800;color:#1a3f6f;}
+.sg-lbl{font-size:9px;color:#718096;margin-top:2px;}
+.fg-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.gastos-table{width:100%;border-collapse:collapse;}
+.gastos-table thead th{background:#1a3f6f;color:#fff;font-size:9px;font-weight:700;padding:7px 10px;text-align:left;text-transform:uppercase;}
+.gastos-table tbody tr{border-bottom:0.5px solid #eef2f7;}
+.gastos-table tbody tr:hover{background:#f7fafc;}
+.gastos-table td{padding:8px 10px;font-size:11px;color:#2d3748;}
+.cat-badge{display:inline-block;font-size:9px;padding:2px 7px;border-radius:8px;font-weight:600;}
+
+/* GASTOS MÓDULO NUEVO (prefijo g-) */
+.gview{display:none;}
+.gview.active{display:block;}
+.gbig-btn{width:100%;border-radius:10px;padding:16px;display:flex;align-items:center;gap:14px;cursor:pointer;margin-bottom:10px;border:1.5px solid;background:#fff;text-align:left;font-family:'Times New Roman',Times,serif;}
+.gbb-icon{width:44px;height:44px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:22px;color:#fff;flex-shrink:0;}
+.gbb-body{flex:1;}
+.gbb-title{font-size:15px;font-weight:700;}
+.gbb-desc{font-size:11px;color:#4a5568;margin-top:2px;}
+.gbb-arrow{font-size:20px;}
+.gbig-btn.azul{background:#eef3ff;border-color:#1a3f6f;}
+.gbig-btn.azul .gbb-icon{background:#1a3f6f;}
+.gbig-btn.azul .gbb-title,.gbig-btn.azul .gbb-arrow{color:#1a3f6f;}
+.gbig-btn.verde{background:#f0fff4;border-color:#25a244;}
+.gbig-btn.verde .gbb-icon{background:#25a244;}
+.gbig-btn.verde .gbb-title,.gbig-btn.verde .gbb-arrow{color:#276749;}
+.gbig-btn.amarillo{background:#fff8e1;border-color:#c8960a;}
+.gbig-btn.amarillo .gbb-icon{background:#c8960a;}
+.gbig-btn.amarillo .gbb-title,.gbig-btn.amarillo .gbb-arrow{color:#854f0b;}
+
+.gview-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px;}
+.gvh-left{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.gbtn-back{background:#fff;border:1px solid #dde3ed;border-radius:5px;padding:7px 12px;font-size:12px;color:#4a5568;cursor:pointer;font-family:'Times New Roman',Times,serif;font-weight:700;}
+.gbtn-back:hover{background:#f0f4ff;color:#1a3f6f;}
+.gview-title{font-size:14px;font-weight:700;color:#1a3f6f;}
+.ghint-box{background:#f0f4ff;border:1px dashed #c6d4f0;border-radius:6px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:#1a3f6f;}
+
+.gtbl{width:100%;border-collapse:collapse;}
+.gtbl thead th{background:#1a3f6f;color:#fff;font-size:12px;font-weight:700;padding:10px;text-align:left;text-transform:uppercase;letter-spacing:.3px;font-family:'Times New Roman',Times,serif;}
+.gtbl thead th.ar{text-align:right;}
+.gtbl thead th.ac{text-align:center;width:80px;}
+.gtbl tbody tr{border-bottom:0.5px solid #eef2f7;}
+.gtbl td{padding:9px 10px;font-size:13px;color:#2d3748;vertical-align:middle;}
+.gtbl td.ar{text-align:right;font-weight:700;color:#1a3f6f;}
+.gtbl td.ac{text-align:center;}
+.gtbl tbody tr.total-row{background:#1a3f6f;}
+.gtbl tbody tr.total-row td{color:#fff;font-weight:700;padding:12px 10px;}
+.gtbl tbody tr.total-row td.ar{color:#fff;font-size:14px;}
+.gempty{text-align:center;padding:30px 20px;color:#a0aec0;font-size:13px;}
+
+.gmes-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.gmes-card{border-radius:7px;padding:12px 14px;border:1px solid;}
+.gmes-card.ing{background:#f0fff4;border-color:#9ae6b4;}
+.gmes-card.fij{background:#ffebee;border-color:#ffcdd2;}
+.gmc-head{font-size:12px;font-weight:700;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;letter-spacing:.3px;}
+.gmes-card.ing .gmc-head{color:#276749;}
+.gmes-card.fij .gmc-head{color:#c62828;}
+.gmc-item{display:grid;grid-template-columns:1fr 130px 24px;gap:6px;align-items:center;padding:4px 0;font-size:12px;color:#4a5568;}
+.gmc-item input{font-size:14px;padding:7px 9px;border:1px solid #cbd5e0;border-radius:4px;background:#fff;font-family:'Times New Roman',Times,serif;min-width:0;width:100%;}
+.gmc-item input:focus{outline:none;border-color:#1a3f6f;}
+.gmc-item input.monto{text-align:right;font-weight:700;}
+.gmes-card.ing .gmc-item input.monto{color:#2f855a;border-color:#9ae6b4;}
+.gmes-card.fij .gmc-item input.monto{color:#c62828;border-color:#ffcdd2;}
+.gmc-item .del-x{color:#c62828;cursor:pointer;background:none;border:none;font-size:16px;padding:0;line-height:1;}
+.gmc-item .del-x:hover{color:#8b0000;}
+.gmc-total{margin-top:8px;padding-top:8px;border-top:0.5px solid;display:flex;justify-content:space-between;font-size:13px;font-weight:700;}
+.gmc-total.ing{border-color:#9ae6b4;color:#276749;}
+.gmc-total.fij{border-color:#ffcdd2;color:#c62828;}
+.gmc-add{width:100%;padding:6px;font-size:11px;background:transparent;border:1px dashed;border-radius:4px;cursor:pointer;margin-top:6px;font-family:'Times New Roman',Times,serif;font-weight:700;}
+.gmc-add.ing{border-color:#9ae6b4;color:#2f855a;}
+.gmc-add.fij{border-color:#ffcdd2;color:#c62828;}
+
+.gvar-card{background:#fff8e1;border:1px solid #fde68a;border-radius:7px;padding:12px 14px;margin-bottom:12px;}
+.gvar-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.gvar-title{font-size:12px;color:#854f0b;font-weight:700;letter-spacing:.3px;}
+.gvar-item{display:grid;grid-template-columns:32px 85px 1fr 110px 100px 30px;gap:6px;padding:6px 0;align-items:center;border-bottom:0.5px dashed #fde68a;}
+.gvar-item:last-of-type{border-bottom:none;}
+.gvar-item input:not([type=checkbox]),.gvar-item select{font-size:13px;padding:5px 7px;border:1px solid #fde68a;border-radius:4px;background:#fff;font-family:'Times New Roman',Times,serif;}
+.gvar-item input[type=date]{font-size:12px;}
+.gvar-item input.monto{text-align:right;font-weight:700;color:#854f0b;}
+.gvar-item .del-x{color:#c62828;cursor:pointer;background:none;border:none;font-size:14px;padding:0;}
+.gvar-total{margin-top:8px;padding-top:8px;border-top:0.5px solid #fde68a;display:flex;justify-content:space-between;font-size:13px;font-weight:700;color:#854f0b;}
+
+.gsaldo-box{background:#1a3f6f;border-radius:8px;padding:16px 20px;color:#fff;margin-top:10px;}
+.gsb-row{display:flex;justify-content:space-between;align-items:baseline;}
+.gsb-label{font-size:12px;color:rgba(255,255,255,.7);text-transform:uppercase;letter-spacing:.5px;}
+.gsb-value{font-size:26px;font-weight:700;}
+.gsb-value.neg{color:#ffb3b3;}
+.gsb-detail{color:rgba(255,255,255,.6);font-size:11px;margin-top:6px;}
+
+.gmes-selector{background:#fff;border:1.5px solid #1a3f6f;border-radius:7px;padding:10px 14px;font-size:14px;font-weight:700;color:#1a3f6f;cursor:pointer;font-family:'Times New Roman',Times,serif;width:100%;}
+.gstats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:14px;}
+.gstat-box{background:#f7fafc;border:0.5px solid #dde3ed;padding:12px;border-radius:7px;}
+.gstat-lbl{font-size:10px;color:#718096;text-transform:uppercase;letter-spacing:.4px;}
+.gstat-val{font-size:20px;font-weight:700;color:#1a3f6f;margin-top:3px;}
+.gstat-val.verde{color:#2f855a;}
+.gstat-val.rojo{color:#c62828;}
+
+/* ==================== RESPONSIVE ==================== */
+
+/* iPAD VERTICAL Y TABLETS (hasta 1024px) */
+@media(max-width:1024px){
+  .info-bar{padding:14px 18px;gap:14px;}
+  .hora-mil{font-size:42px;}
+  .clima-temp{font-size:36px;}
+  .clima-icon{font-size:34px;}
+  .clima-man{min-width:130px;padding:10px 14px;}
+  .man-temp{font-size:20px;}
+  .frase-txt{font-size:14px;}
+  .export-menu{min-width:200px;}
+}
+
+/* TABLET PEQUEÑA / iPAD MINI (hasta 900px) */
+@media(max-width:900px){
+  .agenda-layout,.admin-grid,.gastos-grid{grid-template-columns:1fr;}
+  .tab-content{padding:10px 12px;}
+  .info-bar{flex-wrap:wrap;}
+  .info-left{flex:1 1 100%;}
+  .clima-man{flex:1 1 100%;flex-direction:row;justify-content:space-between;align-items:center;}
+  .man-desc{margin-top:0;}
+}
+
+/* CELULAR (hasta 700px) */
+@media(max-width:700px){
+  .app-header{flex-direction:column;gap:6px;align-items:flex-start;padding:8px 14px;
+    padding-top:max(8px,env(safe-area-inset-top));
+    padding-left:max(14px,env(safe-area-inset-left));
+    padding-right:max(14px,env(safe-area-inset-right));}
+  .app-header h1{font-size:12px;}
+  .header-right{width:100%;justify-content:space-between;}
+  .info-bar{padding:12px 14px;flex-direction:column;align-items:stretch;gap:12px;}
+  .info-left{flex-direction:column;align-items:flex-start;gap:10px;width:100%;}
+  .info-div{display:none;}
+  .clock-block{min-width:0;width:100%;}
+  .hora-mil{font-size:44px;letter-spacing:2px;}
+  .fecha-mil{font-size:11px;}
+  .clima-hoy{width:100%;}
+  .clima-temp{font-size:32px;}
+  .clima-icon{font-size:32px;}
+  .clima-city{font-size:12px;}
+  .clima-pill{font-size:11px;padding:3px 8px;}
+  .clima-man{width:100%;min-width:0;}
+  .frase-bar{flex-direction:column;gap:6px;padding:8px 14px;}
+  .frase-div{display:none;}
+  .frase-txt{font-size:13px;}
+  .nav-tabs{padding-left:8px;}
+  .tab{padding:10px 14px;font-size:11px;}
+
+  /* TABLA DE ACTIVIDADES: scroll horizontal en celular */
+  .form-card{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  .acts-table{min-width:380px;}
+  .acts-table td input,.acts-table td input[type=time]{font-size:16px;}
+  .date-row input{font-size:16px;}
+
+  /* Inputs en 16px para evitar zoom iOS */
+  .fg input,.fg select,.mfg input,.mfg select,
+  .tg-row input[type=time]{font-size:16px !important;}
+
+  /* Menú exportar no se sale de pantalla */
+  .export-menu{right:0;left:auto;min-width:200px;max-width:calc(100vw - 28px);}
+
+  /* Timeline más compacta */
+  .tl-header{flex-wrap:wrap;}
+  .tl-num{font-size:30px;}
+
+  /* Modal más cómodo */
+  .modal-box{width:94vw;padding:18px;}
+
+  /* Gastos: stats en 2 columnas */
+  .stat-gastos{grid-template-columns:repeat(2,1fr);}
+  .gastos-table{font-size:10px;}
+  .gastos-table th,.gastos-table td{padding:6px 7px;}
+
+  /* Módulo gastos nuevo en celular */
+  .gmes-grid{grid-template-columns:1fr;}
+  .gvar-item{grid-template-columns:1fr 1fr;gap:6px;padding:10px 0;}
+  .gvar-item input[type=checkbox]{grid-column:1/span 2;justify-self:start;width:22px !important;height:22px !important;}
+  .gvar-item input[type=date]{grid-column:1;}
+  .gvar-item input:not([type=date]):not(.monto):not([type=checkbox]){grid-column:2;}
+  .gvar-item input.monto{grid-column:1;}
+  .gvar-item input:last-of-type{grid-column:2;}
+  .gvar-item .del-x{grid-column:1/span 2;text-align:right;}
+  .gbig-btn{padding:14px;}
+  .gbb-icon{width:38px;height:38px;font-size:19px;}
+  .gbb-title{font-size:14px;}
+}
+
+/* CELULAR PEQUEÑO (iPhone SE, hasta 380px) */
+@media(max-width:380px){
+  .hora-mil{font-size:38px;}
+  .clima-temp{font-size:28px;}
+  .tab{padding:9px 10px;font-size:10px;}
+  .export-btn{padding:6px 9px;font-size:10px;}
+  .user-badge{font-size:10px;padding:3px 9px;}
+}
+
+/* Notch del iPhone (safe area en bordes inferior y laterales) */
+@supports(padding:max(0px)){
+  body{
+    padding-left:env(safe-area-inset-left);
+    padding-right:env(safe-area-inset-right);
+    padding-bottom:env(safe-area-inset-bottom);
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="screen-login" class="screen active">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="logo-circle">M</div>
+      <h1>Sistema MAAH</h1>
+      <p>Ingrese sus credenciales de acceso</p>
+    </div>
+    <div class="lfg">
+      <label>Usuario</label>
+      <input type="text" id="login-user" placeholder="Nombre de usuario" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <div class="lfg">
+      <label>Contraseña</label>
+      <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="btn-login" onclick="doLogin()">Ingresar al sistema</button>
+    <div class="login-error" id="login-error">Usuario o contraseña incorrectos</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="screen-app" class="screen">
+
+  <div class="app-header">
+    <h1>&#9632;&nbsp; SISTEMA MAAH</h1>
+    <div class="header-right">
+      <span class="user-badge" id="header-username"></span>
+      <button class="btn-logout" onclick="openChangePass()" title="Cambiar mi clave" style="background:rgba(255,255,255,.15);">&#128273; Clave</button>
+      <button class="btn-logout" onclick="doLogout()">&#128275; Salir</button>
+    </div>
+  </div>
+
+  <!-- INFO BAR: hora + clima -->
+  <div class="info-bar">
+    <div class="info-left">
+      <div class="clock-block">
+        <div class="hora-mil" id="hora-mil">00:00</div>
+        <div class="fecha-mil" id="fecha-mil">--</div>
+      </div>
+      <div class="info-div"></div>
+      <div class="clima-hoy">
+        <div class="clima-icon" id="clima-icon">⛅</div>
+        <div class="clima-temp" id="clima-temp">--°C</div>
+        <div class="clima-details">
+          <div class="clima-city">Punta Arenas, Chile</div>
+          <div class="clima-pills" id="clima-pills">
+            <div class="clima-pill">💨 --</div>
+            <div class="clima-pill">🌧 --</div>
+            <div class="clima-pill">❄️ --</div>
+            <div class="clima-pill">☀️ UV --</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="clima-man">
+      <div class="man-label">Mañana</div>
+      <div class="man-top">
+        <span id="man-icon">🌡</span>
+        <span class="man-temp" id="man-temp">--°C</span>
+      </div>
+      <div class="man-minmax" id="man-minmax">--</div>
+      <div class="man-desc" id="man-desc"></div>
+    </div>
+  </div>
+
+  <!-- FRASE DEL DÍA -->
+  <div class="frase-bar">
+    <div class="frase-item">
+      <span class="frase-icon">&#128218;</span>
+      <div class="frase-txt" id="frase-proverbio"><strong>Cargando...</strong></div>
+    </div>
+    <div class="frase-div"></div>
+    <div class="frase-item">
+      <span class="frase-icon">&#129504;</span>
+      <div class="frase-txt" id="frase-estoica"><strong>Cargando...</strong></div>
+    </div>
+  </div>
+
+  <div class="nav-tabs" id="nav-tabs">
+    <div class="tab active" onclick="showTab('agenda',this)">&#128197; Mi Agenda</div>
+    <div class="tab" onclick="showTab('gantt',this)">&#128200; Carta Gantt</div>
+    <div class="tab" id="tab-gastos-btn" onclick="showTab('gastos',this)">&#128181; Mis Gastos</div>
+    <div class="tab" id="tab-admin-btn" onclick="showTab('admin',this)" style="display:none;">&#9881; Administrador</div>
+  </div>
+
+  <!-- AGENDA -->
+  <div class="tab-content active" id="tab-content-agenda">
+    <div class="agenda-layout">
+
+      <div class="form-card">
+        <div class="card-title">+ Ingresar actividades del día</div>
+        <div class="date-row">
+          <label>&#128197; Fecha:</label>
+          <input type="date" id="agenda-fecha">
+        </div>
+        <table class="acts-table">
+          <thead><tr><th>Hora</th><th>Actividad</th><th>OBS</th><th></th></tr></thead>
+          <tbody id="acts-body"></tbody>
+        </table>
+        <button class="btn-addrow" onclick="addActRow()">+ Agregar otra actividad</button>
+        <button class="btn-guardar" onclick="guardarAgenda()">&#10003; Guardar agenda del día</button>
+
+        <div class="tg-box">
+          <div class="tg-title">&#128276; Notificación Telegram — BD26MAAHBOT</div>
+          <div class="tg-row">
+            <input type="checkbox" id="tg-auto" checked>
+            <label>Envío automático diario a las</label>
+            <input type="time" id="tg-hora" value="08:00">
+          </div>
+          <div class="tg-row">
+            <input type="checkbox" id="tg-frase" checked>
+            <label>Incluir frase del día siempre (aunque no haya actividades)</label>
+          </div>
+          <button class="btn-tg" onclick="enviarTelegram()">&#9992; Enviar resumen ahora</button>
+        </div>
+      </div>
+
+      <div class="timeline-card">
+        <div class="card-title">ACTIVIDADES DE LA AGENDA</div>
+        <div class="tl-header">
+          <div class="tl-num-wrap">
+            <div class="tl-num" id="tl-num" onclick="toggleTLDropdown()">--
+              <div class="tl-dropdown" id="tl-dropdown">
+                <div class="tl-dd-item active" onclick="setTLMode('dia',event)">📅 Ver por Día</div>
+                <div class="tl-dd-item" onclick="setTLMode('semana',event)">📆 Ver por Semana</div>
+                <div class="tl-dd-item" onclick="setTLMode('mes',event)">🗓 Ver por Mes</div>
+              </div>
+            </div>
+          </div>
+          <div class="tl-info">
+            <div class="tl-nombre" id="tl-nombre">Seleccione una fecha</div>
+            <div class="tl-sub" id="tl-sub">y guarde para ver la agenda</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <div class="tl-nav-wrap">
+              <div class="tl-nav-arr" onclick="tlNavPrev()">&#8592;</div>
+              <span class="tl-mode-badge" id="tl-mode-badge">Día</span>
+              <div class="tl-nav-arr" onclick="tlNavNext()">&#8594;</div>
+            </div>
+            <div class="export-wrap">
+              <button class="export-btn" id="export-btn" onclick="toggleExportMenu()">&#8681; Exportar <span class="export-arrow">▼</span></button>
+              <div class="export-menu" id="export-menu">
+                <div class="exp-item" onclick="exportarPDF()">
+                  <div class="exp-icon" style="background:#ffebee;">📄</div>
+                  <div class="exp-text"><div class="exp-title">Descargar PDF</div><div class="exp-sub">Genera un PDF listo para imprimir</div></div>
+                </div>
+                <div class="exp-item" onclick="exportarImprimir()">
+                  <div class="exp-icon" style="background:#f3e5f5;">🖨️</div>
+                  <div class="exp-text"><div class="exp-title">Imprimir</div><div class="exp-sub">Abre el diálogo de impresión</div></div>
+                </div>
+                <div class="exp-divider"></div>
+                <div class="exp-item" onclick="exportarExcel()">
+                  <div class="exp-icon" style="background:#e8f5e9;">📊</div>
+                  <div class="exp-text"><div class="exp-title">Descargar Excel</div><div class="exp-sub">Exporta las actividades en .xlsx</div></div>
+                </div>
+                <div class="exp-divider"></div>
+                <div class="exp-item" onclick="exportarEmail()">
+                  <div class="exp-icon" style="background:#e3f2fd;">✉️</div>
+                  <div class="exp-text"><div class="exp-title">Enviar por Email</div><div class="exp-sub">Abre tu correo con el resumen</div></div>
+                </div>
+                <div class="exp-item" onclick="exportarWhatsApp()">
+                  <div class="exp-icon" style="background:#e8f5e9;">💬</div>
+                  <div class="exp-text"><div class="exp-title">Enviar por WhatsApp</div><div class="exp-sub">Abre WhatsApp con el mensaje listo</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="nav-days-week"></div>
+        <div class="timeline" id="timeline-view">
+          <div class="empty-tl">No hay actividades para este día.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CARTA GANTT -->
+  <div class="tab-content" id="tab-content-gantt">
+    <div style="background:#fff;border-radius:10px;border:0.5px solid #dde3ed;padding:24px;text-align:center;">
+      <p style="font-size:13px;color:#4a5568;margin-bottom:14px;">La Carta Gantt MAAH se abre en su propia página.</p>
+      <a href="https://maah1996.github.io/Carta-Gantt-Maah/" target="_blank"
+         style="display:inline-block;padding:12px 24px;background:#1a3f6f;color:#fff;border-radius:8px;font-size:13px;font-weight:700;text-decoration:none;">
+        &#128200; Abrir Carta Gantt MAAH
+      </a>
+    </div>
+  </div>
+
+  <!-- GASTOS (Nuevo módulo: Fijos + Mes + Historial) -->
+  <div class="tab-content" id="tab-content-gastos">
+
+    <!-- VISTA: HOME (3 botones) -->
+    <div class="gview active" id="gview-home">
+      <div style="font-size:15px;font-weight:700;color:#1a3f6f;margin-bottom:4px;">Control de Gastos Personal</div>
+      <div style="font-size:12px;color:#718096;margin-bottom:14px;">Gestiona tus finanzas mes a mes de forma privada.</div>
+
+      <button class="gbig-btn azul" onclick="gShowView('fijos')">
+        <div class="gbb-icon">&#9881;</div>
+        <div class="gbb-body">
+          <div class="gbb-title">Gastos Fijos Permanentes</div>
+          <div class="gbb-desc">Administrar rubros que se repiten cada mes</div>
+        </div>
+        <div class="gbb-arrow">&rarr;</div>
+      </button>
+
+      <button class="gbig-btn verde" onclick="gStartNuevoMes()">
+        <div class="gbb-icon">&#43;</div>
+        <div class="gbb-body">
+          <div class="gbb-title">Ingresar Gastos del Mes</div>
+          <div class="gbb-desc">Registrar sueldo, bonos, fijos y gastos variables</div>
+        </div>
+        <div class="gbb-arrow">&rarr;</div>
+      </button>
+
+      <button class="gbig-btn amarillo" onclick="gShowView('historial')">
+        <div class="gbb-icon">&#128197;</div>
+        <div class="gbb-body">
+          <div class="gbb-title">Ver Gastos por Mes</div>
+          <div class="gbb-desc">Consultar historial y descargar PDF</div>
+        </div>
+        <div class="gbb-arrow">&rarr;</div>
+      </button>
+    </div>
+
+    <!-- VISTA: FIJOS PERMANENTES -->
+    <div class="gview" id="gview-fijos">
+      <div class="gview-header">
+        <div class="gvh-left">
+          <button class="gbtn-back" onclick="gShowView('home')">&larr; Volver</button>
+          <div class="gview-title">&#9881; GASTOS FIJOS PERMANENTES</div>
+        </div>
+        <button class="btn-primary" style="padding:8px 14px;font-size:11px;" onclick="gOpenAddFijo()">&#43; Agregar rubro</button>
+      </div>
+      <div class="ghint-box">
+        Esta lista se usa como plantilla base para cada mes. Cuando crees un mes nuevo podrás copiar estos gastos y ajustar los montos.
+      </div>
+      <div class="card" style="padding:0;overflow:hidden;background:#fff;border-radius:10px;border:0.5px solid #dde3ed;margin-bottom:14px;">
+        <table class="gtbl">
+          <thead><tr><th>Rubro</th><th class="ar">Monto base</th><th class="ac">Acciones</th></tr></thead>
+          <tbody id="gfijos-body"><tr><td colspan="3" class="gempty">Cargando...</td></tr></tbody>
+        </table>
+      </div>
+
+      <div style="background:#fff;border:1px solid #ffcdd2;border-radius:8px;padding:12px 14px;margin-bottom:14px;">
+        <div style="font-size:11px;color:#c62828;font-weight:700;margin-bottom:6px;text-transform:uppercase;letter-spacing:.3px;">⚠ Zona de peligro</div>
+        <div style="font-size:12px;color:#4a5568;margin-bottom:10px;line-height:1.4;">Si tus gastos quedaron desordenados, puedes borrar todo y empezar de cero.</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <button class="ubtn del" style="background:#ffebee;border-color:#ffcdd2;color:#c62828;padding:6px 10px;" onclick="gResetFijos()">🗑 Borrar plantilla de fijos</button>
+          <button class="ubtn del" style="background:#ffebee;border-color:#ffcdd2;color:#c62828;padding:6px 10px;" onclick="gResetTodo()">🗑 Borrar TODO (fijos + meses)</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- VISTA: MES (editar) -->
+    <div class="gview" id="gview-mes">
+      <div class="gview-header">
+        <div class="gvh-left">
+          <button class="gbtn-back" onclick="gBackFromMes()">&larr; Volver</button>
+          <div class="gview-title" id="gmes-title">&#128197; MES</div>
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <button class="btn-primary" style="padding:8px 12px;font-size:11px;background:#c8960a;" onclick="gExportarPDF()">&#128196; PDF</button>
+          <button class="btn-primary" style="padding:8px 12px;font-size:11px;background:#1976d2;" onclick="gEnviarEmail()" title="Enviar resumen por email">&#9993; Email</button>
+          <button class="btn-primary" style="padding:8px 12px;font-size:11px;background:#25a244;" onclick="gEnviarWhatsApp()" title="Enviar resumen por WhatsApp">&#128241; WhatsApp</button>
+          <button class="btn-primary" style="padding:8px 12px;font-size:11px;background:#25a244;" onclick="gGuardarMes()">&#128190; Guardar</button>
+        </div>
+      </div>
+
+      <div class="gmes-grid">
+        <div class="gmes-card ing">
+          <div class="gmc-head">
+            <span>&#43; INGRESOS</span>
+            <span id="gtotal-ing" style="font-size:13px;">$0</span>
+          </div>
+          <div id="ging-list"></div>
+          <button class="gmc-add ing" onclick="gAddIngreso()">&#43; Agregar ingreso</button>
+          <div class="gmc-total ing"><span>Total</span><span id="gtotal-ing2">$0</span></div>
+        </div>
+
+        <div class="gmes-card fij">
+          <div class="gmc-head">
+            <span>&minus; GASTOS FIJOS <small style="font-weight:normal;font-size:10px;opacity:.75;">(de tu plantilla)</small></span>
+            <span id="gtotal-fij" style="font-size:13px;">$0</span>
+          </div>
+          <div id="gfij-list"></div>
+          <div style="text-align:center;margin-top:8px;padding:6px;font-size:10px;color:#c62828;opacity:.75;font-style:italic;">
+            Para cambiar estos montos, edita la plantilla en "Gastos Fijos Permanentes"
+          </div>
+          <div class="gmc-total fij"><span>Total</span><span id="gtotal-fij2">$0</span></div>
+        </div>
+      </div>
+
+      <div class="gvar-card">
+        <div class="gvar-head">
+          <span class="gvar-title">&minus; GASTOS VARIABLES (DÍA A DÍA)</span>
+          <button class="btn-primary" style="padding:6px 12px;font-size:11px;background:#c8960a;" onclick="gAddVariable()">&#43; Agregar</button>
+        </div>
+        <div id="gvar-list-head" style="display:none;grid-template-columns:32px 85px 1fr 110px 100px 30px;gap:6px;font-size:10px;color:#854f0b;text-transform:uppercase;letter-spacing:.3px;padding-bottom:5px;border-bottom:0.5px solid #fde68a;font-weight:700;">
+          <div title="Pagado" style="text-align:center;">✓</div><div>FECHA</div><div>DESCRIPCIÓN</div><div style="text-align:right;">MONTO</div><div>CATEGORÍA</div><div></div>
+        </div>
+        <div id="gvar-list"></div>
+        <div class="gvar-total"><span>Total variables</span><span id="gtotal-var">$0</span></div>
+      </div>
+
+      <div class="gsaldo-box">
+        <div class="gsb-row">
+          <span class="gsb-label">Saldo disponible</span>
+          <span class="gsb-value" id="gsaldo-val">$0</span>
+        </div>
+        <div class="gsb-detail" id="gsaldo-detail">Ingresos − Fijos − Variables</div>
+      </div>
+    </div>
+
+    <!-- VISTA: HISTORIAL -->
+    <div class="gview" id="gview-historial">
+      <div class="gview-header">
+        <div class="gvh-left">
+          <button class="gbtn-back" onclick="gShowView('home')">&larr; Volver</button>
+          <div class="gview-title">&#128197; HISTORIAL DE GASTOS</div>
+        </div>
+      </div>
+      <div style="background:#fff;border-radius:10px;border:0.5px solid #dde3ed;padding:16px;margin-bottom:14px;">
+        <label style="display:block;font-size:11px;color:#4a5568;margin-bottom:5px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;">Seleccionar mes</label>
+        <select class="gmes-selector" id="ghistorial-mes" onchange="gVerMesHistorial()">
+          <option value="">Elige un mes...</option>
+        </select>
+      </div>
+      <div id="ghistorial-content"></div>
+    </div>
+  </div>
+
+  <!-- ADMIN -->
+  <div class="tab-content" id="tab-content-admin">
+    <div class="admin-grid">
+      <div class="admin-card">
+        <div class="card-title">+ Crear usuario</div>
+        <div class="fg"><label>Nombre de usuario</label><input type="text" id="nu-nombre" placeholder="Ej: JUAN" oninput="this.value=this.value.toUpperCase()"></div>
+        <div class="fg"><label>Contraseña</label><input type="password" id="nu-pass" placeholder="Clave de acceso"></div>
+        <div class="fg"><label>Rol</label>
+          <select id="nu-rol"><option value="usuario">Usuario</option><option value="admin">Administrador</option></select>
+        </div>
+        <div class="fg"><label>Chat ID Telegram (puedes dejarlo vacío y agregarlo después)</label><input type="text" id="nu-tgid" placeholder="Opcional — se puede agregar luego"></div>
+        <button class="btn-primary" onclick="crearUsuario()">+ Crear usuario</button>
+        <div id="admin-msg" style="margin-top:10px;font-size:12px;text-align:center;display:none;padding:8px 12px;border-radius:6px;font-weight:700;"></div>
+      </div>
+      <div class="admin-card">
+        <div class="card-title" style="display:flex;justify-content:space-between;align-items:center;">
+          <span>Usuarios del sistema</span>
+          <button onclick="loadUserList()" style="background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);color:#fff;padding:3px 10px;border-radius:4px;font-size:10px;cursor:pointer;font-weight:700;font-family:'Times New Roman',Times,serif;">🔄 Recargar</button>
+        </div>
+        <div id="user-list"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL EDITAR ACTIVIDAD -->
+<div class="modal-overlay" id="modal-edit-act">
+  <div class="modal-box">
+    <h3>&#9998; Editar actividad</h3>
+    <div class="mfg"><label>Hora</label><input type="time" id="edit-act-hora"></div>
+    <div class="mfg"><label>Actividad</label><input type="text" id="edit-act-desc" oninput="this.value=this.value.toUpperCase()"></div>
+    <div class="mfg"><label>OBS</label><textarea id="edit-act-obs" rows="3" style="width:100%;font-size:12px;padding:7px 10px;border:1px solid #cbd5e0;border-radius:5px;color:#2d3748;font-family:'Times New Roman',Times,serif;background:#fffde7;resize:vertical;line-height:1.4;" oninput="this.value=this.value.toUpperCase()"></textarea></div>
+    <div class="modal-btns">
+      <button class="btn-cancel-m" onclick="closeModal('modal-edit-act')">Cancelar</button>
+      <button class="btn-save-m" onclick="saveEditAct()">Guardar cambios</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR USUARIO -->
+<div class="modal-overlay" id="modal-edit-user">
+  <div class="modal-box">
+    <h3>&#9998; Editar usuario</h3>
+    <div class="mfg"><label>Nombre</label><input type="text" id="eu-nombre" oninput="this.value=this.value.toUpperCase()"></div>
+    <div class="mfg"><label>Nueva contraseña (dejar vacío para no cambiar)</label><input type="password" id="eu-pass" placeholder="Nueva clave..."></div>
+    <div class="mfg"><label>Rol</label><select id="eu-rol"><option value="usuario">Usuario</option><option value="admin">Administrador</option></select></div>
+    <div class="mfg"><label>Chat ID Telegram</label><input type="text" id="eu-tgid"></div>
+    <div class="modal-btns">
+      <button class="btn-cancel-m" onclick="closeModal('modal-edit-user')">Cancelar</button>
+      <button class="btn-save-m" onclick="saveEditUser()">Guardar cambios</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CAMBIAR CLAVE (para todos los usuarios) -->
+<div class="modal-overlay" id="modal-change-pass">
+  <div class="modal-box">
+    <h3>&#128273; Cambiar mi clave</h3>
+    <div class="mfg"><label>Clave actual</label><input type="password" id="cp-actual" placeholder="Tu clave actual"></div>
+    <div class="mfg"><label>Nueva clave</label><input type="password" id="cp-nueva" placeholder="Mínimo 4 caracteres"></div>
+    <div class="mfg"><label>Repetir nueva clave</label><input type="password" id="cp-nueva2" placeholder="Confirma la nueva clave"></div>
+    <div id="cp-msg" style="font-size:11px;text-align:center;margin-top:6px;display:none;padding:6px;border-radius:4px;"></div>
+    <div class="modal-btns">
+      <button class="btn-cancel-m" onclick="closeModal('modal-change-pass')">Cancelar</button>
+      <button class="btn-save-m" onclick="doChangePass()">Cambiar clave</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL AGREGAR/EDITAR FIJO PERMANENTE -->
+<div class="modal-overlay" id="modal-gfijo">
+  <div class="modal-box">
+    <h3 id="modal-gfijo-title">Agregar rubro fijo</h3>
+    <div class="mfg"><label>Nombre del rubro</label><input type="text" id="gfijo-nombre" placeholder="Ej: Arriendo, Luz..." oninput="this.value=this.value.toUpperCase()" onkeydown="if(event.key==='Enter')gSaveFijo()"></div>
+    <div class="mfg"><label>Monto base mensual</label><input type="text" inputmode="numeric" id="gfijo-monto" placeholder="$0" oninput="this.value=fmtMiles(gToNum(this.value))" onkeydown="if(event.key==='Enter')gSaveFijo()"></div>
+    <div class="modal-btns">
+      <button class="btn-cancel-m" onclick="closeModal('modal-gfijo')">Cancelar</button>
+      <button class="btn-save-m" onclick="gSaveFijo()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CREAR NUEVO MES -->
+<div class="modal-overlay" id="modal-nuevo-mes">
+  <div class="modal-box">
+    <h3>Nuevo mes de gastos</h3>
+    <p style="font-size:13px;color:#4a5568;margin-bottom:14px;line-height:1.5;">Los gastos fijos de tu plantilla se cargarán automáticamente.</p>
+    <div class="mfg"><label>Mes y año</label><input type="month" id="nuevo-mes-valor"></div>
+    <div class="modal-btns">
+      <button class="btn-cancel-m" onclick="closeModal('modal-nuevo-mes')">Cancelar</button>
+      <button class="btn-save-m" onclick="gCrearMes()">Aceptar</button>
+    </div>
+  </div>
+</div>
+
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<script>
+// ── FIREBASE ─────────────────────────────────────────────────
+const FB_CONFIG={
+  apiKey:"AIzaSyB0f_Sh2xiDgvB9_-nyp76Ol-XvhhyvcXA",
+  authDomain:"gantt-maah.firebaseapp.com",
+  databaseURL:"https://gantt-maah-default-rtdb.firebaseio.com",
+  projectId:"gantt-maah",
+  storageBucket:"gantt-maah.firebasestorage.app",
+  messagingSenderId:"299934642229",
+  appId:"1:299934642229:web:87681b489cdc2a5452c17c"
+};
+firebase.initializeApp(FB_CONFIG);
+const db=firebase.database();
+
+// ── TELEGRAM ─────────────────────────────────────────────────
+const TG_TOKEN='8439566682:AAHSM9JXlNDwh-WK3GP5b205fdGGHfikUpY';
+const TG_ADMIN_CHATID='8290529563';
+
+// Envía mensaje nuevo y guarda el message_id en Firebase con la fecha correcta
+function sendTG(chatId, text, fecha){
+  return fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage`,{
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({chat_id:chatId, text:text, parse_mode:'HTML'})
+  }).then(r=>r.json()).then(data=>{
+    if(data.ok && data.result && data.result.message_id){
+      const uid=currentUser ? currentUser.id : 'admin';
+      const key=fecha || fmtDateKey(new Date());
+      db.ref(`maah_tg_msgid/${uid}/${key}`).set({
+        msgId: data.result.message_id,
+        chatId: chatId
+      });
+    }
+  }).catch(()=>{});
+}
+
+// Edita un mensaje existente. Si falla, envía uno nuevo con la fecha correcta
+function editTG(chatId, messageId, text, fecha){
+  return fetch(`https://api.telegram.org/bot${TG_TOKEN}/editMessageText`,{
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({chat_id:chatId, message_id:messageId, text:text, parse_mode:'HTML'})
+  }).then(r=>r.json()).then(data=>{
+    if(!data.ok){
+      // Mensaje expiró o no existe — borramos el id guardado y enviamos nuevo
+      const uid=currentUser ? currentUser.id : 'admin';
+      db.ref(`maah_tg_msgid/${uid}/${fecha}`).remove();
+      return sendTG(chatId, text, fecha);
+    }
+  }).catch(()=>{});
+}
+
+// Función principal: edita si ya existe mensaje del día, sino envía nuevo
+function sendOrEditTG(chatId, text, fecha){
+  const uid=currentUser ? currentUser.id : 'admin';
+  db.ref(`maah_tg_msgid/${uid}/${fecha}`).once('value', snap=>{
+    const saved=snap.val();
+    if(saved && saved.msgId){
+      editTG(chatId, saved.msgId, text, fecha);
+    } else {
+      sendTG(chatId, text, fecha);
+    }
+  });
+}
+
+// ── FRASES ───────────────────────────────────────────────────
+const PROVERBIOS=[
+  'PROVERBIOS 14:23 — En todo trabajo hay ganancia, pero el solo hablar lleva a la pobreza.',
+  'PROVERBIOS 16:3 — Encomienda a Dios tus obras y tus planes se cumplirán.',
+  'PROVERBIOS 3:5 — Confía en el Señor con todo tu corazón y no te apoyes en tu propia prudencia.',
+  'PROVERBIOS 21:5 — Los planes del diligente ciertamente llevan a la abundancia.',
+  'PROVERBIOS 27:1 — No te jactes del día de mañana, porque no sabes lo que traerá.',
+  'PROVERBIOS 12:24 — La mano diligente gobernará, pero la indolencia es servidumbre.',
+  'PROVERBIOS 19:21 — Muchos son los planes en el corazón del hombre, pero el propósito del Señor prevalecerá.',
+];
+const ESTOICAS=[
+  '<strong>Marco Aurelio</strong> — Haz lo correcto, no lo cómodo. El obstáculo es el camino.',
+  '<strong>Epicteto</strong> — No busques que los acontecimientos sucedan como tú quieres. Desea que sucedan como son.',
+  '<strong>Séneca</strong> — No es pobre quien tiene poco, sino quien desea más.',
+  '<strong>Marco Aurelio</strong> — Pierde el tiempo el que busca lo que no puede encontrar.',
+  '<strong>Epicteto</strong> — El hombre no es perturbado por los hechos, sino por su opinión de los hechos.',
+  '<strong>Séneca</strong> — Comienza. El audaz tiene la suerte de su parte.',
+  '<strong>Marco Aurelio</strong> — Nunca estimes que algo te es provechoso si te obliga a romper tu palabra.',
+];
+
+function getFrasesHoy(){
+  const idx=new Date().getDay();
+  return {proverbio:PROVERBIOS[idx], estoica:ESTOICAS[idx]};
+}
+
+function mostrarFrases(){
+  const {proverbio,estoica}=getFrasesHoy();
+  document.getElementById('frase-proverbio').innerHTML='<strong>'+proverbio.split('—')[0]+'</strong>— '+proverbio.split('—').slice(1).join('—');
+  document.getElementById('frase-estoica').innerHTML=estoica;
+}
+
+// ── RELOJ MILITAR ────────────────────────────────────────────
+const DIAS_ES=['DOMINGO','LUNES','MARTES','MIÉRCOLES','JUEVES','VIERNES','SÁBADO'];
+const MESES_ES=['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
+function updateClock(){
+  const n=new Date();
+  document.getElementById('hora-mil').textContent=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
+  document.getElementById('fecha-mil').textContent=DIAS_ES[n.getDay()]+' '+String(n.getDate()).padStart(2,'0')+'/'+MESES_ES[n.getMonth()]+'/'+n.getFullYear();
+}
+updateClock(); setInterval(updateClock,1000);
+
+// ── CLIMA ─────────────────────────────────────────────────────
+const CLIMA_ICONS={'0':'☀️','1':'🌤','2':'⛅','3':'☁️','45':'🌫','48':'🌫','51':'🌦','53':'🌦','55':'🌧','61':'🌧','63':'🌧','65':'🌧','71':'🌨','73':'❄️','75':'❄️','77':'🌨','80':'🌦','81':'🌧','82':'⛈','85':'🌨','86':'❄️','95':'⛈','96':'⛈','99':'⛈'};
+function iconFromCode(c){return CLIMA_ICONS[String(c)]||'🌡';}
+function uvLabel(uv){if(uv<=2)return'Bajo';if(uv<=5)return'Moderado';if(uv<=7)return'Alto';if(uv<=10)return'Muy alto';return'Extremo';}
+function makePill(icon,val){const d=document.createElement('div');d.className='clima-pill';d.textContent=icon+' '+val;return d;}
+function makeManPill(txt){const s=document.createElement('span');s.className='man-pill';s.textContent=txt;return s;}
+function loadClima(){
+  fetch('https://api.open-meteo.com/v1/forecast?latitude=-53.15&longitude=-70.92&current=temperature_2m,weathercode,windspeed_10m,precipitation,snowfall,uv_index&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,snowfall_sum,windspeed_10m_max,uv_index_max&timezone=America%2FSantiago&forecast_days=2')
+    .then(r=>r.json()).then(d=>{
+      const cur=d.current;
+      const temp=Math.round(cur.temperature_2m);
+      const code=cur.weathercode;
+      const wind=Math.round(cur.windspeed_10m);
+      const rain=cur.precipitation.toFixed(1);
+      const snow=cur.snowfall.toFixed(1);
+      const uv=parseFloat(cur.uv_index.toFixed(1));
+      const manTemp=Math.round(d.daily.temperature_2m_max[1]);
+      const manMin=Math.round(d.daily.temperature_2m_min[1]);
+      const manCode=d.daily.weathercode[1];
+      const manRain=d.daily.precipitation_sum[1].toFixed(1);
+      const manSnow=d.daily.snowfall_sum[1].toFixed(1);
+      const manWind=Math.round(d.daily.windspeed_10m_max[1]);
+      const manUV=d.daily.uv_index_max[1].toFixed(1);
+
+      document.getElementById('clima-icon').textContent=iconFromCode(code);
+      document.getElementById('clima-temp').textContent=temp+'°C';
+
+      const pills=document.getElementById('clima-pills');
+      pills.innerHTML='';
+      pills.appendChild(makePill('💨',wind+' km/h'));
+      pills.appendChild(makePill('🌧',rain+' mm'));
+      pills.appendChild(makePill('❄️',snow+' cm'));
+      pills.appendChild(makePill('☀️','UV '+uv+' — '+uvLabel(uv)));
+
+      document.getElementById('man-icon').textContent=iconFromCode(manCode);
+      document.getElementById('man-temp').textContent=manTemp+'°C';
+      document.getElementById('man-minmax').textContent='Mín '+manMin+'°C · Máx '+manTemp+'°C';
+
+      const mdesc=document.getElementById('man-desc');
+      mdesc.innerHTML='';
+      mdesc.appendChild(makeManPill('💨 '+manWind+' km/h'));
+      mdesc.appendChild(makeManPill('🌧 '+manRain+' mm'));
+      mdesc.appendChild(makeManPill('❄️ '+manSnow+' cm'));
+      mdesc.appendChild(makeManPill('UV '+manUV));
+    }).catch(()=>{
+      document.getElementById('clima-temp').textContent='Sin datos';
+    });
+}
+
+// ── ESTADO ───────────────────────────────────────────────────
+const TODAY=new Date(); TODAY.setHours(0,0,0,0);
+let currentUser=null;
+let editingActKey=null, editingActDate=null, editingActOld=null;
+let editingUserId=null;
+
+const MSHORT=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+const DNAMES=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+const DSHORT=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+
+function fmtDateKey(d){return d.toISOString().slice(0,10);}
+function fmtDateLabel(d){return String(d.getDate()).padStart(2,'0')+'/'+MSHORT[d.getMonth()]+'/'+String(d.getFullYear()).slice(2);}
+function fmt$(n){return '$'+Math.round(n).toLocaleString('es-CL');}
+function getWeekNum(d){const j=new Date(d.getFullYear(),0,1);return Math.ceil((((d-j)/86400000)+j.getDay()+1)/7);}
+
+// ── LOGIN ─────────────────────────────────────────────────────
+function doLogin(){
+  const user=document.getElementById('login-user').value.trim().toUpperCase();
+  const pass=document.getElementById('login-pass').value.trim();
+  if(!user||!pass){showLoginErr('Complete los campos.');return;}
+  db.ref('maah_usuarios').orderByChild('nombre').equalTo(user).once('value',snap=>{
+    if(!snap.exists()){showLoginErr('Usuario o contraseña incorrectos');return;}
+    let found=null;
+    snap.forEach(c=>{if(c.val().pass===pass)found={id:c.key,...c.val()};});
+    if(!found){showLoginErr('Usuario o contraseña incorrectos');return;}
+    if(found.bloqueado){showLoginErr('Tu cuenta está bloqueada. Contacta al administrador.');return;}
+    currentUser=found; startApp();
+  });
+}
+function showLoginErr(msg){const e=document.getElementById('login-error');e.textContent=msg;e.style.display='block';setTimeout(()=>e.style.display='none',3000);}
+function doLogout(){currentUser=null;document.getElementById('screen-app').classList.remove('active');document.getElementById('screen-login').classList.add('active');document.getElementById('login-user').value='';document.getElementById('login-pass').value='';}
+
+function startApp(){
+  document.getElementById('screen-login').classList.remove('active');
+  document.getElementById('screen-app').classList.add('active');
+  document.getElementById('header-username').textContent=currentUser.nombre+(currentUser.rol==='admin'?' ★':'');
+  // Gastos es visible para TODOS (cada usuario ve los suyos)
+  document.getElementById('tab-gastos-btn').style.display='block';
+  // Solo el admin ve la pestaña Administrador
+  if(currentUser.rol==='admin'){
+    document.getElementById('tab-admin-btn').style.display='block';
+    loadUserList();
+  }else{
+    document.getElementById('tab-admin-btn').style.display='none';
+  }
+  // Cargar plantilla de gastos fijos del usuario (siempre)
+  gLoadFijosPlantilla();
+  mostrarFrases();
+  loadClima();
+  const hoy=fmtDateKey(TODAY);
+  document.getElementById('agenda-fecha').value=hoy;
+  addActRow();
+  tlCurrent=new Date(TODAY);
+  loadAgendaForDate(hoy);
+}
+
+// ── TABS ─────────────────────────────────────────────────────
+function showTab(tab,el){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-content-'+tab).classList.add('active');
+  el.classList.add('active');
+  // Recargar lista al entrar a admin
+  if(tab==='admin' && currentUser && currentUser.rol==='admin'){
+    loadUserList();
+  }
+}
+
+// ── AGENDA ───────────────────────────────────────────────────
+function addActRow(){
+  const tbody=document.getElementById('acts-body');
+  const tr=document.createElement('tr');
+  tr.innerHTML=`<td><input type="time" value="08:00"></td>
+    <td><input type="text" placeholder="Actividad..." oninput="this.value=this.value.toUpperCase()"></td>
+    <td class="obs-td"><textarea placeholder="OBS..." rows="1" oninput="this.value=this.value.toUpperCase();autoGrow(this);" onkeydown="if(event.key==='Enter'){event.stopPropagation();}"></textarea></td>
+    <td><button class="del-r" onclick="this.closest('tr').remove()">&#10005;</button></td>`;
+  tbody.appendChild(tr);
+  tr.querySelectorAll('input')[1].focus();
+}
+
+function guardarAgenda(){
+  const fecha=document.getElementById('agenda-fecha').value;
+  if(!fecha){alert('Seleccione una fecha.');return;}
+  const rows=[...document.querySelectorAll('#acts-body tr')];
+  const newActs=rows.map(r=>{
+    const ins=r.querySelectorAll('input, textarea');
+    return {hora:ins[0].value,act:(ins[1].value||'').toUpperCase().trim(),obs:(ins[2].value||'').toUpperCase().trim()};
+  }).filter(a=>a.act);
+  if(!newActs.length){alert('Ingrese al menos una actividad.');return;}
+
+  // Lee las actividades existentes y las combina con las nuevas
+  db.ref(`maah_agenda/${currentUser.id}/${fecha}`).once('value',snap=>{
+    const existing=snap.val()?Object.values(snap.val()):[];
+    const combined=[...existing,...newActs];
+    // Ordena por hora y re-indexa
+    combined.sort((a,b)=>a.hora.localeCompare(b.hora));
+    const obj=combined.reduce((o,a,i)=>{o[i]=a;return o;},{});
+
+    db.ref(`maah_agenda/${currentUser.id}/${fecha}`).set(obj,()=>{
+      loadAgendaForDate(fecha);
+      const d=new Date(fecha+'T12:00:00');
+      renderWeekNav(d);
+      document.getElementById('acts-body').innerHTML='';
+      addActRow();
+      const chatId=currentUser.tgid||TG_ADMIN_CHATID;
+      const inclFrase=document.getElementById('tg-frase').checked;
+      setTimeout(()=>buildAndSendAgenda(fecha, chatId, inclFrase), 800);
+    });
+  });
+}
+
+function loadAgendaForDate(fecha){
+  tlCurrent=new Date(fecha+'T12:00:00');
+  tlMode='dia';
+  renderTLDia();
+}
+
+const TL_COLORS=['#2c5282','#1a3f6f','#E65100','#c8960a','#c62828','#2e7d32','#6b46c1'];
+const DIAS_CORTO=['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+const MESES_LARGO=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+
+let tlMode='dia';
+let tlCurrent=new Date();
+
+// Lunes como primer día: (getDay()+6)%7 → 0=Lun...6=Dom
+function tlDayIdx(d){return (d.getDay()+6)%7;}
+function tlGetMonday(d){const dd=new Date(d);dd.setDate(d.getDate()-tlDayIdx(d));return dd;}
+
+function toggleTLDropdown(){
+  document.getElementById('tl-dropdown').classList.toggle('open');
+}
+document.addEventListener('click',e=>{
+  if(!e.target.closest('#tl-num')) document.getElementById('tl-dropdown').classList.remove('open');
+});
+
+function setTLMode(m,e){
+  if(e) e.stopPropagation();
+  tlMode=m;
+  document.getElementById('tl-dropdown').classList.remove('open');
+  document.querySelectorAll('.tl-dd-item').forEach((el,i)=>el.classList.toggle('active',
+    (i===0&&m==='dia')||(i===1&&m==='semana')||(i===2&&m==='mes')));
+  renderTL();
+}
+
+function tlNavPrev(){
+  if(tlMode==='dia') tlCurrent.setDate(tlCurrent.getDate()-1);
+  else if(tlMode==='semana') tlCurrent.setDate(tlCurrent.getDate()-7);
+  else tlCurrent.setMonth(tlCurrent.getMonth()-1);
+  renderTL();
+}
+function tlNavNext(){
+  if(tlMode==='dia') tlCurrent.setDate(tlCurrent.getDate()+1);
+  else if(tlMode==='semana') tlCurrent.setDate(tlCurrent.getDate()+7);
+  else tlCurrent.setMonth(tlCurrent.getMonth()+1);
+  renderTL();
+}
+
+function renderTL(){
+  document.getElementById('tl-mode-badge').textContent=tlMode==='dia'?'Día':tlMode==='semana'?'Semana':'Mes';
+  if(tlMode==='dia') renderTLDia();
+  else if(tlMode==='semana') renderTLSemana();
+  else renderTLMes();
+}
+
+function renderTLDia(){
+  const fecha=fmtDateKey(tlCurrent);
+  document.getElementById('tl-num').childNodes[0].nodeValue=tlCurrent.getDate();
+  document.getElementById('tl-nombre').textContent=DNAMES[tlCurrent.getDay()]+' — Semana '+getWeekNum(tlCurrent);
+  document.getElementById('tl-sub').textContent=fmtDateLabel(tlCurrent);
+
+  const mon=tlGetMonday(tlCurrent);
+  const fechaActual=fmtDateKey(tlCurrent);
+  Promise.all(Array.from({length:7},(_,i)=>{
+    const d=new Date(mon); d.setDate(mon.getDate()+i);
+    return db.ref(`maah_agenda/${currentUser.id}/${fmtDateKey(d)}`).once('value').then(s=>({d,has:s.exists()}));
+  })).then(results=>{
+    document.getElementById('nav-days-week').innerHTML='<div class="nav-days">'+
+      results.map(({d,has})=>{
+        const key=fmtDateKey(d);
+        const cls='day-pill'+(key===fechaActual?' active':has?' has':'');
+        return `<div class="${cls}" onclick="selectDay('${key}')">${DIAS_CORTO[tlDayIdx(d)]} ${d.getDate()}</div>`;
+      }).join('')+'</div>';
+  });
+
+  db.ref(`maah_agenda/${currentUser.id}/${fecha}`).once('value',snap=>{
+    const data=snap.val();
+    const acts=data?Object.values(data):[];
+    acts.sort((a,b)=>a.hora.localeCompare(b.hora));
+    document.getElementById('tl-sub').textContent=fmtDateLabel(tlCurrent)+' · '+acts.length+' actividad'+(acts.length!==1?'es':'');
+    renderTimeline(fecha,acts,false);
+  });
+}
+
+function renderTLSemana(){
+  const mon=tlGetMonday(tlCurrent);
+  const sun=new Date(mon); sun.setDate(mon.getDate()+6);
+  document.getElementById('tl-num').childNodes[0].nodeValue=mon.getDate();
+  document.getElementById('tl-nombre').textContent='Semana '+getWeekNum(tlCurrent)+' — '+MESES_LARGO[tlCurrent.getMonth()];
+  document.getElementById('tl-sub').textContent=mon.getDate()+' al '+sun.getDate()+' de '+MESES_LARGO[mon.getMonth()];
+
+  const keys=Array.from({length:7},(_,i)=>{const d=new Date(mon);d.setDate(mon.getDate()+i);return d;});
+  Promise.all(keys.map(d=>db.ref(`maah_agenda/${currentUser.id}/${fmtDateKey(d)}`).once('value').then(s=>({d,data:s.val()})))).then(results=>{
+    document.getElementById('nav-days-week').innerHTML='<div class="week-grid">'+
+      results.map(({d,data})=>{
+        const key=fmtDateKey(d);
+        const cls='wc'+(key===fmtDateKey(tlCurrent)?' active':data?' has':'');
+        return `<div class="${cls}" onclick="selectDay('${key}')"><div class="wd">${DIAS_CORTO[tlDayIdx(d)]}</div><div class="wn">${d.getDate()}</div></div>`;
+      }).join('')+'</div>';
+
+    const allActs=[];
+    results.forEach(({d,data})=>{
+      if(data) Object.values(data).forEach(a=>allActs.push({...a,dia:DIAS_CORTO[tlDayIdx(d)]+' '+d.getDate(),fecha:fmtDateKey(d)}));
+    });
+    allActs.sort((a,b)=>a.hora.localeCompare(b.hora));
+    renderTimelineMulti(allActs);
+  });
+}
+
+function renderTLMes(){
+  const y=tlCurrent.getFullYear(), m=tlCurrent.getMonth();
+  document.getElementById('tl-num').childNodes[0].nodeValue=MESES_LARGO[m].slice(0,3).toUpperCase();
+  document.getElementById('tl-nombre').textContent=MESES_LARGO[m]+' '+y;
+  document.getElementById('tl-sub').textContent='Vista mensual';
+
+  const firstIdx=tlDayIdx(new Date(y,m,1));
+  const daysInM=new Date(y,m+1,0).getDate();
+  const days=Array.from({length:daysInM},(_,i)=>new Date(y,m,i+1));
+
+  Promise.all(days.map(d=>db.ref(`maah_agenda/${currentUser.id}/${fmtDateKey(d)}`).once('value').then(s=>({d,data:s.val()})))).then(results=>{
+    let hdr='<div class="month-hdr">'+['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'].map(d=>`<span>${d}</span>`).join('')+'</div>';
+    let grid='<div class="month-grid">';
+    for(let i=0;i<firstIdx;i++) grid+='<div class="mc empty"></div>';
+    results.forEach(({d,data})=>{
+      const key=fmtDateKey(d);
+      const cls='mc'+(key===fmtDateKey(tlCurrent)?' active':data?' has dot':'');
+      grid+=`<div class="${cls}" onclick="selectDay('${key}')"><span class="mn">${d.getDate()}</span></div>`;
+    });
+    grid+='</div>';
+    document.getElementById('nav-days-week').innerHTML=hdr+grid;
+
+    const allActs=[];
+    results.forEach(({d,data})=>{
+      if(data) Object.values(data).forEach(a=>allActs.push({...a,dia:DIAS_CORTO[tlDayIdx(d)]+' '+d.getDate(),fecha:fmtDateKey(d)}));
+    });
+    allActs.sort((a,b)=>a.hora.localeCompare(b.hora));
+    renderTimelineMulti(allActs);
+  });
+}
+
+function renderTimeline(fecha,acts,showDay){
+  const tl=document.getElementById('timeline-view');
+  if(!acts.length){tl.innerHTML='<div class="empty-tl">No hay actividades para este día.</div>';return;}
+  tl.innerHTML=acts.map((a,i)=>{
+    const col=TL_COLORS[i%TL_COLORS.length];
+    const ampm=parseInt(a.hora)>=12?'PM':'AM';
+    return `<div class="tl-item">
+      <div class="tl-left">
+        <div class="tl-circle" style="background:${col};">${a.hora}</div>
+        <div class="tl-ampm">${ampm}</div>
+      </div>
+      <div class="tl-card-item">
+        <h4>${a.act}</h4>
+        <div class="meta">${a.hora}</div>
+        ${a.obs?`<div class="obs-tag">${a.obs}</div>`:''}
+        <div class="tl-actions">
+          <button class="tl-btn" onclick="openEditAct('${fecha}',${i},'${a.hora}','${a.act.replace(/'/g,"\\'")}','${(a.obs||'').replace(/'/g,"\\'").replace(/\n/g,"\\n").replace(/\r/g,"")}')">&#9998; Editar</button>
+          <button class="tl-btn del" onclick="deleteAct('${fecha}',${i},'${a.hora}','${a.act.replace(/'/g,"\\'")}','${(a.obs||'').replace(/'/g,"\\'").replace(/\n/g,"\\n").replace(/\r/g,"")}')">&#10005; Eliminar</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderTimelineMulti(acts){
+  const tl=document.getElementById('timeline-view');
+  if(!acts.length){tl.innerHTML='<div class="empty-tl">No hay actividades para este período.</div>';return;}
+  tl.innerHTML=acts.map((a,i)=>{
+    const col=TL_COLORS[i%TL_COLORS.length];
+    const ampm=parseInt(a.hora)>=12?'PM':'AM';
+    return `<div class="tl-item">
+      <div class="tl-left">
+        <div class="tl-circle" style="background:${col};">${a.hora}</div>
+        <div class="tl-ampm">${ampm}</div>
+      </div>
+      <div class="tl-card-item">
+        <h4>${a.act} <span style="font-size:9px;color:#718096;font-weight:400;">— ${a.dia}</span></h4>
+        <div class="meta">${a.hora}</div>
+        ${a.obs?`<div class="obs-tag">${a.obs}</div>`:''}
+        <div class="tl-actions">
+          <button class="tl-btn" onclick="selectDay('${a.fecha}')">&#128197; Ver día</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// NAV SEMANA (usada al guardar para actualizar la vista)
+function renderWeekNav(refDate){
+  tlCurrent=new Date(refDate);
+  if(tlMode==='dia') renderTLDia();
+}
+
+// Hacer que el textarea crezca automáticamente según el contenido
+function autoGrow(el){
+  el.style.height='auto';
+  el.style.height=(el.scrollHeight+2)+'px';
+}
+
+function selectDay(fecha){
+  document.getElementById('agenda-fecha').value=fecha;
+  tlCurrent=new Date(fecha+'T12:00:00');
+  tlMode='dia';
+  document.querySelectorAll('.tl-dd-item').forEach((el,i)=>el.classList.toggle('active',i===0));
+  document.getElementById('tl-mode-badge').textContent='Día';
+  renderTLDia();
+  document.getElementById('acts-body').innerHTML='';
+  addActRow();
+}
+function openEditAct(fecha,idx,hora,act,obs){
+  editingActKey=idx; editingActDate=fecha;
+  editingActOld={hora,act,obs};
+  document.getElementById('edit-act-hora').value=hora;
+  document.getElementById('edit-act-desc').value=act;
+  document.getElementById('edit-act-obs').value=obs;
+  document.getElementById('modal-edit-act').classList.add('open');
+}
+
+function saveEditAct(){
+  const hora=document.getElementById('edit-act-hora').value;
+  const act=document.getElementById('edit-act-desc').value.toUpperCase().trim();
+  const obs=document.getElementById('edit-act-obs').value.toUpperCase().trim();
+  if(!act){alert('Ingrese una descripción.');return;}
+  db.ref(`maah_agenda/${currentUser.id}/${editingActDate}/${editingActKey}`).set({hora,act,obs},()=>{
+    closeModal('modal-edit-act');
+    loadAgendaForDate(editingActDate);
+    // Edita el mensaje existente en Telegram con la agenda actualizada
+    const chatId=currentUser.tgid||TG_ADMIN_CHATID;
+    const inclFrase=document.getElementById('tg-frase').checked;
+    buildAndSendAgenda(editingActDate, chatId, inclFrase);
+  });
+}
+
+// ELIMINAR ACTIVIDAD
+function deleteAct(fecha,idx,hora,act,obs){
+  if(!confirm('¿Eliminar esta actividad?')) return;
+  db.ref(`maah_agenda/${currentUser.id}/${fecha}/${idx}`).remove(()=>{
+    loadAgendaForDate(fecha);
+    const chatId=currentUser.tgid||TG_ADMIN_CHATID;
+    const inclFrase=document.getElementById('tg-frase').checked;
+    const d=new Date(fecha+'T12:00:00');
+    // Notificación separada de eliminación
+    const msgElim=`🗑 <b>ACTIVIDAD ELIMINADA — AGENDA MAAH</b>\n`+
+      `👤 ${currentUser.nombre}\n`+
+      `❌ ${fmtDateLabel(d)} · ${hora} — ${act}${obs?' ('+obs+')':''}`;
+    sendTG(chatId, msgElim, fecha+'_elim');
+    // Edita el mensaje principal con la agenda actualizada
+    setTimeout(()=>buildAndSendAgenda(fecha, chatId, inclFrase), 1000);
+  });
+}
+
+// NAV SEMANA
+function renderWeekNav(refDate){
+  const container=document.getElementById('nav-days-week');
+  const start=new Date(refDate);
+  start.setDate(refDate.getDate()-refDate.getDay());
+  const days=Array.from({length:7},(_,i)=>{const d=new Date(start);d.setDate(start.getDate()+i);return d;});
+  const fechaActual=document.getElementById('agenda-fecha').value;
+  Promise.all(days.map(d=>db.ref(`maah_agenda/${currentUser.id}/${fmtDateKey(d)}`).once('value').then(s=>({d,has:s.exists()})))).then(results=>{
+    container.innerHTML=results.map(({d,has})=>{
+      const key=fmtDateKey(d);
+      const cls='day-pill'+(key===fechaActual?' active':has?' has':'');
+      return `<div class="${cls}" onclick="selectDay('${key}')">${DSHORT[d.getDay()]} ${d.getDate()}</div>`;
+    }).join('');
+  });
+}
+
+function selectDay(fecha){
+  document.getElementById('agenda-fecha').value=fecha;
+  const d=new Date(fecha+'T12:00:00');
+  renderWeekNav(d);
+  loadAgendaForDate(fecha);
+  document.getElementById('acts-body').innerHTML='';
+  addActRow();
+}
+
+// ── EXPORTAR ─────────────────────────────────────────────────
+function toggleExportMenu(){
+  document.getElementById('export-btn').classList.toggle('open');
+  document.getElementById('export-menu').classList.toggle('open');
+}
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.export-wrap')){
+    document.getElementById('export-btn')?.classList.remove('open');
+    document.getElementById('export-menu')?.classList.remove('open');
+  }
+});
+
+function getActsParaExportar(){
+  return new Promise(resolve=>{
+    const fecha=fmtDateKey(tlCurrent);
+    db.ref(`maah_agenda/${currentUser.id}/${fecha}`).once('value',snap=>{
+      const data=snap.val();
+      const acts=data?Object.values(data):[];
+      acts.sort((a,b)=>a.hora.localeCompare(b.hora));
+      resolve({fecha, acts});
+    });
+  });
+}
+
+function buildTextoAgenda(fecha, acts){
+  const d=new Date(fecha+'T12:00:00');
+  const dias=['DOMINGO','LUNES','MARTES','MIÉRCOLES','JUEVES','VIERNES','SÁBADO'];
+  const meses=['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'];
+  let txt=`AGENDA PARA EL DÍA\n${dias[d.getDay()]} ${d.getDate()} DE ${meses[d.getMonth()]} DEL ${d.getFullYear()}\n\n`;
+  if(!acts.length){
+    txt+='No hay actividades para este día.\n';
+  } else {
+    acts.forEach(a=>{
+      txt+=`• ${a.hora} — ${a.act}`;
+      if(a.obs) txt+=` (${a.obs})`;
+      txt+='\n';
+    });
+  }
+  return txt;
+}
+
+function exportarPDF(){
+  toggleExportMenu();
+  getActsParaExportar().then(({fecha,acts})=>{
+    const d=new Date(fecha+'T12:00:00');
+    const dias=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+    const meses=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+    const titulo=`Agenda del ${dias[d.getDay()]} ${d.getDate()} de ${meses[d.getMonth()]} del ${d.getFullYear()}`;
+    let filas=acts.length?acts.map(a=>`<tr><td style="padding:8px 12px;border-bottom:1px solid #eee;font-weight:700;color:#1a3f6f;">${a.hora}</td><td style="padding:8px 12px;border-bottom:1px solid #eee;">${a.act}</td><td style="padding:8px 12px;border-bottom:1px solid #eee;color:#856900;">${a.obs||''}</td></tr>`).join('')
+      :'<tr><td colspan="3" style="padding:16px;text-align:center;color:#a0aec0;">No hay actividades para este día.</td></tr>';
+    const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${titulo}</title><style>
+      body{font-family:'Times New Roman',Times,serif;margin:40px;color:#2d3748;}
+      h1{font-size:20px;color:#1a3f6f;margin-bottom:4px;}
+      p{font-size:13px;color:#718096;margin-bottom:20px;}
+      table{width:100%;border-collapse:collapse;}
+      th{background:#1a3f6f;color:#fff;padding:10px 12px;text-align:left;font-size:13px;}
+      td{font-size:13px;}
+    </style></head><body>
+    <h1>AGENDA MAAH — ${currentUser.nombre}</h1>
+    <p>${titulo}</p>
+    <table><thead><tr><th>Hora</th><th>Actividad</th><th>OBS</th></tr></thead><tbody>${filas}</tbody></table>
+    </body></html>`;
+    const blob=new Blob([html],{type:'text/html'});
+    const url=URL.createObjectURL(blob);
+    const w=window.open(url,'_blank');
+    setTimeout(()=>{w.print();},800);
+  });
+}
+
+function exportarImprimir(){
+  toggleExportMenu();
+  getActsParaExportar().then(({fecha,acts})=>{
+    exportarPDF();
+  });
+}
+
+function exportarExcel(){
+  toggleExportMenu();
+  getActsParaExportar().then(({fecha,acts})=>{
+    const d=new Date(fecha+'T12:00:00');
+    const dias=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+    const meses=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+    const nombreDia=`${dias[d.getDay()]} ${d.getDate()} ${meses[d.getMonth()]} ${d.getFullYear()}`;
+    let csv=`Fecha,Hora,Actividad,OBS\n`;
+    if(acts.length){
+      acts.forEach(a=>{csv+=`"${nombreDia}","${a.hora}","${a.act}","${a.obs||''}"\n`;});
+    } else {
+      csv+=`"${nombreDia}","","Sin actividades",""\n`;
+    }
+    const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url; a.download=`Agenda_MAAH_${fecha}.csv`;
+    a.click(); URL.revokeObjectURL(url);
+  });
+}
+
+function exportarEmail(){
+  toggleExportMenu();
+  // Abrimos la ventana de inmediato (mismo gesto del click) y luego le asignamos la URL.
+  // Esto evita que el bloqueador de pop-ups bloquee window.open por venir de un .then() asíncrono.
+  const w=window.open('about:blank','_self');
+  getActsParaExportar().then(({fecha,acts})=>{
+    const txt=buildTextoAgenda(fecha,acts);
+    const asunto=encodeURIComponent(`Agenda MAAH — ${fecha}`);
+    const cuerpo=encodeURIComponent(txt);
+    const url=`mailto:?subject=${asunto}&body=${cuerpo}`;
+    if(w&&!w.closed){w.location.href=url;}
+    else{window.location.href=url;}
+  }).catch(err=>{
+    alert('Error al cargar la agenda: '+err.message);
+  });
+}
+
+function exportarWhatsApp(){
+  toggleExportMenu();
+  // Abrimos la pestaña de inmediato (sincrónicamente con el click) para evitar bloqueo de pop-ups.
+  const w=window.open('about:blank','_blank');
+  getActsParaExportar().then(({fecha,acts})=>{
+    const txt=buildTextoAgenda(fecha,acts);
+    const url=`https://wa.me/?text=${encodeURIComponent(txt)}`;
+    if(w&&!w.closed){w.location.href=url;}
+    else{
+      // Fallback si el navegador bloqueó la apertura
+      alert('Tu navegador bloqueó la apertura de WhatsApp. Por favor permite ventanas emergentes para este sitio.');
+    }
+  }).catch(err=>{
+    if(w&&!w.closed)w.close();
+    alert('Error al cargar la agenda: '+err.message);
+  });
+}
+
+// ── TELEGRAM ENVÍO ───────────────────────────────────────────
+
+// Construye el mensaje de agenda para una fecha dada y lo envía/edita
+function buildAndSendAgenda(fecha, chatId, inclFrase){
+  const {proverbio,estoica}=getFrasesHoy();
+  db.ref(`maah_agenda/${currentUser.id}/${fecha}`).once('value',snap=>{
+    const data=snap.val();
+    const acts=data?Object.values(data):[];
+    // Ordenar siempre por hora
+    acts.sort((a,b)=>a.hora.localeCompare(b.hora));
+    const d=new Date(fecha+'T12:00:00');
+    const emojis=['🔴','🟠','🟡','🟢','🔵','🟣','⚫'];
+    const dias=['DOMINGO','LUNES','MARTES','MIÉRCOLES','JUEVES','VIERNES','SÁBADO'];
+    const meses=['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'];
+
+    // Título estilo sheet: AGENDA PARA EL DÍA en negrita
+    let msg=`📅 <b>AGENDA PARA EL DÍA:\n${dias[d.getDay()]} ${d.getDate()} DE ${meses[d.getMonth()]} DEL ${d.getFullYear()}</b>\n\n`;
+
+    if(!acts.length){
+      msg+='✅ NO HAY ACTIVIDADES HOY.\n';
+    } else {
+      acts.forEach((a,i)=>{
+        msg+=`${emojis[i%emojis.length]} <b>${a.hora}</b> — ${a.act}`;
+        if(a.obs) msg+=` <i>(${a.obs})</i>`;
+        msg+='\n';
+      });
+    }
+
+    if(inclFrase){
+      msg+='\n──────────────────\n';
+      msg+=`📖 <i>${proverbio}</i>\n\n`;
+      msg+=`🧠 <i>${estoica.replace(/<[^>]+>/g,'')}</i>`;
+    }
+
+    sendOrEditTG(chatId, msg, fecha);
+  });
+}
+
+function enviarTelegram(){
+  const fecha=document.getElementById('agenda-fecha').value;
+  if(!fecha){alert('Seleccione una fecha.');return;}
+  const chatId=currentUser.tgid||TG_ADMIN_CHATID;
+  const inclFrase=document.getElementById('tg-frase').checked;
+  buildAndSendAgenda(fecha, chatId, inclFrase);
+}
+
+// ── GASTOS (NUEVO MÓDULO) ───────────────────────────────────
+// Mantengo función loadGastos() por compatibilidad pero ya no se usa
+function loadGastos(){} // stub vacío
+
+// Estado del módulo gastos
+let gFijosPlantilla=[];
+let gMesActual={mes:'',ingresos:[],fijos:[],variables:[],fijosPagados:{}};
+let gEditingFijoIdx=null;
+const GMESES=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+
+// Helpers
+const fmtMiles=n=>{n=Math.round(gToNum(n)); return n?n.toLocaleString('es-CL'):'';};
+const gToNum=s=>{if(typeof s==='number')return s; const c=String(s||'').replace(/[^0-9-]/g,''); return parseFloat(c)||0;};
+function gMesLabel(ym){if(!ym)return ''; const[a,m]=ym.split('-'); return GMESES[parseInt(m)-1]+' '+a;}
+function gMesActualYM(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');}
+function gEscapeAttr(s){return String(s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;');}
+
+// Cargar la plantilla al iniciar sesión
+function gLoadFijosPlantilla(){
+  if(!currentUser)return;
+  console.log('[MAAH] Cargando plantilla de gastos fijos para usuario:',currentUser.id);
+  db.ref(`maah_gastos_fijos/${currentUser.id}`).on('value',snap=>{
+    gFijosPlantilla=[];
+    if(snap.exists()){
+      snap.forEach(c=>{
+        const data=c.val()||{};
+        gFijosPlantilla.push({
+          id:c.key,
+          nombre:data.nombre||'(sin nombre)',
+          monto:gToNum(data.monto)
+        });
+      });
+    }
+    console.log('[MAAH] Gastos fijos cargados:',gFijosPlantilla.length,gFijosPlantilla);
+    // Siempre re-renderizar si la vista está activa
+    if(document.getElementById('gview-fijos')&&document.getElementById('gview-fijos').classList.contains('active')){
+      gRenderFijos();
+    }
+  },err=>{
+    console.error('[MAAH] Error cargando fijos:',err);
+  });
+}
+
+function gShowView(name){
+  document.querySelectorAll('.gview').forEach(v=>v.classList.remove('active'));
+  document.getElementById('gview-'+name).classList.add('active');
+  if(name==='fijos'){
+    // Forzar recarga desde Firebase al entrar a la vista
+    gLoadFijosPlantilla();
+    gRenderFijos(); // render inmediato con lo que haya en memoria
+  }
+  if(name==='historial')gLoadHistorial();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// Gastos fijos permanentes
+function gRenderFijos(){
+  const tb=document.getElementById('gfijos-body');
+  if(!gFijosPlantilla.length){
+    tb.innerHTML='<tr><td colspan="3" class="gempty">No hay rubros fijos aún. Agrega el primero con el botón "+ Agregar rubro" de arriba.</td></tr>';
+    return;
+  }
+  let total=0;
+  tb.innerHTML=gFijosPlantilla.map((f,i)=>{
+    total+=gToNum(f.monto);
+    return `<tr>
+      <td style="font-weight:600;">${f.nombre}</td>
+      <td class="ar">${fmt$(f.monto)}</td>
+      <td class="ac" style="white-space:nowrap;">
+        <button class="ubtn" style="background:#eef3ff;border-color:#1a3f6f;color:#1a3f6f;padding:5px 10px;" onclick="gEditFijo(${i})" title="Editar">&#9998; Editar</button>
+        <button class="ubtn del" style="background:#ffebee;border-color:#ffcdd2;color:#c62828;padding:5px 10px;" onclick="gDelFijo(${i})" title="Eliminar">&times;</button>
+      </td>
+    </tr>`;
+  }).join('')+`<tr class="total-row"><td>TOTAL FIJO MENSUAL</td><td class="ar">${fmt$(total)}</td><td></td></tr>`;
+}
+function gOpenAddFijo(){
+  gEditingFijoIdx=null;
+  document.getElementById('modal-gfijo-title').textContent='Agregar rubro fijo';
+  document.getElementById('gfijo-nombre').value='';
+  document.getElementById('gfijo-monto').value='';
+  document.getElementById('modal-gfijo').classList.add('open');
+  setTimeout(()=>document.getElementById('gfijo-nombre').focus(),100);
+}
+function gEditFijo(i){
+  gEditingFijoIdx=i;
+  document.getElementById('modal-gfijo-title').textContent='Editar rubro fijo';
+  document.getElementById('gfijo-nombre').value=gFijosPlantilla[i].nombre;
+  document.getElementById('gfijo-monto').value=fmtMiles(gFijosPlantilla[i].monto);
+  document.getElementById('modal-gfijo').classList.add('open');
+}
+function gSaveFijo(){
+  const nom=document.getElementById('gfijo-nombre').value.trim().toUpperCase();
+  const monto=gToNum(document.getElementById('gfijo-monto').value);
+  if(!nom){alert('Ingrese el nombre del rubro.');return;}
+  if(monto<=0){alert('Ingrese un monto válido mayor a 0.');return;}
+  if(!currentUser || !currentUser.id){alert('Error: sesión no válida. Vuelve a iniciar sesión.');return;}
+
+  console.log('[MAAH] Guardando rubro fijo:',{nombre:nom,monto:monto,userId:currentUser.id,editando:gEditingFijoIdx});
+
+  if(gEditingFijoIdx!==null){
+    // EDITAR rubro existente
+    const id=gFijosPlantilla[gEditingFijoIdx].id;
+    db.ref(`maah_gastos_fijos/${currentUser.id}/${id}`).update({nombre:nom,monto:monto},err=>{
+      if(err){alert('Error al editar: '+err.message);return;}
+      console.log('[MAAH] Rubro editado correctamente');
+      closeModal('modal-gfijo');
+    });
+  }else{
+    // AGREGAR rubro nuevo
+    const nuevoRef=db.ref(`maah_gastos_fijos/${currentUser.id}`).push();
+    nuevoRef.set({nombre:nom,monto:monto},err=>{
+      if(err){
+        alert('Error al guardar: '+err.message+'\n\nRevisa tu conexión e intenta de nuevo.');
+        console.error('[MAAH] Error guardando rubro:',err);
+        return;
+      }
+      console.log('[MAAH] Rubro agregado correctamente, ID:',nuevoRef.key);
+      closeModal('modal-gfijo');
+    });
+  }
+}
+function gDelFijo(i){
+  if(!confirm(`¿Eliminar el rubro "${gFijosPlantilla[i].nombre}" de la plantilla?\n\n(Los meses ya guardados NO se verán afectados.)`))return;
+  db.ref(`maah_gastos_fijos/${currentUser.id}/${gFijosPlantilla[i].id}`).remove();
+}
+
+// Crear / abrir mes
+function gStartNuevoMes(){
+  document.getElementById('nuevo-mes-valor').value=gMesActualYM();
+  document.getElementById('modal-nuevo-mes').classList.add('open');
+}
+function gCrearMes(){
+  const mes=document.getElementById('nuevo-mes-valor').value;
+  if(!mes){alert('Seleccione un mes válido.');return;}
+  closeModal('modal-nuevo-mes');
+  db.ref(`maah_gastos_mes/${currentUser.id}/${mes}`).once('value',snap=>{
+    if(snap.exists()){
+      if(confirm(`El mes ${gMesLabel(mes)} ya tiene datos guardados.\n\n¿Quieres abrirlo para editarlo?`)){
+        gAbrirMes(mes,snap.val());
+      }
+      return;
+    }
+    gMesActual={
+      mes:mes,
+      ingresos:[{nombre:'SUELDO BASE',monto:0}],
+      fijos:[], // Se llenará automáticamente con la plantilla al renderizar
+      variables:[],
+      fijosPagados:{} // Mes nuevo: nada pagado aún
+    };
+    gShowView('mes');
+    gRenderMes();
+  });
+}
+function gAbrirMes(ym,data){
+  // Asegurar que cada variable tenga el flag pagado (compat con meses viejos)
+  const variables=(data.variables||[]).map(v=>({
+    fecha:v.fecha||'',
+    desc:v.desc||'',
+    monto:gToNum(v.monto),
+    categoria:v.categoria||'',
+    pagado:!!v.pagado
+  }));
+  gMesActual={
+    mes:ym,
+    ingresos:data.ingresos||[],
+    fijos:[], // Los fijos SIEMPRE se leen de la plantilla actual
+    variables:variables,
+    fijosPagados:data.fijosPagados||{} // Pagos de fijos de ESTE mes
+  };
+  gShowView('mes');
+  gRenderMes();
+}
+function gBackFromMes(){
+  if(confirm('¿Volver sin guardar? Los cambios no guardados se perderán.')){
+    gShowView('home');
+  }
+}
+
+// Render del mes
+function gRenderMes(){
+  document.getElementById('gmes-title').textContent='📅 '+gMesLabel(gMesActual.mes).toUpperCase();
+  gRenderIngresos();
+  gRenderFijosMes();
+  gRenderVariables();
+  gRecalcular();
+}
+function gRenderIngresos(){
+  const el=document.getElementById('ging-list');
+  if(!gMesActual.ingresos.length){
+    el.innerHTML='<div style="text-align:center;color:#a0aec0;padding:12px 0;font-size:12px;">Sin ingresos aún.</div>';
+    return;
+  }
+  el.innerHTML=`<div style="display:grid;grid-template-columns:1fr 130px 24px;gap:6px;font-size:10px;color:#276749;text-transform:uppercase;font-weight:700;margin-bottom:4px;padding:0 2px;">
+    <div>NOMBRE</div><div style="text-align:right;">MONTO</div><div></div>
+  </div>`+gMesActual.ingresos.map((it,i)=>`
+    <div class="gmc-item">
+      <input type="text" value="${gEscapeAttr(it.nombre||'')}" placeholder="Ej: SUELDO BASE" oninput="gMesActual.ingresos[${i}].nombre=this.value.toUpperCase();this.value=this.value.toUpperCase()">
+      <input type="text" inputmode="numeric" class="monto" value="${fmtMiles(gToNum(it.monto))}" placeholder="$0" oninput="gMesActual.ingresos[${i}].monto=gToNum(this.value);this.value=fmtMiles(gMesActual.ingresos[${i}].monto);gRecalcular()">
+      <button class="del-x" onclick="gDelIngreso(${i})" title="Eliminar">&times;</button>
+    </div>`).join('');
+}
+function gAddIngreso(){gMesActual.ingresos.push({nombre:'',monto:0});gRenderIngresos();}
+function gDelIngreso(i){gMesActual.ingresos.splice(i,1);gRenderIngresos();gRecalcular();}
+
+function gRenderFijosMes(){
+  const el=document.getElementById('gfij-list');
+  // Los fijos SIEMPRE vienen de la plantilla, no del mes guardado
+  const fijos=gFijosPlantilla||[];
+  // Asegurar que el objeto de pagos exista
+  if(!gMesActual.fijosPagados)gMesActual.fijosPagados={};
+  // Actualizar la referencia en el estado del mes para que el cálculo funcione
+  // Cada fijo conserva su id (de la plantilla) para poder mapear el pagado
+  gMesActual.fijos=fijos.map(f=>({id:f.id,nombre:f.nombre,monto:gToNum(f.monto),pagado:!!gMesActual.fijosPagados[f.id]}));
+  if(!fijos.length){
+    el.innerHTML='<div style="text-align:center;color:#a0aec0;padding:15px 0;font-size:12px;">No hay gastos fijos en tu plantilla.<br>Agrégalos desde "Gastos Fijos Permanentes".</div>';
+    return;
+  }
+  el.innerHTML=`<div style="display:grid;grid-template-columns:30px 1fr 130px;gap:6px;font-size:10px;color:#c62828;text-transform:uppercase;font-weight:700;margin-bottom:4px;padding:0 2px;">
+    <div title="Pagado">✓</div><div>RUBRO</div><div style="text-align:right;">MONTO</div>
+  </div>`+fijos.map(it=>{
+    const pagado=!!gMesActual.fijosPagados[it.id];
+    const bg=pagado?'#f0fff4':'#fff';
+    const bd=pagado?'#b8e0c2':'#ffcdd2';
+    const colorMonto=pagado?'#2f855a':'#c62828';
+    const tachado=pagado?'text-decoration:line-through;opacity:.7;':'';
+    const colorNom=pagado?'#2f855a':'#2d3748';
+    return `
+    <div style="display:grid;grid-template-columns:30px 1fr 130px;gap:6px;align-items:center;padding:7px 9px;font-size:13px;background:${bg};border:0.5px solid ${bd};border-radius:4px;margin-bottom:4px;transition:background .15s;">
+      <input type="checkbox" ${pagado?'checked':''} onchange="gToggleFijoPagado('${gEscapeAttr(it.id)}',this.checked)" style="width:18px;height:18px;cursor:pointer;accent-color:#38a169;" title="Marcar como pagado">
+      <span style="font-weight:600;color:${colorNom};${tachado}">${gEscapeAttr(it.nombre||'(sin nombre)')}</span>
+      <span style="text-align:right;font-weight:700;color:${colorMonto};${tachado}">${fmt$(it.monto)}</span>
+    </div>`;}).join('');
+}
+function gToggleFijoPagado(id,checked){
+  if(!gMesActual.fijosPagados)gMesActual.fijosPagados={};
+  if(checked){gMesActual.fijosPagados[id]=true;}
+  else{delete gMesActual.fijosPagados[id];}
+  gRenderFijosMes();
+  gRecalcular();
+}
+function gDelFijoMes(i){
+  alert('Los gastos fijos no se editan desde aquí.\n\nPara eliminar o modificar un rubro fijo, ve a "Gastos Fijos Permanentes".');
+}
+function gCargarFijosAlMes(){
+  // Ya no se necesita, los fijos se cargan automáticamente
+  gRenderFijosMes();
+  gRecalcular();
+}
+
+function gRenderVariables(){
+  const el=document.getElementById('gvar-list');
+  const hd=document.getElementById('gvar-list-head');
+  if(!gMesActual.variables.length){
+    el.innerHTML='<div style="text-align:center;color:#a0aec0;padding:15px 0;font-size:12px;">No hay gastos variables aún.<br>Usa "+ Agregar" para empezar.</div>';
+    hd.style.display='none';
+    return;
+  }
+  hd.style.display='grid';
+  const cats=[...new Set(gMesActual.variables.map(v=>v.categoria).filter(c=>c))];
+  el.innerHTML=gMesActual.variables.map((it,i)=>{
+    const pagado=!!it.pagado;
+    const styleRow=pagado?'background:#f0fff4;border-color:#b8e0c2;':'';
+    const styleInp=pagado?'background:#f0fff4;color:#4a5568;':'';
+    return `
+    <div class="gvar-item" style="${styleRow}">
+      <input type="checkbox" ${pagado?'checked':''} onchange="gMesActual.variables[${i}].pagado=this.checked;gRenderVariables();gRecalcular()" style="width:18px;height:18px;cursor:pointer;accent-color:#38a169;justify-self:center;" title="Marcar como pagado">
+      <input type="date" value="${it.fecha||''}" oninput="gMesActual.variables[${i}].fecha=this.value" style="${styleInp}">
+      <input type="text" value="${gEscapeAttr(it.desc||'')}" placeholder="Descripción" oninput="gMesActual.variables[${i}].desc=this.value.toUpperCase();this.value=this.value.toUpperCase()" style="${styleInp}">
+      <input type="text" inputmode="numeric" class="monto" value="${fmtMiles(gToNum(it.monto))}" placeholder="$0" oninput="gMesActual.variables[${i}].monto=gToNum(this.value);this.value=fmtMiles(gMesActual.variables[${i}].monto);gRecalcular()" style="${styleInp}">
+      <input type="text" list="gcats-list" value="${gEscapeAttr(it.categoria||'')}" placeholder="Categoría" oninput="gMesActual.variables[${i}].categoria=this.value.toUpperCase();this.value=this.value.toUpperCase()" style="${styleInp}">
+      <button class="del-x" onclick="gDelVariable(${i})">&times;</button>
+    </div>`;}).join('')+`<datalist id="gcats-list">${cats.map(c=>`<option value="${gEscapeAttr(c)}">`).join('')}</datalist>`;
+}
+function gAddVariable(){
+  const hoy=new Date().toISOString().slice(0,10);
+  gMesActual.variables.push({fecha:hoy,desc:'',monto:0,categoria:'',pagado:false});
+  gRenderVariables();
+}
+function gDelVariable(i){gMesActual.variables.splice(i,1);gRenderVariables();gRecalcular();}
+
+function gRecalcular(){
+  const tIng=gMesActual.ingresos.reduce((s,x)=>s+gToNum(x.monto),0);
+  // Fijos: separar pagados de pendientes
+  const tFijTot=gMesActual.fijos.reduce((s,x)=>s+gToNum(x.monto),0);
+  const tFijPag=gMesActual.fijos.filter(x=>x.pagado).reduce((s,x)=>s+gToNum(x.monto),0);
+  const tFijPend=tFijTot-tFijPag;
+  // Variables: separar pagados de pendientes
+  const tVarTot=gMesActual.variables.reduce((s,x)=>s+gToNum(x.monto),0);
+  const tVarPag=gMesActual.variables.filter(x=>x.pagado).reduce((s,x)=>s+gToNum(x.monto),0);
+  const tVarPend=tVarTot-tVarPag;
+  // Saldo: solo lo PAGADO se descuenta
+  const saldo=tIng-tFijPag-tVarPag;
+  const totalPend=tFijPend+tVarPend;
+
+  document.getElementById('gtotal-ing').textContent=fmt$(tIng);
+  document.getElementById('gtotal-ing2').textContent=fmt$(tIng);
+  // Mostrar fijos: pagado / total
+  document.getElementById('gtotal-fij').innerHTML=tFijPend>0?`<span style="color:#2f855a;">${fmt$(tFijPag)}</span> <small style="color:#888;font-weight:400;">/ ${fmt$(tFijTot)}</small>`:fmt$(tFijTot);
+  document.getElementById('gtotal-fij2').innerHTML=tFijPend>0?`<span style="color:#2f855a;">${fmt$(tFijPag)} pagado</span> <small style="color:#c62828;font-weight:400;">· ${fmt$(tFijPend)} pendiente</small>`:fmt$(tFijPag);
+  // Mostrar variables: pagado / total
+  document.getElementById('gtotal-var').innerHTML=tVarPend>0?`<span style="color:#2f855a;">${fmt$(tVarPag)} pagado</span> <small style="color:#854f0b;font-weight:400;">· ${fmt$(tVarPend)} pendiente</small>`:fmt$(tVarPag);
+
+  const sv=document.getElementById('gsaldo-val');
+  sv.textContent=fmt$(saldo);
+  sv.classList.toggle('neg',saldo<0);
+  let det=`${fmt$(tIng)} (ingresos) − ${fmt$(tFijPag)} (fijos pagados) − ${fmt$(tVarPag)} (variables pagados)`;
+  if(totalPend>0){det+=` · Pendiente por pagar: ${fmt$(totalPend)}`;}
+  document.getElementById('gsaldo-detail').textContent=det;
+}
+
+// Guardar mes
+function gGuardarMes(){
+  const clean={
+    ingresos:gMesActual.ingresos.filter(x=>x.nombre||gToNum(x.monto)>0),
+    // Los fijos NO se guardan: siempre se leen en vivo desde la plantilla
+    // Pero SÍ guardamos qué fijos están marcados como pagados ESTE mes
+    fijosPagados:gMesActual.fijosPagados||{},
+    variables:gMesActual.variables.filter(x=>x.desc||gToNum(x.monto)>0).map(v=>({
+      fecha:v.fecha||'',
+      desc:v.desc||'',
+      monto:gToNum(v.monto),
+      categoria:v.categoria||'',
+      pagado:!!v.pagado
+    }))
+  };
+  if(!clean.ingresos.length && !clean.variables.length && !Object.keys(clean.fijosPagados).length){
+    alert('No hay datos para guardar. Ingresa al menos un ingreso, gasto variable, o tiquea un gasto fijo como pagado.');
+    return;
+  }
+  db.ref(`maah_gastos_mes/${currentUser.id}/${gMesActual.mes}`).set(clean,err=>{
+    if(err){alert('Error al guardar: '+err.message);return;}
+    alert(`✓ Mes de ${gMesLabel(gMesActual.mes)} guardado correctamente.`);
+    gShowView('home');
+  });
+}
+
+// Historial
+function gLoadHistorial(){
+  const sel=document.getElementById('ghistorial-mes');
+  sel.innerHTML='<option value="">Cargando...</option>';
+  document.getElementById('ghistorial-content').innerHTML='';
+  db.ref(`maah_gastos_mes/${currentUser.id}`).once('value',snap=>{
+    const meses=[];
+    if(snap.exists())snap.forEach(c=>meses.push(c.key));
+    meses.sort().reverse();
+    if(!meses.length){
+      sel.innerHTML='<option value="">Aún no tienes meses guardados</option>';
+      return;
+    }
+    sel.innerHTML='<option value="">Elige un mes...</option>'+meses.map(m=>`<option value="${m}">${gMesLabel(m)}</option>`).join('');
+  });
+}
+function gVerMesHistorial(){
+  const ym=document.getElementById('ghistorial-mes').value;
+  const c=document.getElementById('ghistorial-content');
+  if(!ym){c.innerHTML='';return;}
+  db.ref(`maah_gastos_mes/${currentUser.id}/${ym}`).once('value',snap=>{
+    if(!snap.exists()){c.innerHTML='<div class="gempty" style="background:#fff;border-radius:10px;border:0.5px solid #dde3ed;">No hay datos para este mes.</div>';return;}
+    const d=snap.val();
+    // Los fijos SIEMPRE vienen de la plantilla actual (no del mes guardado)
+    const fijosPlantilla=gFijosPlantilla.map(f=>({nombre:f.nombre,monto:gToNum(f.monto)}));
+    const tIng=(d.ingresos||[]).reduce((s,x)=>s+gToNum(x.monto),0);
+    const tFij=fijosPlantilla.reduce((s,x)=>s+gToNum(x.monto),0);
+    const tVar=(d.variables||[]).reduce((s,x)=>s+gToNum(x.monto),0);
+    const saldo=tIng-tFij-tVar;
+    const catsMap={};
+    (d.variables||[]).forEach(v=>{const k=v.categoria||'SIN CATEGORÍA';catsMap[k]=(catsMap[k]||0)+gToNum(v.monto);});
+    const catsList=Object.entries(catsMap).sort((a,b)=>b[1]-a[1]);
+
+    c.innerHTML=`
+    <div style="background:#fff;border-radius:10px;border:0.5px solid #dde3ed;padding:16px;">
+      <div style="background:#1a3f6f;color:#fff;padding:10px 14px;border-radius:4px;font-size:13px;font-weight:700;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;">
+        <span>📊 ${gMesLabel(ym).toUpperCase()}</span>
+        <div style="display:flex;gap:6px;">
+          <button class="btn-primary" style="padding:5px 10px;font-size:10px;background:#c8960a;" onclick="gExportarPDFDesdeHist('${ym}')">&#128196; PDF</button>
+          <button class="btn-primary" style="padding:5px 10px;font-size:10px;" onclick="gEditarMesHist('${ym}')">&#9998; Editar</button>
+          <button class="btn-primary" style="padding:5px 10px;font-size:10px;background:#c62828;" onclick="gEliminarMesHist('${ym}')">&#128465; Eliminar</button>
+        </div>
+      </div>
+
+      <div class="gstats-grid">
+        <div class="gstat-box"><div class="gstat-lbl">Ingresos</div><div class="gstat-val verde">${fmt$(tIng)}</div></div>
+        <div class="gstat-box"><div class="gstat-lbl">Gastos fijos</div><div class="gstat-val rojo">${fmt$(tFij)}</div></div>
+        <div class="gstat-box"><div class="gstat-lbl">Gastos variables</div><div class="gstat-val rojo">${fmt$(tVar)}</div></div>
+        <div class="gstat-box"><div class="gstat-lbl">Saldo</div><div class="gstat-val ${saldo<0?'rojo':'verde'}">${fmt$(saldo)}</div></div>
+      </div>
+
+      ${(d.ingresos||[]).length?`
+      <div style="margin-top:14px;">
+        <div style="font-size:12px;font-weight:700;color:#2f855a;margin-bottom:6px;text-transform:uppercase;letter-spacing:.3px;">Ingresos</div>
+        ${(d.ingresos||[]).map(x=>`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:0.5px solid #eef2f7;font-size:13px;"><span>${x.nombre||'-'}</span><span style="color:#2f855a;font-weight:700;">${fmt$(x.monto)}</span></div>`).join('')}
+      </div>`:''}
+
+      ${fijosPlantilla.length?`
+      <div style="margin-top:14px;">
+        <div style="font-size:12px;font-weight:700;color:#c62828;margin-bottom:6px;text-transform:uppercase;letter-spacing:.3px;">Gastos fijos <small style="font-weight:normal;opacity:.7;">(de tu plantilla actual)</small></div>
+        ${fijosPlantilla.map(x=>`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:0.5px solid #eef2f7;font-size:13px;"><span>${x.nombre||'-'}</span><span style="color:#c62828;font-weight:700;">${fmt$(x.monto)}</span></div>`).join('')}
+      </div>`:''}
+
+      ${(d.variables||[]).length?`
+      <div style="margin-top:14px;">
+        <div style="font-size:12px;font-weight:700;color:#854f0b;margin-bottom:6px;text-transform:uppercase;letter-spacing:.3px;">Gastos variables</div>
+        ${(d.variables||[]).map(x=>`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:0.5px solid #eef2f7;font-size:13px;gap:8px;"><span style="flex:1;">${x.fecha||''} · ${x.desc||'-'} ${x.categoria?`<span class="cat-badge" style="background:#fef3e7;color:#854f0b;">${x.categoria}</span>`:''}</span><span style="color:#854f0b;font-weight:700;">${fmt$(x.monto)}</span></div>`).join('')}
+        ${catsList.length?`
+        <div style="margin-top:10px;padding:10px;background:#fef9e7;border-radius:6px;">
+          <div style="font-size:10px;color:#854f0b;font-weight:700;text-transform:uppercase;letter-spacing:.3px;margin-bottom:6px;">Resumen por categoría</div>
+          ${catsList.map(([cat,m])=>`<div style="display:flex;justify-content:space-between;font-size:12px;padding:2px 0;"><span>${cat}</span><span style="font-weight:700;color:#854f0b;">${fmt$(m)} · ${tVar?Math.round(m/tVar*100):0}%</span></div>`).join('')}
+        </div>`:''}
+      </div>`:''}
+    </div>`;
+  });
+}
+function gEditarMesHist(ym){
+  db.ref(`maah_gastos_mes/${currentUser.id}/${ym}`).once('value',snap=>{
+    if(snap.exists())gAbrirMes(ym,snap.val());
+  });
+}
+function gEliminarMesHist(ym){
+  const confirmMsg=`¿Eliminar todos los datos del mes ${gMesLabel(ym)}?\n\nEsta acción NO se puede deshacer.`;
+  if(!confirm(confirmMsg))return;
+  if(!confirm('Última confirmación: ¿Seguro que quieres borrar todo '+gMesLabel(ym)+'?'))return;
+  db.ref(`maah_gastos_mes/${currentUser.id}/${ym}`).remove(err=>{
+    if(err){alert('Error: '+err.message);return;}
+    alert('Mes '+gMesLabel(ym)+' eliminado.');
+    document.getElementById('ghistorial-mes').value='';
+    document.getElementById('ghistorial-content').innerHTML='';
+    gLoadHistorial();
+  });
+}
+function gExportarPDFDesdeHist(ym){
+  db.ref(`maah_gastos_mes/${currentUser.id}/${ym}`).once('value',snap=>{
+    if(!snap.exists())return;
+    const d=snap.val();
+    // Los fijos siempre vienen de la plantilla actual, pero llevamos los pagados del mes
+    const pagados=d.fijosPagados||{};
+    const fijosActuales=gFijosPlantilla.map(f=>({id:f.id,nombre:f.nombre,monto:gToNum(f.monto),pagado:!!pagados[f.id]}));
+    gBuildPDF(ym,d.ingresos||[],fijosActuales,d.variables||[]);
+  });
+}
+function gExportarPDF(){
+  // Los fijos del mes actual siempre vienen de la plantilla, con su estado de pagado
+  const pagados=gMesActual.fijosPagados||{};
+  const fijosActuales=gFijosPlantilla.map(f=>({id:f.id,nombre:f.nombre,monto:gToNum(f.monto),pagado:!!pagados[f.id]}));
+  gBuildPDF(gMesActual.mes,gMesActual.ingresos,fijosActuales,gMesActual.variables);
+}
+
+// Construye un texto plano del resumen del mes (usado para email y whatsapp)
+function gBuildResumenTexto(ym,ingresos,fijos,variables){
+  const tIng=ingresos.reduce((s,x)=>s+gToNum(x.monto),0);
+  const tFijPag=fijos.filter(x=>x.pagado).reduce((s,x)=>s+gToNum(x.monto),0);
+  const tFijPend=fijos.filter(x=>!x.pagado).reduce((s,x)=>s+gToNum(x.monto),0);
+  const tVarPag=variables.filter(x=>x.pagado).reduce((s,x)=>s+gToNum(x.monto),0);
+  const tVarPend=variables.filter(x=>!x.pagado).reduce((s,x)=>s+gToNum(x.monto),0);
+  const saldo=tIng-tFijPag-tVarPag;
+  const totPend=tFijPend+tVarPend;
+  const nombreMes=gMesLabel(ym).toUpperCase();
+
+  let txt=`💰 PRESUPUESTO MES ${nombreMes}\n`;
+  txt+=`Usuario: ${currentUser.nombre}\n`;
+  txt+=`Generado: ${new Date().toLocaleDateString('es-CL')}\n`;
+  txt+=`━━━━━━━━━━━━━━━━━━━━━\n\n`;
+
+  if(ingresos.length){
+    txt+=`📈 INGRESOS\n`;
+    ingresos.forEach(x=>{txt+=`• ${x.nombre||'-'}: ${fmt$(x.monto)}\n`;});
+    txt+=`Total ingresos: ${fmt$(tIng)}\n\n`;
+  }
+
+  if(fijos.length){
+    txt+=`🏠 GASTOS FIJOS\n`;
+    fijos.forEach(x=>{
+      const mark=x.pagado?'✅':'⏳';
+      const tag=x.pagado?'':' [PENDIENTE]';
+      txt+=`${mark} ${x.nombre||'-'}: ${fmt$(x.monto)}${tag}\n`;
+    });
+    txt+=`Pagado fijos: ${fmt$(tFijPag)}`;
+    if(tFijPend>0)txt+=` (pendiente: ${fmt$(tFijPend)})`;
+    txt+=`\n\n`;
+  }
+
+  if(variables.length){
+    txt+=`🛒 GASTOS VARIABLES\n`;
+    variables.forEach(x=>{
+      const mark=x.pagado?'✅':'⏳';
+      const tag=x.pagado?'':' [PENDIENTE]';
+      const cat=x.categoria?` (${x.categoria})`:'';
+      txt+=`${mark} ${x.fecha||''} ${x.desc||'-'}${cat}: ${fmt$(x.monto)}${tag}\n`;
+    });
+    txt+=`Pagado variables: ${fmt$(tVarPag)}`;
+    if(tVarPend>0)txt+=` (pendiente: ${fmt$(tVarPend)})`;
+    txt+=`\n\n`;
+  }
+
+  txt+=`━━━━━━━━━━━━━━━━━━━━━\n`;
+  txt+=`💵 SALDO DISPONIBLE: ${fmt$(saldo)}\n`;
+  if(totPend>0){
+    txt+=`⏳ PENDIENTE POR PAGAR: ${fmt$(totPend)}\n`;
+  }
+  txt+=`\n— Sistema MAAH —`;
+  return txt;
+}
+
+function gEnviarEmail(){
+  const pagados=gMesActual.fijosPagados||{};
+  const fijosActuales=gFijosPlantilla.map(f=>({id:f.id,nombre:f.nombre,monto:gToNum(f.monto),pagado:!!pagados[f.id]}));
+  const txt=gBuildResumenTexto(gMesActual.mes,gMesActual.ingresos,fijosActuales,gMesActual.variables);
+  const nombreMes=gMesLabel(gMesActual.mes).toUpperCase();
+  const asunto=encodeURIComponent(`Presupuesto MAAH — ${nombreMes}`);
+  const cuerpo=encodeURIComponent(txt+`\n\nNota: Si quieres adjuntar el PDF, descárgalo desde el botón "PDF" del módulo de gastos y adjúntalo manualmente a este correo.`);
+  // Preguntar si también quiere abrir el PDF
+  if(confirm('¿Quieres también abrir el PDF para descargarlo y adjuntarlo manualmente al email?\n\n(El email se abrirá con el resumen en texto)')){
+    gExportarPDF();
+    setTimeout(()=>{window.open(`mailto:?subject=${asunto}&body=${cuerpo}`);},800);
+  } else {
+    window.open(`mailto:?subject=${asunto}&body=${cuerpo}`);
+  }
+}
+
+function gEnviarWhatsApp(){
+  const pagados=gMesActual.fijosPagados||{};
+  const fijosActuales=gFijosPlantilla.map(f=>({id:f.id,nombre:f.nombre,monto:gToNum(f.monto),pagado:!!pagados[f.id]}));
+  const txt=gBuildResumenTexto(gMesActual.mes,gMesActual.ingresos,fijosActuales,gMesActual.variables);
+  // Preguntar si también quiere abrir el PDF
+  if(confirm('¿Quieres también abrir el PDF para guardarlo y adjuntarlo manualmente al WhatsApp?\n\n(WhatsApp se abrirá con el resumen en texto)')){
+    gExportarPDF();
+    setTimeout(()=>{window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`,'_blank');},800);
+  } else {
+    window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`,'_blank');
+  }
+}
+
+// Reset: borrar plantilla de fijos permanentes
+function gResetFijos(){
+  if(!confirm('¿Borrar TODA tu plantilla de gastos fijos permanentes?\n\nLos meses ya guardados NO se verán afectados, solo borra la plantilla base.'))return;
+  if(!confirm('Última confirmación: ¿Seguro?'))return;
+  db.ref(`maah_gastos_fijos/${currentUser.id}`).remove(err=>{
+    if(err){alert('Error: '+err.message);return;}
+    alert('✓ Plantilla de gastos fijos borrada. Ya puedes empezar de cero.');
+  });
+}
+
+// Reset: borrar TODO (plantilla + todos los meses)
+function gResetTodo(){
+  if(!confirm('⚠ ATENCIÓN: Vas a borrar TODO tu módulo de gastos:\n\n• Plantilla de gastos fijos permanentes\n• TODOS los meses guardados\n\nEsta acción NO se puede deshacer.'))return;
+  if(!confirm('Última confirmación: ¿Borrar TODO? Escribe mentalmente "BORRAR" y acepta si estás 100% seguro.'))return;
+  Promise.all([
+    db.ref(`maah_gastos_fijos/${currentUser.id}`).remove(),
+    db.ref(`maah_gastos_mes/${currentUser.id}`).remove()
+  ]).then(()=>{
+    alert('✓ Todos los datos de gastos han sido borrados. Puedes empezar de cero.');
+    gShowView('home');
+  }).catch(err=>{
+    alert('Error: '+err.message);
+  });
+}
+
+// PDF: abre una ventana con el diseño para imprimir/guardar
+function gBuildPDF(ym,ingresos,fijos,variables){
+  const tIng=ingresos.reduce((s,x)=>s+gToNum(x.monto),0);
+  const tFij=fijos.reduce((s,x)=>s+gToNum(x.monto),0);
+  const tFijPag=fijos.filter(x=>x.pagado).reduce((s,x)=>s+gToNum(x.monto),0);
+  const tFijPend=tFij-tFijPag;
+  const tVar=variables.reduce((s,x)=>s+gToNum(x.monto),0);
+  const tVarPag=variables.filter(x=>x.pagado).reduce((s,x)=>s+gToNum(x.monto),0);
+  const tVarPend=tVar-tVarPag;
+  const tEgrPag=tFijPag+tVarPag;
+  const tEgrPend=tFijPend+tVarPend;
+  const saldo=tIng-tEgrPag; // Saldo solo descuenta lo pagado
+  const catsMap={};
+  variables.forEach(v=>{const k=v.categoria||'SIN CATEGORÍA';catsMap[k]=(catsMap[k]||0)+gToNum(v.monto);});
+  const catsList=Object.entries(catsMap).sort((a,b)=>b[1]-a[1]);
+  const fechaHoy=new Date().toLocaleDateString('es-CL');
+  const nombreMes=gMesLabel(ym).toUpperCase();
+
+  const html=`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Presupuesto ${nombreMes}</title>
+<style>
+@page{size:letter;margin:1.5cm;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Times New Roman',Times,serif;color:#2d3748;padding:10px;}
+.header{text-align:center;margin-bottom:24px;padding-bottom:16px;border-bottom:2px solid #1a3f6f;}
+.header .sub{font-size:11px;color:#718096;text-transform:uppercase;letter-spacing:3px;margin-bottom:6px;}
+.header h1{font-size:20px;font-weight:700;color:#1a3f6f;letter-spacing:.5px;}
+.header .info{font-size:11px;color:#718096;margin-top:6px;}
+table{width:100%;border-collapse:collapse;margin-bottom:18px;}
+th{background:#1a3f6f;color:#fff;padding:9px 12px;font-size:12px;font-weight:700;text-align:left;letter-spacing:.5px;}
+th.ar{text-align:right;width:150px;}
+.sec-ing{background:#eef3ff;padding:9px 12px;font-size:13px;font-weight:700;color:#1a3f6f;letter-spacing:.5px;border-bottom:1px solid #c6d4f0;}
+.sec-fij{background:#ffebee;padding:9px 12px;font-size:13px;font-weight:700;color:#c62828;letter-spacing:.5px;border-bottom:1px solid #ffcdd2;}
+.sec-var{background:#fff8e1;padding:9px 12px;font-size:13px;font-weight:700;color:#854f0b;letter-spacing:.5px;border-bottom:1px solid #fde68a;}
+td{padding:8px 12px;font-size:13px;border-bottom:.5px solid #eef2f7;}
+td.ar{text-align:right;font-weight:700;}
+td.verde{color:#2f855a;}
+td.rojo{color:#c62828;}
+td.amb{color:#854f0b;}
+.sub-total{background:#f7fafc;font-weight:700;}
+.sub-total-ing{background:#f0fff4;color:#276749;}
+.sub-total-fij{background:#ffebee;color:#c62828;}
+.sub-total-var{background:#fff8e1;color:#854f0b;}
+.total-egr{background:#fde68a;color:#c62828;}
+.total-egr td{font-weight:700;padding:10px 12px;}
+.saldo{background:#1a3f6f;color:#fff;}
+.saldo td{padding:14px 12px;font-weight:700;color:#fff;}
+.saldo td.ar{font-size:18px;}
+.empty-row td{height:18px;border:none;}
+.badge{background:#fef3e7;color:#854f0b;font-size:10px;padding:1px 6px;border-radius:8px;margin-left:4px;font-weight:700;}
+.resumen{margin-top:18px;padding:12px 16px;background:#fef9e7;border-radius:6px;border:1px solid #fde68a;}
+.resumen-title{font-size:11px;color:#854f0b;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
+.resumen-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;font-size:12px;}
+.foot{text-align:center;margin-top:24px;padding-top:14px;border-top:.5px solid #dde3ed;font-size:10px;color:#a0aec0;letter-spacing:.5px;}
+@media print{body{padding:0;} .noprint{display:none;}}
+.noprint{text-align:center;margin-bottom:20px;padding:12px;background:#f0f4ff;border-radius:8px;}
+.noprint button{background:#1a3f6f;color:#fff;border:none;padding:10px 20px;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer;margin:0 5px;font-family:'Times New Roman',Times,serif;}
+</style></head><body>
+<div class="noprint">
+  <button onclick="window.print()">🖨 Imprimir / Guardar como PDF</button>
+  <button onclick="window.close()">✕ Cerrar</button>
+</div>
+<div class="header">
+  <div class="sub">Sistema MAAH</div>
+  <h1>PRESUPUESTO - GASTOS MES DE ${nombreMes}</h1>
+  <div class="info">Usuario: ${currentUser.nombre}${currentUser.rol==='admin'?' ★':''} &nbsp;·&nbsp; Generado el ${fechaHoy}</div>
+</div>
+<table>
+  <thead><tr><th style="width:40px;text-align:center;">✓</th><th>CONCEPTO</th><th class="ar">MONTO</th></tr></thead>
+  <tbody>
+    <tr><td colspan="3" class="sec-ing">INGRESOS</td></tr>
+    ${ingresos.map(x=>`<tr><td></td><td>${x.nombre||'-'}</td><td class="ar verde">${fmt$(x.monto)}</td></tr>`).join('')}
+    <tr class="sub-total sub-total-ing"><td></td><td>TOTAL INGRESOS</td><td class="ar">${fmt$(tIng)}</td></tr>
+    <tr class="empty-row"><td colspan="3"></td></tr>
+    ${fijos.length?`
+    <tr><td colspan="3" class="sec-fij">EGRESOS - GASTOS FIJOS</td></tr>
+    ${fijos.map(x=>`<tr><td style="text-align:center;font-weight:700;color:${x.pagado?'#2f855a':'#c62828'};font-size:14px;">${x.pagado?'✓':'○'}</td><td${x.pagado?'':' style="opacity:.7;"'}>${x.nombre||'-'}${!x.pagado?' <span style="background:#fef3e7;color:#854f0b;font-size:9px;padding:1px 5px;border-radius:6px;margin-left:4px;font-weight:700;">PENDIENTE</span>':''}</td><td class="ar rojo"${x.pagado?'':' style="text-decoration:line-through;opacity:.6;"'}>${fmt$(x.monto)}</td></tr>`).join('')}
+    <tr class="sub-total sub-total-fij"><td></td><td>Subtotal fijos pagados</td><td class="ar">${fmt$(tFijPag)}${tFijPend>0?` <small style="font-weight:400;color:#888;">(${fmt$(tFijPend)} pendiente)</small>`:''}</td></tr>
+    <tr class="empty-row"><td colspan="3"></td></tr>`:''}
+    ${variables.length?`
+    <tr><td colspan="3" class="sec-var">EGRESOS - GASTOS VARIABLES</td></tr>
+    ${variables.map(x=>`<tr><td style="text-align:center;font-weight:700;color:${x.pagado?'#2f855a':'#c62828'};font-size:14px;">${x.pagado?'✓':'○'}</td><td${x.pagado?'':' style="opacity:.7;"'}>${x.fecha||''} · ${x.desc||'-'}${x.categoria?`<span class="badge">${x.categoria}</span>`:''}${!x.pagado?' <span style="background:#fef3e7;color:#854f0b;font-size:9px;padding:1px 5px;border-radius:6px;margin-left:4px;font-weight:700;">PENDIENTE</span>':''}</td><td class="ar amb"${x.pagado?'':' style="text-decoration:line-through;opacity:.6;"'}>${fmt$(x.monto)}</td></tr>`).join('')}
+    <tr class="sub-total sub-total-var"><td></td><td>Subtotal variables pagados</td><td class="ar">${fmt$(tVarPag)}${tVarPend>0?` <small style="font-weight:400;color:#888;">(${fmt$(tVarPend)} pendiente)</small>`:''}</td></tr>`:''}
+    ${(fijos.length||variables.length)?`<tr class="total-egr"><td></td><td>TOTAL EGRESOS PAGADOS</td><td class="ar">${fmt$(tEgrPag)}</td></tr>${tEgrPend>0?`<tr style="background:#fef3e7;color:#854f0b;"><td></td><td style="font-weight:700;padding:8px 12px;">PENDIENTE POR PAGAR</td><td class="ar" style="color:#854f0b;font-weight:700;padding:8px 12px;">${fmt$(tEgrPend)}</td></tr>`:''}`:''}
+    <tr class="empty-row"><td colspan="3"></td></tr>
+    <tr class="saldo"><td></td><td>SALDO DISPONIBLE</td><td class="ar">${fmt$(saldo)}</td></tr>
+  </tbody>
+</table>
+${catsList.length?`
+<div class="resumen">
+  <div class="resumen-title">Resumen por categoría (gastos variables)</div>
+  <div class="resumen-grid">
+    ${catsList.map(([c,m])=>`<div><strong>${c}:</strong> ${fmt$(m)} · ${tVar?Math.round(m/tVar*100):0}%</div>`).join('')}
+  </div>
+</div>`:''}
+<div class="foot">SISTEMA MAAH &nbsp;·&nbsp; CONTROL DE GASTOS PERSONAL</div>
+</body></html>`;
+  const w=window.open('','_blank');
+  w.document.write(html);
+  w.document.close();
+}
+
+// ── CAMBIAR CLAVE ─────────────────────────────────────────────
+function openChangePass(){
+  document.getElementById('cp-actual').value='';
+  document.getElementById('cp-nueva').value='';
+  document.getElementById('cp-nueva2').value='';
+  document.getElementById('cp-msg').style.display='none';
+  document.getElementById('modal-change-pass').classList.add('open');
+  setTimeout(()=>document.getElementById('cp-actual').focus(),100);
+}
+function doChangePass(){
+  const actual=document.getElementById('cp-actual').value.trim();
+  const nueva=document.getElementById('cp-nueva').value.trim();
+  const nueva2=document.getElementById('cp-nueva2').value.trim();
+  const msg=document.getElementById('cp-msg');
+  function mostrar(txt,color,bg){msg.textContent=txt;msg.style.color=color;msg.style.background=bg;msg.style.display='block';}
+  if(!actual||!nueva||!nueva2){mostrar('Complete todos los campos.','#c62828','#ffebee');return;}
+  if(actual!==currentUser.pass){mostrar('La clave actual es incorrecta.','#c62828','#ffebee');return;}
+  if(nueva.length<4){mostrar('La nueva clave debe tener al menos 4 caracteres.','#c62828','#ffebee');return;}
+  if(nueva!==nueva2){mostrar('Las nuevas claves no coinciden.','#c62828','#ffebee');return;}
+  if(nueva===actual){mostrar('La nueva clave debe ser distinta a la actual.','#c62828','#ffebee');return;}
+  db.ref(`maah_usuarios/${currentUser.id}`).update({pass:nueva},err=>{
+    if(err){mostrar('Error al guardar: '+err.message,'#c62828','#ffebee');return;}
+    currentUser.pass=nueva;
+    mostrar('✓ Clave cambiada correctamente.','#2f855a','#f0fff4');
+    setTimeout(()=>closeModal('modal-change-pass'),1500);
+  });
+}
+
+
+
+// ── USUARIOS ─────────────────────────────────────────────────
+function crearUsuario(){
+  const nombre=document.getElementById('nu-nombre').value.trim().toUpperCase();
+  const pass=document.getElementById('nu-pass').value.trim();
+  const rol=document.getElementById('nu-rol').value;
+  const tgid=document.getElementById('nu-tgid').value.trim();
+  if(!nombre){showAdminMsg('Falta el nombre del usuario.','#c62828');return;}
+  if(!pass){showAdminMsg('Falta la contraseña.','#c62828');return;}
+  if(pass.length<4){showAdminMsg('La contraseña debe tener al menos 4 caracteres.','#c62828');return;}
+  db.ref('maah_usuarios').orderByChild('nombre').equalTo(nombre).once('value',snap=>{
+    if(snap.exists()){showAdminMsg('Ya existe un usuario con ese nombre.','#c62828');return;}
+    const userData={nombre,pass,rol,tgid:tgid||'',bloqueado:false};
+    db.ref('maah_usuarios').push(userData).then(()=>{
+      showAdminMsg('✓ Usuario '+nombre+' creado. Revisa la lista a la derecha →','#2e7d32');
+      document.getElementById('nu-nombre').value='';
+      document.getElementById('nu-pass').value='';
+      document.getElementById('nu-tgid').value='';
+      document.getElementById('nu-rol').value='usuario';
+      // Forzar recarga inmediata de la lista
+      loadUserList();
+    }).catch(err=>{
+      showAdminMsg('Error al crear: '+err.message,'#c62828');
+    });
+  });
+}
+function showAdminMsg(msg,color){
+  const e=document.getElementById('admin-msg');
+  e.textContent=msg;
+  e.style.color=color;
+  e.style.background=color==='#c62828'?'#ffebee':'#f0fff4';
+  e.style.border='1px solid '+(color==='#c62828'?'#ffcdd2':'#9ae6b4');
+  e.style.display='block';
+  setTimeout(()=>e.style.display='none',4000);
+}
+function loadUserList(){
+  const list=document.getElementById('user-list');
+  if(list) list.innerHTML='<div style="text-align:center;padding:20px;color:#718096;font-size:12px;">Cargando usuarios...</div>';
+  db.ref('maah_usuarios').on('value',snap=>{
+    const users=[];
+    if(snap.exists()){
+      snap.forEach(c=>{
+        const data=c.val()||{};
+        users.push({
+          id:c.key,
+          nombre:data.nombre||'(sin nombre)',
+          pass:data.pass||'',
+          rol:data.rol||'usuario',
+          tgid:data.tgid||'',
+          bloqueado:!!data.bloqueado
+        });
+      });
+    }
+    console.log('[MAAH] Usuarios cargados desde Firebase:',users.length,users.map(u=>u.nombre));
+    if(!users.length){
+      list.innerHTML='<div style="text-align:center;padding:30px 20px;color:#a0aec0;font-size:13px;">No hay usuarios registrados.</div>';
+      return;
+    }
+    // Ordenar: ADMIN primero, luego por nombre
+    users.sort((a,b)=>{
+      if(a.rol==='admin' && b.rol!=='admin')return -1;
+      if(b.rol==='admin' && a.rol!=='admin')return 1;
+      return a.nombre.localeCompare(b.nombre);
+    });
+    const activos=users.filter(u=>!u.bloqueado).length;
+    const bloqueados=users.filter(u=>u.bloqueado).length;
+    list.innerHTML=`
+      <div style="display:flex;gap:8px;margin-bottom:12px;font-size:11px;">
+        <div style="flex:1;background:#f0fff4;border:1px solid #9ae6b4;padding:6px 10px;border-radius:5px;text-align:center;"><b style="color:#2f855a;">${activos}</b> <span style="color:#276749;">activos</span></div>
+        <div style="flex:1;background:#ffebee;border:1px solid #ffcdd2;padding:6px 10px;border-radius:5px;text-align:center;"><b style="color:#c62828;">${bloqueados}</b> <span style="color:#c62828;">bloqueados</span></div>
+      </div>
+    `+users.map(u=>{
+      const bloqueado=!!u.bloqueado;
+      const isAdmin=u.rol==='admin';
+      const isSelf=currentUser && u.id===currentUser.id;
+      return `
+      <div class="user-list-item" style="${bloqueado?'opacity:.55;background:#ffebee;':''}">
+        <div class="user-avatar ${isAdmin?'adm':''}">${u.nombre.slice(0,2)}</div>
+        <div class="user-info">
+          <div class="uname">${u.nombre}${isSelf?' <span style="color:#1a3f6f;font-size:10px;">(tú)</span>':''} ${bloqueado?'<span style="background:#c62828;color:#fff;font-size:9px;padding:1px 6px;border-radius:8px;font-weight:700;margin-left:4px;">BLOQUEADO</span>':'<span style="background:#2f855a;color:#fff;font-size:9px;padding:1px 6px;border-radius:8px;font-weight:700;margin-left:4px;">ACTIVO</span>'}</div>
+          <div class="urole">${isAdmin?'Administrador':'Usuario'}${u.tgid?' · TG:'+u.tgid:' · Sin Telegram'}</div>
+        </div>
+        <div class="user-actions">
+          ${(!isAdmin && !isSelf)?`<button class="ubtn" style="${bloqueado?'background:#2f855a;color:#fff;border-color:#2f855a;':'background:#c62828;color:#fff;border-color:#c62828;'}" onclick="toggleBloqueoUser('${u.id}','${u.nombre.replace(/'/g,"\\'")}',${bloqueado})" title="${bloqueado?'Desbloquear':'Bloquear'}">${bloqueado?'✓ Activar':'🚫 Bloquear'}</button>`:''}
+          <button class="ubtn" onclick="openEditUser('${u.id}','${u.nombre.replace(/'/g,"\\'")}','${u.rol}','${(u.tgid||'').replace(/'/g,"\\'")}')" title="Editar">&#9998;</button>
+          ${(!isAdmin && !isSelf)?`<button class="ubtn del" onclick="deleteUser('${u.id}','${u.nombre.replace(/'/g,"\\'")}')" title="Eliminar">&#10005;</button>`:''}
+        </div>
+      </div>`;
+    }).join('');
+  },err=>{
+    list.innerHTML=`<div style="text-align:center;padding:20px;color:#c62828;font-size:12px;background:#ffebee;border-radius:6px;">Error al cargar usuarios: ${err.message}</div>`;
+  });
+}
+function toggleBloqueoUser(id,nombre,estaBloqueado){
+  const accion=estaBloqueado?'desbloquear':'bloquear';
+  const msg=estaBloqueado
+    ? `¿Reactivar a ${nombre}?\n\nPodrá volver a ingresar con su clave.`
+    : `¿Bloquear a ${nombre}?\n\nNo podrá ingresar al sistema hasta que lo reactives. Sus datos NO se borran.`;
+  if(!confirm(msg))return;
+  db.ref('maah_usuarios/'+id).update({bloqueado:!estaBloqueado},err=>{
+    if(err){alert('Error: '+err.message);return;}
+    showAdminMsg(`Usuario ${nombre} ${estaBloqueado?'reactivado ✓':'bloqueado 🚫'}.`,estaBloqueado?'#2f855a':'#c62828');
+  });
+}
+function openEditUser(id,nombre,rol,tgid){
+  editingUserId=id;
+  document.getElementById('eu-nombre').value=nombre;
+  document.getElementById('eu-rol').value=rol;
+  document.getElementById('eu-tgid').value=tgid;
+  document.getElementById('eu-pass').value='';
+  document.getElementById('modal-edit-user').classList.add('open');
+}
+function saveEditUser(){
+  const nombre=document.getElementById('eu-nombre').value.trim().toUpperCase();
+  const pass=document.getElementById('eu-pass').value.trim();
+  const rol=document.getElementById('eu-rol').value;
+  const tgid=document.getElementById('eu-tgid').value.trim();
+  if(!nombre){alert('Ingrese un nombre.');return;}
+  const upd={nombre,rol,tgid};
+  if(pass) upd.pass=pass;
+  db.ref('maah_usuarios/'+editingUserId).update(upd,()=>closeModal('modal-edit-user'));
+}
+function deleteUser(id,nombre){
+  if(id===currentUser.id){alert('No puedes eliminar tu propio usuario.');return;}
+  if(confirm('¿Eliminar al usuario '+nombre+'?'))db.ref('maah_usuarios/'+id).remove();
+}
+
+// ── MODALES ──────────────────────────────────────────────────
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.modal-overlay.open').forEach(m=>m.classList.remove('open'));});
+
+// ── ADMIN INICIAL ─────────────────────────────────────────────
+db.ref('maah_usuarios').once('value',snap=>{
+  if(!snap.exists()) db.ref('maah_usuarios').push({nombre:'ADMIN',pass:'1996',rol:'admin',tgid:TG_ADMIN_CHATID});
+});
+</script>
+
+<!-- PWA: registro del service worker para hacer la app instalable -->
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('service-worker.js')
+      .then(() => console.log('Service Worker registrado'))
+      .catch(err => console.log('SW error:', err));
+  });
+}
+</script>
+</body>
+</html>
