@@ -76,6 +76,10 @@ body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100
 .nav-tabs{background:#0f2744;display:flex;overflow-x:auto;}
 .tab{padding:9px 16px;font-size:11px;font-weight:600;color:rgba(255,255,255,.55);cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;flex-shrink:0;}
 .tab.active{color:#fff;border-bottom:3px solid #fff;background:rgba(255,255,255,.08);}
+/* Pestaña sin acceso: se ve atenuada con candado */
+.tab.locked-tab{color:rgba(255,255,255,.3);position:relative;padding-right:26px;}
+.tab.locked-tab::after{content:"🔒";position:absolute;right:6px;top:50%;transform:translateY(-50%);font-size:10px;}
+.tab.locked-tab:hover{color:rgba(255,255,255,.5);background:rgba(255,255,255,.04);}
 
 /* TAB CONTENT */
 .tab-content{display:none;padding:14px 20px;}
@@ -228,16 +232,16 @@ body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100
 .ubtn.del:hover{background:#fff0f0;color:#c62828;}
 
 /* Iconos cuadraditos de servicios MAAH (al lado de cada usuario) */
-.svc-mini-row{display:flex;gap:5px;flex-shrink:0;margin-right:8px;}
-.svc-mini{width:30px;height:30px;border:1.5px solid #cbd5e0;border-radius:6px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;position:relative;transition:all 0.15s;user-select:none;line-height:1;}
-.svc-mini:hover{transform:scale(1.08);}
+.svc-mini-row{display:flex;gap:3px;flex-shrink:0;margin-right:8px;}
+.svc-mini{width:22px;height:22px;border:1px solid #cbd5e0;border-radius:5px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer;position:relative;transition:all 0.15s;user-select:none;line-height:1;}
+.svc-mini:hover{transform:scale(1.12);}
 .svc-mini.on{border-color:#0F6E56;background:#E1F5EE;}
-.svc-mini.on::after{content:"✓";position:absolute;top:-5px;right:-5px;width:14px;height:14px;background:#0F6E56;color:#fff;border-radius:50%;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;border:1.5px solid #fff;line-height:1;}
+.svc-mini.on::after{content:"✓";position:absolute;top:-4px;right:-4px;width:11px;height:11px;background:#0F6E56;color:#fff;border-radius:50%;font-size:7px;font-weight:700;display:flex;align-items:center;justify-content:center;border:1px solid #fff;line-height:1;}
 .svc-mini.off{opacity:0.35;filter:grayscale(0.7);}
 .svc-mini.off:hover{opacity:0.7;filter:grayscale(0);}
 .svc-mini.locked{cursor:not-allowed;opacity:1;}
 .svc-mini.locked:hover{transform:none;}
-.svc-mini.locked::before{content:"🔒";position:absolute;top:-5px;left:-5px;font-size:9px;background:#c8960a;width:13px;height:13px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:1px solid #fff;line-height:1;}
+.svc-mini.locked::before{content:"🔒";position:absolute;top:-4px;left:-4px;font-size:7px;background:#c8960a;width:10px;height:10px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:1px solid #fff;line-height:1;}
 
 /* GASTOS */
 .gastos-grid{display:grid;grid-template-columns:300px 1fr;gap:16px;}
@@ -1079,7 +1083,37 @@ function doLogin(){
     snap.forEach(c=>{if(c.val().pass===pass)found={id:c.key,...c.val()};});
     if(!found){showLoginErr('Usuario o contraseña incorrectos');return;}
     if(found.bloqueado){showLoginErr('Tu cuenta está bloqueada. Contacta al administrador.');return;}
-    currentUser=found; startApp();
+
+    // ── PERMISOS ──
+    // Admin: SIEMPRE tiene todos los servicios
+    // Usuario: lo que tenga en Firebase (o {} si nunca se le asignó nada)
+    if(found.rol === 'admin'){
+      const all = {};
+      SERVICIOS_MAAH.forEach(s => all[s.key] = true);
+      found.permisos = all;
+    } else {
+      found.permisos = found.permisos || {};
+    }
+
+    currentUser=found;
+    startApp();
+
+    // ── ESCUCHAR CAMBIOS de permisos en tiempo real ──
+    // Si el admin activa/desactiva un servicio mientras este usuario está logueado,
+    // los cambios se reflejan al instante y se bloquea/desbloquea automáticamente.
+    if(currentUser.rol !== 'admin'){
+      db.ref('maah_usuarios/'+currentUser.id+'/permisos').on('value', psnap=>{
+        currentUser.permisos = psnap.val() || {};
+        actualizarVisibilidadPestañas();
+      });
+      // También escuchar si lo bloquean para sacarlo automáticamente
+      db.ref('maah_usuarios/'+currentUser.id+'/bloqueado').on('value', bsnap=>{
+        if(bsnap.val() === true){
+          alert('Tu cuenta ha sido bloqueada por el administrador. Cerrando sesión.');
+          doLogout();
+        }
+      });
+    }
   });
 }
 function showLoginErr(msg){const e=document.getElementById('login-error');e.textContent=msg;e.style.display='block';setTimeout(()=>e.style.display='none',3000);}
@@ -1098,6 +1132,12 @@ function startApp(){
   }else{
     document.getElementById('tab-admin-btn').style.display='none';
   }
+  // Aplicar visibilidad/atenuación de pestañas según permisos
+  actualizarVisibilidadPestañas();
+  // Si la pestaña activa por defecto (agenda) no tiene permiso, llevar a la primera disponible
+  if(currentUser.rol !== 'admin' && !(currentUser.permisos||{}).agenda){
+    irAPestañaDisponible();
+  }
   // Cargar plantilla de gastos fijos del usuario (siempre)
   gLoadFijosPlantilla();
   mostrarFrases();
@@ -1109,8 +1149,60 @@ function startApp(){
   loadAgendaForDate(hoy);
 }
 
+// Atenúa las pestañas a las que el usuario no tiene acceso (con candado visual)
+function actualizarVisibilidadPestañas(){
+  if(!currentUser) return;
+  const perms = currentUser.permisos || {};
+  const tabBtns = document.querySelectorAll('#nav-tabs .tab');
+  const mapping = ['agenda','gantt','gastos']; // orden de las primeras 3 pestañas
+  tabBtns.forEach((tab, idx)=>{
+    if(idx >= mapping.length) return; // saltar la pestaña Admin
+    const svc = mapping[idx];
+    if(currentUser.rol === 'admin' || perms[svc]){
+      tab.classList.remove('locked-tab');
+      tab.title = '';
+    } else {
+      tab.classList.add('locked-tab');
+      tab.title = 'Sin acceso — solicita activación al administrador';
+    }
+  });
+}
+
+// Si el usuario no tiene acceso a la pestaña por defecto, busca la primera disponible
+function irAPestañaDisponible(){
+  const perms = currentUser.permisos || {};
+  if(perms.agenda) return; // ya está activa por defecto
+  // Buscar otra pestaña activa
+  if(perms.gantt){
+    const t = document.querySelector('#nav-tabs .tab:nth-child(2)');
+    if(t) showTab('gantt', t);
+  } else if(perms.gastos){
+    const t = document.getElementById('tab-gastos-btn');
+    if(t) showTab('gastos', t);
+  }
+  // Si no tiene ninguno, queda en agenda con la pestaña abierta pero sin contenido útil
+  // (al hacer clic en cualquier pestaña le saldrá el mensaje "sin acceso")
+}
+
 // ── TABS ─────────────────────────────────────────────────────
 function showTab(tab,el){
+  // ── VERIFICAR PERMISO al servicio ──
+  // Mapeo de pestañas a clave de servicio en SERVICIOS_MAAH
+  const tabToService = {
+    'agenda': 'agenda',
+    'gantt':  'gantt',
+    'gastos': 'gastos'
+    // 'admin' no requiere permiso de servicio (ya se filtra por rol)
+  };
+  if(currentUser && tabToService[tab] && currentUser.rol !== 'admin'){
+    const permisos = currentUser.permisos || {};
+    if(!permisos[tabToService[tab]]){
+      // No tiene acceso → mostrar mensaje y NO cambiar de pestaña
+      mostrarSinAcceso(tab);
+      return;
+    }
+  }
+
   document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.getElementById('tab-content-'+tab).classList.add('active');
@@ -1119,6 +1211,42 @@ function showTab(tab,el){
   if(tab==='admin' && currentUser && currentUser.rol==='admin'){
     loadUserList();
   }
+}
+
+// Muestra un overlay con mensaje cuando el usuario intenta acceder a un servicio sin permiso
+function mostrarSinAcceso(tabKey){
+  const nombres = { agenda: 'Agenda', gantt: 'Carta Gantt', gastos: 'Mis Gastos' };
+  const iconos  = { agenda: '📒',     gantt: '📅',          gastos: '💰' };
+  const nombre = nombres[tabKey] || tabKey;
+  const icono  = iconos[tabKey] || '🔒';
+
+  // Crear overlay si no existe
+  let ov = document.getElementById('sin-acceso-overlay');
+  if(!ov){
+    ov = document.createElement('div');
+    ov.id = 'sin-acceso-overlay';
+    ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:99999;display:flex;align-items:center;justify-content:center;font-family:\'Segoe UI\',Arial,sans-serif;';
+    document.body.appendChild(ov);
+  }
+  ov.innerHTML = `
+    <div style="background:#fff;border-radius:14px;padding:32px 40px;max-width:400px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+      <div style="font-size:54px;margin-bottom:8px;line-height:1;">${icono}</div>
+      <div style="font-size:18px;font-weight:700;color:#1a3f6f;margin-bottom:8px;">Acceso restringido</div>
+      <div style="font-size:13px;color:#4a5568;line-height:1.5;margin-bottom:18px;">
+        No tienes acceso al servicio <strong>${nombre}</strong>.<br>
+        Solicita la activación al administrador.
+      </div>
+      <div style="display:flex;gap:8px;justify-content:center;">
+        <button onclick="cerrarSinAcceso()" style="padding:10px 20px;background:#1a3f6f;color:#fff;border:none;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">Entendido</button>
+      </div>
+    </div>
+  `;
+  ov.style.display = 'flex';
+}
+
+function cerrarSinAcceso(){
+  const ov = document.getElementById('sin-acceso-overlay');
+  if(ov) ov.style.display = 'none';
 }
 
 // ── AGENDA ───────────────────────────────────────────────────
