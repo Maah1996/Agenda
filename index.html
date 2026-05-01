@@ -636,10 +636,10 @@ body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100
   <div class="tab-content" id="tab-content-gantt">
     <div style="background:#fff;border-radius:10px;border:0.5px solid #dde3ed;padding:24px;text-align:center;">
       <p style="font-size:13px;color:#4a5568;margin-bottom:14px;">La Carta Gantt MAAH se abre en su propia página.</p>
-      <a href="https://maah1996.github.io/Carta-Gantt-Maah/" target="_blank"
-         style="display:inline-block;padding:12px 24px;background:#1a3f6f;color:#fff;border-radius:8px;font-size:13px;font-weight:700;text-decoration:none;">
+      <button type="button" onclick="abrirCartaGantt()"
+         style="display:inline-block;padding:12px 24px;background:#1a3f6f;color:#fff;border-radius:8px;font-size:13px;font-weight:700;text-decoration:none;border:none;cursor:pointer;font-family:inherit;">
         &#128200; Abrir Carta Gantt MAAH
-      </a>
+      </button>
     </div>
   </div>
 
@@ -1214,6 +1214,36 @@ function showTab(tab,el){
 }
 
 // Muestra un overlay con mensaje cuando el usuario intenta acceder a un servicio sin permiso
+// Abrir la Carta Gantt MAAH (página externa) con SSO automático.
+// Guarda un ticket en localStorage para que la Gantt no pida clave de nuevo.
+function abrirCartaGantt(){
+  if(!currentUser){
+    alert('Debes iniciar sesión primero.');
+    return;
+  }
+  // Verificar permiso (admin siempre, los demás según permisos.gantt)
+  if(currentUser.rol !== 'admin'){
+    const perms = currentUser.permisos || {};
+    if(!perms.gantt){
+      mostrarSinAcceso('gantt');
+      return;
+    }
+  }
+  // Crear ticket SSO válido por 30 minutos
+  const ticket = {
+    userId: currentUser.id,
+    nombre: currentUser.nombre,
+    expira: Date.now() + (30 * 60 * 1000)  // 30 min en ms
+  };
+  try{
+    localStorage.setItem('maah_session', JSON.stringify(ticket));
+  }catch(e){
+    console.warn('[MAAH] No se pudo guardar ticket SSO:', e);
+  }
+  // Abrir en nueva pestaña
+  window.open('https://maah1996.github.io/Carta-Gantt-Maah/', '_blank');
+}
+
 function mostrarSinAcceso(tabKey){
   const nombres = { agenda: 'Agenda', gantt: 'Carta Gantt', gastos: 'Mis Gastos' };
   const iconos  = { agenda: '📒',     gantt: '📅',          gastos: '💰' };
