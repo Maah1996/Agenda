@@ -227,6 +227,18 @@ body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100
 .ubtn:hover{background:#eef3fa;color:#1a3f6f;}
 .ubtn.del:hover{background:#fff0f0;color:#c62828;}
 
+/* Iconos cuadraditos de servicios MAAH (al lado de cada usuario) */
+.svc-mini-row{display:flex;gap:5px;flex-shrink:0;margin-right:8px;}
+.svc-mini{width:30px;height:30px;border:1.5px solid #cbd5e0;border-radius:6px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;position:relative;transition:all 0.15s;user-select:none;line-height:1;}
+.svc-mini:hover{transform:scale(1.08);}
+.svc-mini.on{border-color:#0F6E56;background:#E1F5EE;}
+.svc-mini.on::after{content:"✓";position:absolute;top:-5px;right:-5px;width:14px;height:14px;background:#0F6E56;color:#fff;border-radius:50%;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;border:1.5px solid #fff;line-height:1;}
+.svc-mini.off{opacity:0.35;filter:grayscale(0.7);}
+.svc-mini.off:hover{opacity:0.7;filter:grayscale(0);}
+.svc-mini.locked{cursor:not-allowed;opacity:1;}
+.svc-mini.locked:hover{transform:none;}
+.svc-mini.locked::before{content:"🔒";position:absolute;top:-5px;left:-5px;font-size:9px;background:#c8960a;width:13px;height:13px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:1px solid #fff;line-height:1;}
+
 /* GASTOS */
 .gastos-grid{display:grid;grid-template-columns:300px 1fr;gap:16px;}
 .stat-gastos{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px;}
@@ -1027,6 +1039,25 @@ const TODAY=new Date(); TODAY.setHours(0,0,0,0);
 let currentUser=null;
 let editingActKey=null, editingActDate=null, editingActOld=null;
 let editingUserId=null;
+
+// ── CATÁLOGO DE SERVICIOS MAAH ───────────────────────────────
+// Para agregar un servicio nuevo en el futuro, solo añade un objeto a este array.
+// El admin verá el icono automáticamente al lado de cada usuario.
+const SERVICIOS_MAAH = [
+  { key: 'gantt',  icon: '📅', nombre: 'Gantt',   desc: 'Cronograma' },
+  { key: 'agenda', icon: '📒', nombre: 'Agenda',  desc: 'Calendario' },
+  { key: 'gastos', icon: '💰', nombre: 'Gastos',  desc: 'Finanzas'   },
+  { key: 'tareas', icon: '✅', nombre: 'Tareas',  desc: 'To-do list' }
+];
+// El admin SIEMPRE tiene acceso a todos los servicios (no se puede desactivar)
+function getPermisosUsuario(u){
+  if(u.rol === 'admin'){
+    const all = {};
+    SERVICIOS_MAAH.forEach(s => all[s.key] = true);
+    return all;
+  }
+  return u.permisos || {};
+}
 
 const MSHORT=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
 const DNAMES=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
@@ -2375,7 +2406,10 @@ function crearUsuario(){
   if(pass.length<4){showAdminMsg('La contraseña debe tener al menos 4 caracteres.','#c62828');return;}
   db.ref('maah_usuarios').orderByChild('nombre').equalTo(nombre).once('value',snap=>{
     if(snap.exists()){showAdminMsg('Ya existe un usuario con ese nombre.','#c62828');return;}
-    const userData={nombre,pass,rol,tgid:tgid||'',bloqueado:false};
+    // Por defecto, los usuarios nuevos tienen acceso solo a Gantt.
+    // El admin puede activar más servicios después con clic en los iconos.
+    const permisosIniciales = { gantt: true };
+    const userData={nombre,pass,rol,tgid:tgid||'',bloqueado:false,permisos:permisosIniciales};
     db.ref('maah_usuarios').push(userData).then(()=>{
       showAdminMsg('✓ Usuario '+nombre+' creado. Revisa la lista a la derecha →','#2e7d32');
       document.getElementById('nu-nombre').value='';
@@ -2412,7 +2446,8 @@ function loadUserList(){
           pass:data.pass||'',
           rol:data.rol||'usuario',
           tgid:data.tgid||'',
-          bloqueado:!!data.bloqueado
+          bloqueado:!!data.bloqueado,
+          permisos:data.permisos||{}
         });
       });
     }
@@ -2429,7 +2464,19 @@ function loadUserList(){
     });
     const activos=users.filter(u=>!u.bloqueado).length;
     const bloqueados=users.filter(u=>u.bloqueado).length;
+    // Total de accesos activos = suma de servicios activos en cada usuario no bloqueado
+    let accesosActivos = 0;
+    users.forEach(u => {
+      if(u.bloqueado) return;
+      const p = getPermisosUsuario(u);
+      SERVICIOS_MAAH.forEach(s => { if(p[s.key]) accesosActivos++; });
+    });
+
     list.innerHTML=`
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:11px;color:#5F5E5A;">
+        <span>${users.length} usuario${users.length!==1?'s':''} registrado${users.length!==1?'s':''}</span>
+        <span><b style="color:#0F6E56;">${accesosActivos}</b> accesos activos</span>
+      </div>
       <div style="display:flex;gap:8px;margin-bottom:12px;font-size:11px;">
         <div style="flex:1;background:#f0fff4;border:1px solid #9ae6b4;padding:6px 10px;border-radius:5px;text-align:center;"><b style="color:#2f855a;">${activos}</b> <span style="color:#276749;">activos</span></div>
         <div style="flex:1;background:#ffebee;border:1px solid #ffcdd2;padding:6px 10px;border-radius:5px;text-align:center;"><b style="color:#c62828;">${bloqueados}</b> <span style="color:#c62828;">bloqueados</span></div>
@@ -2438,6 +2485,21 @@ function loadUserList(){
       const bloqueado=!!u.bloqueado;
       const isAdmin=u.rol==='admin';
       const isSelf=currentUser && u.id===currentUser.id;
+      const permisos=getPermisosUsuario(u);
+      // Construir los iconitos de servicios
+      const svcIcons = SERVICIOS_MAAH.map(s => {
+        const activo = !!permisos[s.key];
+        const lockAdmin = isAdmin; // No se puede desactivar al admin
+        const cls = 'svc-mini' + (activo ? ' on' : ' off') + (lockAdmin ? ' locked' : '');
+        const handler = lockAdmin
+          ? ''
+          : `onclick="toggleServicioUsuario('${u.id}','${s.key}',${activo})"`;
+        const title = lockAdmin
+          ? `${s.nombre} (admin: siempre activo)`
+          : `${s.nombre}: ${activo ? 'activado — clic para desactivar' : 'desactivado — clic para activar'}`;
+        return `<div class="${cls}" ${handler} title="${title}">${s.icon}</div>`;
+      }).join('');
+
       return `
       <div class="user-list-item" style="${bloqueado?'opacity:.55;background:#ffebee;':''}">
         <div class="user-avatar ${isAdmin?'adm':''}">${u.nombre.slice(0,2)}</div>
@@ -2445,6 +2507,7 @@ function loadUserList(){
           <div class="uname">${u.nombre}${isSelf?' <span style="color:#1a3f6f;font-size:10px;">(tú)</span>':''} ${bloqueado?'<span style="background:#c62828;color:#fff;font-size:9px;padding:1px 6px;border-radius:8px;font-weight:700;margin-left:4px;">BLOQUEADO</span>':'<span style="background:#2f855a;color:#fff;font-size:9px;padding:1px 6px;border-radius:8px;font-weight:700;margin-left:4px;">ACTIVO</span>'}</div>
           <div class="urole">${isAdmin?'Administrador':'Usuario'}${u.tgid?' · TG:'+u.tgid:' · Sin Telegram'}</div>
         </div>
+        <div class="svc-mini-row">${svcIcons}</div>
         <div class="user-actions">
           ${(!isAdmin && !isSelf)?`<button class="ubtn" style="${bloqueado?'background:#2f855a;color:#fff;border-color:#2f855a;':'background:#c62828;color:#fff;border-color:#c62828;'}" onclick="toggleBloqueoUser('${u.id}','${u.nombre.replace(/'/g,"\\'")}',${bloqueado})" title="${bloqueado?'Desbloquear':'Bloquear'}">${bloqueado?'✓ Activar':'🚫 Bloquear'}</button>`:''}
           <button class="ubtn" onclick="openEditUser('${u.id}','${u.nombre.replace(/'/g,"\\'")}','${u.rol}','${(u.tgid||'').replace(/'/g,"\\'")}')" title="Editar">&#9998;</button>
@@ -2456,6 +2519,21 @@ function loadUserList(){
     list.innerHTML=`<div style="text-align:center;padding:20px;color:#c62828;font-size:12px;background:#ffebee;border-radius:6px;">Error al cargar usuarios: ${err.message}</div>`;
   });
 }
+// Activar/desactivar el acceso a un servicio para un usuario
+function toggleServicioUsuario(userId, serviceKey, estaActivo){
+  const nuevoEstado = !estaActivo;
+  // Guardar en Firebase: maah_usuarios/{userId}/permisos/{serviceKey} = bool
+  db.ref('maah_usuarios/'+userId+'/permisos/'+serviceKey).set(nuevoEstado, err=>{
+    if(err){
+      console.error('[MAAH] Error al actualizar permiso:', err);
+      alert('Error al guardar: '+err.message);
+    } else {
+      console.log('[MAAH] Permiso actualizado:', userId, serviceKey, nuevoEstado);
+    }
+    // El listener on('value') refresca la lista automáticamente
+  });
+}
+
 function toggleBloqueoUser(id,nombre,estaBloqueado){
   const accion=estaBloqueado?'desbloquear':'bloquear';
   const msg=estaBloqueado
