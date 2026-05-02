@@ -125,8 +125,7 @@ body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100
 /* TIMELINE */
 .tl-header{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
 .tl-num-wrap{position:relative;flex-shrink:0;}
-.tl-num{font-size:36px;font-weight:800;color:#1a3f6f;line-height:1;cursor:pointer;user-select:none;min-width:48px;display:block;}
-.tl-num:hover{color:#15325a;}
+.tl-num{font-size:42px;font-weight:200;color:#1a3f6f;line-height:1;user-select:none;min-width:50px;text-align:center;flex-shrink:0;}
 .tl-dropdown{display:none;position:absolute;top:100%;left:0;background:#fff;border:1px solid #dde3ed;border-radius:8px;z-index:100;min-width:160px;box-shadow:0 4px 16px rgba(0,0,0,.12);}
 .tl-dropdown.open{display:block;}
 .tl-dd-item{padding:10px 14px;font-size:13px;color:#2d3748;cursor:pointer;border-bottom:0.5px solid #eef2f7;font-family:'Times New Roman',Times,serif;}
@@ -180,11 +179,92 @@ body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100
 .tl-btn{font-size:9px;padding:2px 7px;border-radius:4px;border:0.5px solid #dde3ed;cursor:pointer;background:#fff;color:#4a5568;}
 .tl-btn:hover{background:#eef3fa;color:#1a3f6f;}
 .tl-btn.del:hover{background:#fff0f0;color:#c62828;}
-.empty-tl{text-align:center;padding:30px;color:#a0aec0;font-size:12px;}
+.empty-tl{text-align:center;padding:18px;color:#94a3b8;font-size:11px;font-style:italic;background:#fafbfc;border-radius:8px;border:1px dashed #e2e8f0;}
+
+/* === AGENDA OVERVIEW (mini calendario + estadísticas) === */
+#agenda-overview{margin:10px 0 14px;display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:start;}
+#agenda-overview > .ov-empty-msg{grid-column:1/-1;}
+.ov-stats{background:linear-gradient(135deg,#f7fafc 0%,#eef4fb 100%);border-radius:8px;padding:10px 12px;border:0.5px solid #dde3ed;}
+.ov-stats-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:11px;}
+.ov-stats-row + .ov-stats-row{border-top:0.5px dashed #cbd5e0;}
+.ov-stats-label{color:#5F5E5A;}
+.ov-stats-value{font-weight:700;color:#1a3f6f;font-size:12px;}
+.ov-stats-value.green{color:#0F6E56;}
+.ov-stats-value.amber{color:#854F0B;}
+
+.ov-cal{background:#f7fafc;border-radius:8px;padding:10px 11px;border:0.5px solid #dde3ed;}
+.ov-cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;padding:0 2px;}
+.cal-arrow-btn{width:24px;height:24px;border-radius:5px;background:#fff;border:0.5px solid #cbd5e0;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;color:#1a3f6f;font-weight:700;line-height:1;padding:0;font-family:inherit;}
+.cal-arrow-btn:hover{background:#eef4fb;border-color:#1a3f6f;}
+.ov-cal-title{font-size:11px;font-weight:700;color:#1a3f6f;letter-spacing:0.4px;text-transform:uppercase;}
+.ov-cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;}
+.ov-cal-cell{height:28px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;border-radius:4px;color:#5F5E5A;}
+.ov-cal-cell.dow{color:#94a3b8;font-size:9px;height:18px;font-weight:700;}
+.ov-cal-cell.day{color:#2d3748;cursor:pointer;transition:all 0.1s;position:relative;}
+.ov-cal-cell.day:hover{background:#dbe7f5;}
+.ov-cal-cell.today{background:#1a3f6f !important;color:#fff !important;}
+.ov-cal-cell.has-act{background:#E1F5EE;color:#0F6E56;font-weight:700;position:relative;}
+.ov-cal-cell.has-act.today{background:#0F6E56 !important;color:#fff !important;}
+.ov-cal-cell.has-act::after{content:"";position:absolute;bottom:1px;left:50%;transform:translateX(-50%);width:3px;height:3px;background:#0F6E56;border-radius:50%;}
+.ov-cal-cell.today.has-act::after{background:#fff;}
+.ov-cal-cell.feriado{color:#c62828 !important;font-weight:700;cursor:help;}
+.ov-cal-cell.feriado:hover{background:#fef2f2;}
+.ov-cal-cell.feriado::before{content:"";position:absolute;top:1px;right:2px;width:4px;height:4px;background:#c62828;border-radius:50%;}
+.ov-cal-cell.feriado.today{background:#c62828 !important;color:#fff !important;}
+.ov-cal-cell.feriado.today::before{background:#fff;}
+.ov-cal-cell.other{color:#cbd5e0;}
+
+.ov-empty-msg{text-align:center;padding:10px 12px;background:linear-gradient(135deg,#fef3c7 0%,#fde8b3 100%);border-radius:8px;color:#78350f;font-size:11px;line-height:1.5;border:0.5px solid #f5c98a;}
+.ov-empty-msg strong{color:#5a3c00;font-size:11px;display:inline;margin-left:4px;}
+.ov-empty-icon{font-size:14px;line-height:1;}
+
+/* En pantallas más estrechas, apilar */
+@media (max-width: 900px){
+  #agenda-overview{grid-template-columns:1fr;}
+  .ov-cal{max-width:none;}
+}
 
 /* EXPORTAR */
 .export-wrap{position:relative;}
 .export-btn{display:flex;align-items:center;gap:5px;background:#1a3f6f;color:#fff;border:none;border-radius:7px;padding:6px 12px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Times New Roman',Times,serif;white-space:nowrap;}
+
+/* BOTÓN RESUMEN */
+.resumen-wrap{position:relative;}
+.resumen-btn{display:flex;align-items:center;gap:5px;background:#0F6E56;color:#fff;border:none;border-radius:7px;padding:6px 12px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Times New Roman',Times,serif;white-space:nowrap;}
+.resumen-btn:hover{background:#0a5642;}
+.resumen-popup{display:none;position:absolute;right:0;top:calc(100% + 6px);background:#fff;border:1px solid #dde3ed;border-radius:10px;min-width:230px;box-shadow:0 8px 24px rgba(0,0,0,.14);z-index:200;overflow:hidden;padding:4px;font-family:'Times New Roman',Times,serif;}
+.resumen-popup.open{display:block;}
+.resumen-item{display:flex;align-items:center;gap:10px;padding:8px 10px;cursor:pointer;border-radius:6px;}
+.resumen-item:hover{background:#eef4fb;}
+.resumen-icon{width:28px;height:28px;border-radius:6px;background:#e6f1fb;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.resumen-text{flex:1;}
+.resumen-title{font-size:11px;font-weight:700;color:#1a3f6f;line-height:1.2;}
+.resumen-sub{font-size:9px;color:#5F5E5A;margin-top:1px;}
+
+/* MODAL RESUMEN (vista expandida) */
+.resumen-modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:99990;align-items:center;justify-content:center;padding:20px;}
+.resumen-modal-overlay.open{display:flex;}
+.resumen-modal{background:#fff;border-radius:14px;max-width:720px;width:100%;max-height:88vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.3);font-family:'Segoe UI',Arial,sans-serif;}
+.resumen-modal-head{background:#1a3f6f;color:#fff;padding:14px 18px;border-radius:14px 14px 0 0;display:flex;align-items:center;justify-content:space-between;}
+.resumen-modal-title{font-size:14px;font-weight:700;}
+.resumen-modal-close{background:none;border:none;color:#fff;font-size:18px;cursor:pointer;padding:2px 8px;border-radius:5px;}
+.resumen-modal-close:hover{background:rgba(255,255,255,0.1);}
+.resumen-modal-body{padding:16px 20px;}
+.rm-section{margin-bottom:14px;}
+.rm-section-title{font-size:11px;font-weight:700;color:#1a3f6f;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid #e2e8f0;}
+.rm-day-block{margin-bottom:10px;}
+.rm-day-header{font-size:12px;font-weight:700;color:#1a3f6f;background:#f7fafc;padding:6px 10px;border-radius:6px 6px 0 0;border:1px solid #e2e8f0;border-bottom:none;}
+.rm-day-act{display:flex;gap:10px;padding:6px 10px;border:1px solid #e2e8f0;border-top:none;font-size:11px;}
+.rm-day-act:last-child{border-radius:0 0 6px 6px;}
+.rm-act-time{font-weight:700;color:#0F6E56;flex-shrink:0;width:50px;}
+.rm-act-text{flex:1;color:#2d3748;}
+.rm-act-obs{font-size:10px;color:#718096;margin-top:2px;}
+.rm-empty{text-align:center;padding:30px 20px;color:#94a3b8;font-size:12px;font-style:italic;}
+.rm-stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-bottom:14px;}
+.rm-stat-card{background:linear-gradient(135deg,#f7fafc 0%,#eef4fb 100%);border:1px solid #dde3ed;border-radius:8px;padding:10px 12px;text-align:center;}
+.rm-stat-num{font-size:22px;font-weight:200;color:#1a3f6f;line-height:1;}
+.rm-stat-lbl{font-size:10px;color:#5F5E5A;margin-top:3px;}
+
 .export-btn:hover{background:#15325a;}
 .export-arrow{font-size:9px;transition:transform .2s;}
 .export-btn.open .export-arrow{transform:rotate(180deg);}
@@ -575,24 +655,37 @@ body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100
       <div class="timeline-card">
         <div class="card-title">ACTIVIDADES DE LA AGENDA</div>
         <div class="tl-header">
-          <div class="tl-num-wrap">
-            <div class="tl-num" id="tl-num" onclick="toggleTLDropdown()">--
-              <div class="tl-dropdown" id="tl-dropdown">
-                <div class="tl-dd-item active" onclick="setTLMode('dia',event)">📅 Ver por Día</div>
-                <div class="tl-dd-item" onclick="setTLMode('semana',event)">📆 Ver por Semana</div>
-                <div class="tl-dd-item" onclick="setTLMode('mes',event)">🗓 Ver por Mes</div>
-              </div>
-            </div>
-          </div>
+          <div class="tl-num" id="tl-num">--</div>
           <div class="tl-info">
             <div class="tl-nombre" id="tl-nombre">Seleccione una fecha</div>
             <div class="tl-sub" id="tl-sub">y guarde para ver la agenda</div>
           </div>
-          <div style="display:flex;align-items:center;gap:6px;">
-            <div class="tl-nav-wrap">
-              <div class="tl-nav-arr" onclick="tlNavPrev()">&#8592;</div>
-              <span class="tl-mode-badge" id="tl-mode-badge">Día</span>
-              <div class="tl-nav-arr" onclick="tlNavNext()">&#8594;</div>
+          <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+            <div class="resumen-wrap">
+              <button class="resumen-btn" id="resumen-btn" onclick="toggleResumenMenu()">📊 Resumen <span style="font-size:9px;">▾</span></button>
+              <div class="resumen-popup" id="resumen-popup">
+                <div class="resumen-item" onclick="abrirResumenModal('dia')">
+                  <div class="resumen-icon">📅</div>
+                  <div class="resumen-text">
+                    <div class="resumen-title">Resumen del día</div>
+                    <div class="resumen-sub">Actividades de hoy</div>
+                  </div>
+                </div>
+                <div class="resumen-item" onclick="abrirResumenModal('semana')">
+                  <div class="resumen-icon">📆</div>
+                  <div class="resumen-text">
+                    <div class="resumen-title">Resumen semanal</div>
+                    <div class="resumen-sub">Lunes a domingo</div>
+                  </div>
+                </div>
+                <div class="resumen-item" onclick="abrirResumenModal('mes')">
+                  <div class="resumen-icon">🗓</div>
+                  <div class="resumen-text">
+                    <div class="resumen-title">Resumen mensual</div>
+                    <div class="resumen-sub">Todo el mes completo</div>
+                  </div>
+                </div>
+              </div>
             </div>
             <div class="export-wrap">
               <button class="export-btn" id="export-btn" onclick="toggleExportMenu()">&#8681; Exportar <span class="export-arrow">▼</span></button>
@@ -606,24 +699,27 @@ body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100
                   <div class="exp-text"><div class="exp-title">Imprimir</div><div class="exp-sub">Abre el diálogo de impresión</div></div>
                 </div>
                 <div class="exp-divider"></div>
-                <div class="exp-item" onclick="exportarExcel()">
-                  <div class="exp-icon" style="background:#e8f5e9;">📊</div>
-                  <div class="exp-text"><div class="exp-title">Descargar Excel</div><div class="exp-sub">Exporta las actividades en .xlsx</div></div>
+                <div class="exp-item" onclick="exportarWhatsApp()">
+                  <div class="exp-icon" style="background:#e8f5e9;">💬</div>
+                  <div class="exp-text"><div class="exp-title">Enviar por WhatsApp</div><div class="exp-sub">Abre WhatsApp con el mensaje listo</div></div>
                 </div>
-                <div class="exp-divider"></div>
                 <div class="exp-item" onclick="exportarEmail()">
                   <div class="exp-icon" style="background:#e3f2fd;">✉️</div>
                   <div class="exp-text"><div class="exp-title">Enviar por Email</div><div class="exp-sub">Abre tu correo con el resumen</div></div>
                 </div>
-                <div class="exp-item" onclick="exportarWhatsApp()">
-                  <div class="exp-icon" style="background:#e8f5e9;">💬</div>
-                  <div class="exp-text"><div class="exp-title">Enviar por WhatsApp</div><div class="exp-sub">Abre WhatsApp con el mensaje listo</div></div>
+                <div class="exp-item" onclick="exportarTelegram()">
+                  <div class="exp-icon" style="background:#e1f5fe;">📲</div>
+                  <div class="exp-text"><div class="exp-title">Enviar por Telegram</div><div class="exp-sub">Abre Telegram con el mensaje</div></div>
+                </div>
+                <div class="exp-item" onclick="exportarCopiar()">
+                  <div class="exp-icon" style="background:#fff8e1;">📋</div>
+                  <div class="exp-text"><div class="exp-title">Copiar al portapapeles</div><div class="exp-sub">Copia el texto del resumen</div></div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <div id="nav-days-week"></div>
+        <div id="agenda-overview"></div>
         <div class="timeline" id="timeline-view">
           <div class="empty-tl">No hay actividades para este día.</div>
         </div>
@@ -1461,15 +1557,188 @@ function tlNavNext(){
 }
 
 function renderTL(){
-  document.getElementById('tl-mode-badge').textContent=tlMode==='dia'?'Día':tlMode==='semana'?'Semana':'Mes';
+  // tl-mode-badge ya no existe (se quitó del header), no actualizar su texto
   if(tlMode==='dia') renderTLDia();
   else if(tlMode==='semana') renderTLSemana();
   else renderTLMes();
 }
 
+// ── FERIADOS DE CHILE (calendario completo) ─────────────────
+// Feriados nacionales de Chile. Algunos son fijos, otros móviles.
+// El admin puede tunear esto en el futuro si quiere.
+function getFeriadosChile(year){
+  // Fijos
+  const fer = {
+    [`${year}-01-01`]: 'Año Nuevo',
+    [`${year}-05-01`]: 'Día del Trabajo',
+    [`${year}-05-21`]: 'Día de las Glorias Navales',
+    [`${year}-06-21`]: 'Día Nacional de los Pueblos Indígenas',
+    [`${year}-06-29`]: 'San Pedro y San Pablo',
+    [`${year}-07-16`]: 'Virgen del Carmen',
+    [`${year}-08-15`]: 'Asunción de la Virgen',
+    [`${year}-09-18`]: 'Independencia Nacional',
+    [`${year}-09-19`]: 'Día de las Glorias del Ejército',
+    [`${year}-10-12`]: 'Encuentro de Dos Mundos',
+    [`${year}-10-31`]: 'Día de las Iglesias Evangélicas',
+    [`${year}-11-01`]: 'Día de Todos los Santos',
+    [`${year}-12-08`]: 'Inmaculada Concepción',
+    [`${year}-12-25`]: 'Navidad',
+  };
+  // Móviles aproximados (Pascua y derivados). Tabla manual por año:
+  const movibles = {
+    2024: { jueSanto:'2024-03-28', vieSanto:'2024-03-29' },
+    2025: { jueSanto:'2025-04-17', vieSanto:'2025-04-18' },
+    2026: { jueSanto:'2026-04-02', vieSanto:'2026-04-03' },
+    2027: { jueSanto:'2027-03-25', vieSanto:'2027-03-26' },
+    2028: { jueSanto:'2028-04-13', vieSanto:'2028-04-14' },
+  };
+  if(movibles[year]){
+    fer[movibles[year].jueSanto] = 'Jueves Santo';
+    fer[movibles[year].vieSanto] = 'Viernes Santo';
+  }
+  return fer;
+}
+
+// Estado del calendario: qué mes está mostrando (puede ser distinto al día seleccionado)
+let calendarMonthOffset = 0; // 0 = mes del día seleccionado, -1 = anterior, +1 = siguiente
+
+function calNavMes(delta){
+  calendarMonthOffset += delta;
+  // Re-pintar el overview manteniendo el día seleccionado
+  // Necesitamos recalcular el conteo de actividades del día actual
+  const fecha = fmtDateKey(tlCurrent);
+  db.ref(`maah_agenda/${currentUser.id}/${fecha}`).once('value').then(snap=>{
+    const data = snap.val();
+    const acts = data ? Object.values(data) : [];
+    renderAgendaOverview(tlCurrent, acts.length);
+  });
+}
+
+// ── AGENDA OVERVIEW: mini-calendario + estadísticas ──
+// Pinta encima del timeline cuando estamos en modo "Día".
+// Lee Firebase para saber qué días tienen actividades en el mes mostrado.
+function renderAgendaOverview(refDate, currentDayActsCount){
+  const ov = document.getElementById('agenda-overview');
+  if(!ov || !currentUser) return;
+  ov.innerHTML = '';
+
+  // Solo mostrarlo en modo Día (en semana/mes la propia vista ya cubre el periodo)
+  if(tlMode !== 'dia') return;
+
+  // Calcular el mes a mostrar según el offset (puede ser distinto al día seleccionado)
+  const baseDate = new Date(refDate);
+  baseDate.setDate(1);
+  baseDate.setMonth(baseDate.getMonth() + calendarMonthOffset);
+  const year = baseDate.getFullYear();
+  const month = baseDate.getMonth();
+
+  // Feriados de este año
+  const feriados = getFeriadosChile(year);
+
+  // Pedir TODAS las fechas con actividad de ese mes
+  const prefix = year+'-'+String(month+1).padStart(2,'0');
+  db.ref('maah_agenda/'+currentUser.id).once('value').then(snap=>{
+    const data = snap.val() || {};
+    const fechasConAct = new Set();
+    let totalMes = 0, totalSemana = 0;
+
+    // Determinar lunes y domingo de la semana del día SELECCIONADO (no del mes mostrado)
+    const monRef = tlGetMonday(refDate);
+    const sunRef = new Date(monRef); sunRef.setDate(monRef.getDate()+6);
+    const monKey = fmtDateKey(monRef);
+    const sunKey = fmtDateKey(sunRef);
+    // Para "hoy" usamos el día seleccionado real
+    const refMonthPrefix = refDate.getFullYear()+'-'+String(refDate.getMonth()+1).padStart(2,'0');
+
+    Object.keys(data).forEach(k=>{
+      const acts = data[k];
+      if(!acts) return;
+      const cant = Object.keys(acts).length;
+      if(cant === 0) return;
+      // Mes que se está mostrando en el calendario
+      if(k.startsWith(prefix)){
+        fechasConAct.add(k);
+      }
+      // Total mes del día seleccionado
+      if(k.startsWith(refMonthPrefix)){
+        totalMes += cant;
+      }
+      // Semana actual del día seleccionado
+      if(k >= monKey && k <= sunKey){
+        totalSemana += cant;
+      }
+    });
+
+    // ── Construir HTML ──
+    let html = '';
+
+    // Si no hay actividades para este día, mostrar mensaje cálido
+    if(currentDayActsCount === 0){
+      const fechaLabel = fmtDateLabel(refDate);
+      html += `
+        <div class="ov-empty-msg">
+          <span class="ov-empty-icon">☀️</span>
+          <strong>Sin actividades el ${fechaLabel}</strong><br>
+          <span style="font-size:10px;opacity:0.85;">Agrega actividades desde la izquierda o selecciona otro día en el calendario.</span>
+        </div>`;
+    }
+
+    // Mini-calendario del mes con flechas
+    html += '<div class="ov-cal">';
+    html += '<div class="ov-cal-head">';
+    html += '<button type="button" class="cal-arrow-btn" onclick="calNavMes(-1)" title="Mes anterior">‹</button>';
+    html += '<div class="ov-cal-title">'+MESES_LARGO[month]+' '+year+'</div>';
+    html += '<button type="button" class="cal-arrow-btn" onclick="calNavMes(1)" title="Mes siguiente">›</button>';
+    html += '</div>';
+    html += '<div class="ov-cal-grid">';
+    ['L','M','M','J','V','S','D'].forEach(d=>{
+      html += '<div class="ov-cal-cell dow">'+d+'</div>';
+    });
+    const firstDay = new Date(year, month, 1);
+    const offset = (firstDay.getDay()+6)%7; // Lun=0
+    const daysInMonth = new Date(year, month+1, 0).getDate();
+    for(let i=0; i<offset; i++) html += '<div class="ov-cal-cell other"></div>';
+    const todayKey = fmtDateKey(TODAY);
+    const refKey = fmtDateKey(refDate);
+    for(let d=1; d<=daysInMonth; d++){
+      const dKey = year+'-'+String(month+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+      const isToday = dKey === todayKey;
+      const isRef   = dKey === refKey;
+      const hasAct  = fechasConAct.has(dKey);
+      const ferNombre = feriados[dKey];
+      const isFeriado = !!ferNombre;
+      let cls = 'ov-cal-cell day';
+      if(hasAct) cls += ' has-act';
+      if(isFeriado) cls += ' feriado';
+      if(isRef || isToday) cls += ' today';
+      let titleAttr = '';
+      if(isFeriado) titleAttr = ferNombre + (hasAct ? ' · Con actividades' : '');
+      else if(hasAct) titleAttr = 'Día con actividades';
+      html += `<div class="${cls}" onclick="selectDay('${dKey}')" title="${titleAttr.replace(/"/g,'&quot;')}">${d}</div>`;
+    }
+    html += '</div></div>';
+
+    // Estadísticas
+    const diasMes = new Set();
+    Object.keys(data).forEach(k=>{ if(k.startsWith(refMonthPrefix) && data[k] && Object.keys(data[k]).length>0) diasMes.add(k); });
+    const refMonthName = MESES_LARGO[refDate.getMonth()];
+    html += '<div class="ov-stats">';
+    html += '<div class="ov-stats-row"><span class="ov-stats-label">Hoy</span><span class="ov-stats-value '+(currentDayActsCount>0?'green':'')+'">'+currentDayActsCount+' actividad'+(currentDayActsCount!==1?'es':'')+'</span></div>';
+    html += '<div class="ov-stats-row"><span class="ov-stats-label">Esta semana</span><span class="ov-stats-value">'+totalSemana+' actividad'+(totalSemana!==1?'es':'')+'</span></div>';
+    html += '<div class="ov-stats-row"><span class="ov-stats-label">Días con actividad este mes</span><span class="ov-stats-value amber">'+diasMes.size+' día'+(diasMes.size!==1?'s':'')+'</span></div>';
+    html += '<div class="ov-stats-row"><span class="ov-stats-label">Total '+refMonthName+'</span><span class="ov-stats-value">'+totalMes+' actividad'+(totalMes!==1?'es':'')+'</span></div>';
+    html += '</div>';
+
+    ov.innerHTML = html;
+  }).catch(err=>{
+    console.warn('[MAAH] Error cargando overview:', err);
+    ov.innerHTML = '';
+  });
+}
+
 function renderTLDia(){
   const fecha=fmtDateKey(tlCurrent);
-  document.getElementById('tl-num').childNodes[0].nodeValue=tlCurrent.getDate();
+  document.getElementById('tl-num').textContent=tlCurrent.getDate();
   document.getElementById('tl-nombre').textContent=DNAMES[tlCurrent.getDay()]+' — Semana '+getWeekNum(tlCurrent);
   document.getElementById('tl-sub').textContent=fmtDateLabel(tlCurrent);
 
@@ -1493,13 +1762,17 @@ function renderTLDia(){
     acts.sort((a,b)=>a.hora.localeCompare(b.hora));
     document.getElementById('tl-sub').textContent=fmtDateLabel(tlCurrent)+' · '+acts.length+' actividad'+(acts.length!==1?'es':'');
     renderTimeline(fecha,acts,false);
+    // Pintar overview (mini calendario + stats) cada vez que se carga el día
+    renderAgendaOverview(tlCurrent, acts.length);
   });
 }
 
 function renderTLSemana(){
+  // Limpiar overview del modo Día (no aplica en vista semana)
+  const ov = document.getElementById('agenda-overview'); if(ov) ov.innerHTML = '';
   const mon=tlGetMonday(tlCurrent);
   const sun=new Date(mon); sun.setDate(mon.getDate()+6);
-  document.getElementById('tl-num').childNodes[0].nodeValue=mon.getDate();
+  document.getElementById('tl-num').textContent=mon.getDate();
   document.getElementById('tl-nombre').textContent='Semana '+getWeekNum(tlCurrent)+' — '+MESES_LARGO[tlCurrent.getMonth()];
   document.getElementById('tl-sub').textContent=mon.getDate()+' al '+sun.getDate()+' de '+MESES_LARGO[mon.getMonth()];
 
@@ -1522,8 +1795,10 @@ function renderTLSemana(){
 }
 
 function renderTLMes(){
+  // Limpiar overview del modo Día (no aplica en vista mes)
+  const ov = document.getElementById('agenda-overview'); if(ov) ov.innerHTML = '';
   const y=tlCurrent.getFullYear(), m=tlCurrent.getMonth();
-  document.getElementById('tl-num').childNodes[0].nodeValue=MESES_LARGO[m].slice(0,3).toUpperCase();
+  document.getElementById('tl-num').textContent=MESES_LARGO[m].slice(0,3).toUpperCase();
   document.getElementById('tl-nombre').textContent=MESES_LARGO[m]+' '+y;
   document.getElementById('tl-sub').textContent='Vista mensual';
 
@@ -1615,8 +1890,8 @@ function selectDay(fecha){
   document.getElementById('agenda-fecha').value=fecha;
   tlCurrent=new Date(fecha+'T12:00:00');
   tlMode='dia';
-  document.querySelectorAll('.tl-dd-item').forEach((el,i)=>el.classList.toggle('active',i===0));
-  document.getElementById('tl-mode-badge').textContent='Día';
+  // Resetear el offset del calendario para que vuelva al mes del día seleccionado
+  calendarMonthOffset = 0;
   renderTLDia();
   document.getElementById('acts-body').innerHTML='';
   addActRow();
@@ -1679,15 +1954,6 @@ function renderWeekNav(refDate){
   });
 }
 
-function selectDay(fecha){
-  document.getElementById('agenda-fecha').value=fecha;
-  const d=new Date(fecha+'T12:00:00');
-  renderWeekNav(d);
-  loadAgendaForDate(fecha);
-  document.getElementById('acts-body').innerHTML='';
-  addActRow();
-}
-
 // ── EXPORTAR ─────────────────────────────────────────────────
 function toggleExportMenu(){
   document.getElementById('export-btn').classList.toggle('open');
@@ -1698,7 +1964,131 @@ document.addEventListener('click',e=>{
     document.getElementById('export-btn')?.classList.remove('open');
     document.getElementById('export-menu')?.classList.remove('open');
   }
+  // Cerrar también el popup de Resumen
+  if(!e.target.closest('.resumen-wrap')){
+    document.getElementById('resumen-popup')?.classList.remove('open');
+  }
 });
+
+// ── BOTÓN RESUMEN ────────────────────────────────────────────
+function toggleResumenMenu(){
+  const p = document.getElementById('resumen-popup');
+  if(p) p.classList.toggle('open');
+}
+
+// Abre el modal con la vista expandida del periodo: 'dia' | 'semana' | 'mes'
+function abrirResumenModal(periodo){
+  // Cerrar el popup
+  document.getElementById('resumen-popup')?.classList.remove('open');
+
+  if(!currentUser) return;
+
+  // Calcular el rango de fechas según el periodo
+  const refDate = new Date(tlCurrent);
+  let ini, fin, tituloPeriodo;
+  if(periodo === 'dia'){
+    ini = new Date(refDate); ini.setHours(0,0,0,0);
+    fin = new Date(refDate); fin.setHours(23,59,59,999);
+    tituloPeriodo = 'Resumen del día — ' + fmtDateLabel(refDate);
+  } else if(periodo === 'semana'){
+    ini = tlGetMonday(refDate); ini.setHours(0,0,0,0);
+    fin = new Date(ini); fin.setDate(fin.getDate()+6); fin.setHours(23,59,59,999);
+    tituloPeriodo = 'Resumen semanal — ' + fmtDateLabel(ini) + ' al ' + fmtDateLabel(fin);
+  } else if(periodo === 'mes'){
+    ini = new Date(refDate.getFullYear(), refDate.getMonth(), 1, 0,0,0);
+    fin = new Date(refDate.getFullYear(), refDate.getMonth()+1, 0, 23,59,59);
+    tituloPeriodo = 'Resumen mensual — ' + MESES_LARGO[refDate.getMonth()] + ' ' + refDate.getFullYear();
+  }
+
+  // Crear el overlay si no existe
+  let ov = document.getElementById('resumen-modal-overlay');
+  if(!ov){
+    ov = document.createElement('div');
+    ov.id = 'resumen-modal-overlay';
+    ov.className = 'resumen-modal-overlay';
+    document.body.appendChild(ov);
+  }
+  ov.innerHTML = `
+    <div class="resumen-modal" onclick="event.stopPropagation()">
+      <div class="resumen-modal-head">
+        <div class="resumen-modal-title">${tituloPeriodo}</div>
+        <button class="resumen-modal-close" onclick="cerrarResumenModal()">×</button>
+      </div>
+      <div class="resumen-modal-body" id="resumen-modal-body">
+        <div class="rm-empty">Cargando actividades...</div>
+      </div>
+    </div>
+  `;
+  ov.classList.add('open');
+  ov.onclick = (ev)=>{ if(ev.target === ov) cerrarResumenModal(); };
+
+  // Cargar todos los días del rango y construir contenido
+  db.ref('maah_agenda/'+currentUser.id).once('value').then(snap=>{
+    const data = snap.val() || {};
+    const body = document.getElementById('resumen-modal-body');
+    if(!body) return;
+
+    // Recorrer día por día desde ini hasta fin
+    const dias = [];
+    let totalActs = 0;
+    let diasConActs = 0;
+    const cur = new Date(ini);
+    while(cur <= fin){
+      const k = fmtDateKey(cur);
+      const acts = data[k] ? Object.values(data[k]) : [];
+      acts.sort((a,b)=> (a.hora||'').localeCompare(b.hora||''));
+      if(acts.length > 0){
+        diasConActs++;
+        totalActs += acts.length;
+      }
+      dias.push({ fecha: new Date(cur), key: k, acts });
+      cur.setDate(cur.getDate()+1);
+    }
+
+    let html = '';
+    // Estadísticas
+    html += '<div class="rm-stats-grid">';
+    html += `<div class="rm-stat-card"><div class="rm-stat-num">${totalActs}</div><div class="rm-stat-lbl">Actividades</div></div>`;
+    html += `<div class="rm-stat-card"><div class="rm-stat-num">${diasConActs}</div><div class="rm-stat-lbl">Día${diasConActs!==1?'s':''} con actividad</div></div>`;
+    html += `<div class="rm-stat-card"><div class="rm-stat-num">${dias.length}</div><div class="rm-stat-lbl">Día${dias.length!==1?'s':''} totales</div></div>`;
+    html += '</div>';
+
+    if(totalActs === 0){
+      html += '<div class="rm-empty">☀️ No hay actividades registradas en este periodo.</div>';
+    } else {
+      html += '<div class="rm-section"><div class="rm-section-title">Actividades por día</div>';
+      dias.forEach(d=>{
+        if(d.acts.length === 0 && periodo !== 'dia') return; // saltar días vacíos en semana/mes
+        html += '<div class="rm-day-block">';
+        html += `<div class="rm-day-header">${fmtDateLabel(d.fecha)} · ${d.acts.length} actividad${d.acts.length!==1?'es':''}</div>`;
+        if(d.acts.length === 0){
+          html += '<div class="rm-day-act"><div class="rm-act-text" style="color:#a0aec0;font-style:italic;">Sin actividades</div></div>';
+        } else {
+          d.acts.forEach(a=>{
+            html += '<div class="rm-day-act">';
+            html += `<div class="rm-act-time">${a.hora||'--:--'}</div>`;
+            html += '<div class="rm-act-text">';
+            html += `${a.act||''}`;
+            if(a.obs) html += `<div class="rm-act-obs">${a.obs}</div>`;
+            html += '</div></div>';
+          });
+        }
+        html += '</div>';
+      });
+      html += '</div>';
+    }
+
+    body.innerHTML = html;
+  }).catch(err=>{
+    const body = document.getElementById('resumen-modal-body');
+    if(body) body.innerHTML = '<div class="rm-empty">Error al cargar actividades: ' + err.message + '</div>';
+  });
+}
+
+function cerrarResumenModal(){
+  const ov = document.getElementById('resumen-modal-overlay');
+  if(ov) ov.classList.remove('open');
+}
 
 function getActsParaExportar(){
   return new Promise(resolve=>{
@@ -1818,6 +2208,69 @@ function exportarWhatsApp(){
     if(w&&!w.closed)w.close();
     alert('Error al cargar la agenda: '+err.message);
   });
+}
+
+// Exportar a Telegram (abre app web con texto pre-rellenado)
+function exportarTelegram(){
+  toggleExportMenu();
+  const w=window.open('about:blank','_blank');
+  getActsParaExportar().then(({fecha,acts})=>{
+    const txt=buildTextoAgenda(fecha,acts);
+    // Telegram share via URL: usar la página de share
+    const url=`https://t.me/share/url?url=${encodeURIComponent('https://maah1996.github.io')}&text=${encodeURIComponent(txt)}`;
+    if(w&&!w.closed){w.location.href=url;}
+    else{
+      alert('Tu navegador bloqueó la apertura de Telegram. Por favor permite ventanas emergentes para este sitio.');
+    }
+  }).catch(err=>{
+    if(w&&!w.closed)w.close();
+    alert('Error al cargar la agenda: '+err.message);
+  });
+}
+
+// Copiar al portapapeles
+function exportarCopiar(){
+  toggleExportMenu();
+  getActsParaExportar().then(({fecha,acts})=>{
+    const txt=buildTextoAgenda(fecha,acts);
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(txt).then(()=>{
+        // Confirmación visual breve
+        mostrarToast('✓ Resumen copiado al portapapeles');
+      }).catch(()=>{
+        // Fallback para navegadores sin clipboard API
+        copiarFallback(txt);
+      });
+    } else {
+      copiarFallback(txt);
+    }
+  }).catch(err=>{
+    alert('Error al cargar la agenda: '+err.message);
+  });
+}
+function copiarFallback(txt){
+  // Crear textarea temporal y usar execCommand
+  const ta = document.createElement('textarea');
+  ta.value = txt;
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.select();
+  try { document.execCommand('copy'); mostrarToast('✓ Resumen copiado al portapapeles'); }
+  catch(e){ alert('No se pudo copiar. Texto:\n\n'+txt); }
+  document.body.removeChild(ta);
+}
+function mostrarToast(mensaje){
+  let toast = document.getElementById('maah-toast');
+  if(!toast){
+    toast = document.createElement('div');
+    toast.id = 'maah-toast';
+    toast.style.cssText = 'position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#0F6E56;color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;z-index:99999;box-shadow:0 4px 16px rgba(0,0,0,0.2);font-family:\'Segoe UI\',Arial,sans-serif;transition:opacity 0.3s;';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = mensaje;
+  toast.style.opacity = '1';
+  setTimeout(()=>{ toast.style.opacity = '0'; }, 2200);
 }
 
 // ── TELEGRAM ENVÍO ───────────────────────────────────────────
