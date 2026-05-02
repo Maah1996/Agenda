@@ -340,6 +340,46 @@ body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100
 /* GASTOS MÓDULO NUEVO (prefijo g-) */
 .gview{display:none;}
 .gview.active{display:block;}
+/* DASHBOARD GASTOS HOME */
+.dash-card{padding:10px 12px;border-radius:8px;border:0.5px solid #dde3ed;text-align:left;font-family:'Segoe UI',Arial,sans-serif;background:#fff;display:flex;align-items:center;gap:10px;}
+.dash-card .dash-icon{width:32px;height:32px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;background:#eef4fb;}
+.dash-card .dash-info{flex:1;min-width:0;}
+.dash-card .dash-num{font-size:15px;font-weight:700;color:#1a3f6f;line-height:1.1;letter-spacing:-0.2px;}
+.dash-card .dash-lbl{font-size:9px;color:#5F5E5A;font-weight:700;letter-spacing:0.3px;text-transform:uppercase;}
+.dash-card .dash-sub{font-size:9px;color:#718096;margin-top:1px;}
+.dash-card.dash-total .dash-icon{background:#fee2e2;color:#b91c1c;}
+.dash-card.dash-total .dash-num{color:#b91c1c;}
+.dash-card.dash-prom .dash-icon{background:#dbe7f5;color:#185fa5;}
+.dash-card.dash-prom .dash-num{color:#185fa5;}
+.dash-card.dash-caro .dash-icon{background:#fde68a;color:#92400e;}
+.dash-card.dash-caro .dash-num{color:#92400e;}
+.dash-card.dash-barato .dash-icon{background:#d1fae5;color:#15803d;}
+.dash-card.dash-barato .dash-num{color:#15803d;}
+@media (max-width: 700px){
+  #dash-cards{grid-template-columns:repeat(2,1fr) !important;}
+}
+
+/* Tarjetas de acciones (3 botones en grid horizontal) */
+#gastos-actions-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px;}
+.gcard-action{padding:14px;border-radius:10px;border:1px solid;background:#fff;cursor:pointer;transition:all 0.15s;font-family:'Segoe UI',Arial,sans-serif;text-align:left;display:flex;flex-direction:column;gap:8px;min-height:120px;}
+.gcard-action:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(26,63,111,0.08);}
+.gcard-action .ga-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff;}
+.gcard-action .ga-title{font-size:13px;font-weight:700;color:#1a3f6f;line-height:1.2;}
+.gcard-action .ga-desc{font-size:10px;color:#5F5E5A;line-height:1.4;}
+.gcard-action .ga-arrow{margin-top:auto;font-size:14px;color:#5F5E5A;align-self:flex-end;}
+.gcard-action.fijos{background:#eef4fb;border-color:#b5d4f4;}
+.gcard-action.fijos .ga-icon{background:#1a3f6f;}
+.gcard-action.fijos .ga-title{color:#0c447c;}
+.gcard-action.mes{background:#f0fdf4;border-color:#a7f3d0;}
+.gcard-action.mes .ga-icon{background:#0F6E56;}
+.gcard-action.mes .ga-title{color:#15803d;}
+.gcard-action.historial{background:#fffbeb;border-color:#fde68a;}
+.gcard-action.historial .ga-icon{background:#d97706;}
+.gcard-action.historial .ga-title{color:#92400e;}
+@media (max-width: 700px){
+  #gastos-actions-grid{grid-template-columns:1fr;}
+}
+
 .gbig-btn{width:100%;border-radius:10px;padding:16px;display:flex;align-items:center;gap:14px;cursor:pointer;margin-bottom:10px;border:1.5px solid;background:#fff;text-align:left;font-family:'Times New Roman',Times,serif;}
 .gbb-icon{width:44px;height:44px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:22px;color:#fff;flex-shrink:0;}
 .gbb-body{flex:1;}
@@ -742,37 +782,77 @@ body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100
   <!-- GASTOS (Nuevo módulo: Fijos + Mes + Historial) -->
   <div class="tab-content" id="tab-content-gastos">
 
-    <!-- VISTA: HOME (3 botones) -->
+    <!-- VISTA: HOME (Dashboard con resumen anual + 3 tarjetas) -->
     <div class="gview active" id="gview-home">
-      <div style="font-size:15px;font-weight:700;color:#1a3f6f;margin-bottom:4px;">Control de Gastos Personal</div>
-      <div style="font-size:12px;color:#718096;margin-bottom:14px;">Gestiona tus finanzas mes a mes de forma privada.</div>
-
-      <button class="gbig-btn azul" onclick="gShowView('fijos')">
-        <div class="gbb-icon">&#9881;</div>
-        <div class="gbb-body">
-          <div class="gbb-title">Gastos Fijos Permanentes</div>
-          <div class="gbb-desc">Administrar rubros que se repiten cada mes</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+        <div>
+          <div style="font-size:14px;font-weight:700;color:#1a3f6f;">Control de Gastos Personal</div>
+          <div style="font-size:11px;color:#718096;">Gestiona tus finanzas mes a mes</div>
         </div>
-        <div class="gbb-arrow">&rarr;</div>
-      </button>
-
-      <button class="gbig-btn verde" onclick="gStartNuevoMes()">
-        <div class="gbb-icon">&#43;</div>
-        <div class="gbb-body">
-          <div class="gbb-title">Ingresar Gastos del Mes</div>
-          <div class="gbb-desc">Registrar sueldo, bonos, fijos y gastos variables</div>
+        <div id="dash-year-wrap" style="display:flex;align-items:center;gap:6px;background:#fff;border:0.5px solid #dde3ed;border-radius:7px;padding:4px 8px;">
+          <button onclick="dashCambiarAno(-1)" style="background:#fff;border:0.5px solid #cbd5e0;border-radius:5px;width:24px;height:24px;cursor:pointer;color:#1a3f6f;font-weight:700;font-size:12px;line-height:1;">‹</button>
+          <span id="dash-year-title" style="font-size:13px;font-weight:700;color:#1a3f6f;min-width:64px;text-align:center;">Año 2026</span>
+          <button onclick="dashCambiarAno(1)" style="background:#fff;border:0.5px solid #cbd5e0;border-radius:5px;width:24px;height:24px;cursor:pointer;color:#1a3f6f;font-weight:700;font-size:12px;line-height:1;">›</button>
         </div>
-        <div class="gbb-arrow">&rarr;</div>
-      </button>
+      </div>
 
-      <button class="gbig-btn amarillo" onclick="gShowView('historial')">
-        <div class="gbb-icon">&#128197;</div>
-        <div class="gbb-body">
-          <div class="gbb-title">Ver Gastos por Mes</div>
-          <div class="gbb-desc">Consultar historial y descargar PDF</div>
+      <!-- 4 tarjetas dashboard (compactas, una al lado de otra) -->
+      <div id="dash-cards" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;">
+        <div class="dash-card dash-total">
+          <div class="dash-icon">💸</div>
+          <div class="dash-info">
+            <div class="dash-num" id="dash-total">$0</div>
+            <div class="dash-lbl">TOTAL ANUAL</div>
+            <div class="dash-sub" id="dash-total-sub">—</div>
+          </div>
         </div>
-        <div class="gbb-arrow">&rarr;</div>
-      </button>
+        <div class="dash-card dash-prom">
+          <div class="dash-icon">📊</div>
+          <div class="dash-info">
+            <div class="dash-num" id="dash-prom">$0</div>
+            <div class="dash-lbl">PROMEDIO MENSUAL</div>
+            <div class="dash-sub" id="dash-prom-sub">—</div>
+          </div>
+        </div>
+        <div class="dash-card dash-caro">
+          <div class="dash-icon">⬆</div>
+          <div class="dash-info">
+            <div class="dash-num" id="dash-caro">$0</div>
+            <div class="dash-lbl">MES MÁS CARO</div>
+            <div class="dash-sub" id="dash-caro-sub">—</div>
+          </div>
+        </div>
+        <div class="dash-card dash-barato">
+          <div class="dash-icon">⬇</div>
+          <div class="dash-info">
+            <div class="dash-num" id="dash-barato">$0</div>
+            <div class="dash-lbl">MES MÁS BARATO</div>
+            <div class="dash-sub" id="dash-barato-sub">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3 tarjetas de acciones en GRID horizontal -->
+      <div id="gastos-actions-grid">
+        <button class="gcard-action fijos" onclick="gShowView('fijos')" type="button">
+          <div class="ga-icon">⚙</div>
+          <div class="ga-title">Gastos Fijos Permanentes</div>
+          <div class="ga-desc">Plantilla de rubros que se repiten cada mes</div>
+          <div class="ga-arrow">→</div>
+        </button>
+        <button class="gcard-action mes" onclick="gStartNuevoMes()" type="button">
+          <div class="ga-icon">+</div>
+          <div class="ga-title">Ingresar Gastos del Mes</div>
+          <div class="ga-desc">Sueldo, bonos, fijos y gastos variables</div>
+          <div class="ga-arrow">→</div>
+        </button>
+        <button class="gcard-action historial" onclick="gShowView('historial')" type="button">
+          <div class="ga-icon">📅</div>
+          <div class="ga-title">Ver Gastos por Mes</div>
+          <div class="ga-desc">Historial completo y descarga de PDF</div>
+          <div class="ga-arrow">→</div>
+        </button>
+      </div>
     </div>
 
     <!-- VISTA: FIJOS PERMANENTES -->
@@ -1236,6 +1316,10 @@ function startApp(){
   }
   // Cargar plantilla de gastos fijos del usuario (siempre)
   gLoadFijosPlantilla();
+  // Cargar dashboard de gastos del año actual
+  if(typeof renderGastosDashboard === 'function'){
+    setTimeout(renderGastosDashboard, 500);
+  }
   mostrarFrases();
   loadClima();
   const hoy=fmtDateKey(TODAY);
@@ -2357,8 +2441,156 @@ function gLoadFijosPlantilla(){
     if(document.getElementById('gview-fijos')&&document.getElementById('gview-fijos').classList.contains('active')){
       gRenderFijos();
     }
+    // Disparar migración automática (una sola vez) tras cargar la plantilla
+    gMigrarMesesLegacy();
   },err=>{
     console.error('[MAAH] Error cargando fijos:',err);
+  });
+}
+
+// ── MIGRACIÓN AUTOMÁTICA ──────────────────────────────────
+// La primera vez que se carga la app después del cambio "snapshot por mes",
+// se ejecuta esta función UNA SOLA VEZ para cristalizar todos los meses
+// legacy (los que NO tienen 'fijos' guardado) con la plantilla actual.
+// De ahí en adelante cada mes es independiente.
+let gMigracionEjecutada = false;
+function gMigrarMesesLegacy(){
+  if(gMigracionEjecutada) return;
+  if(!currentUser) return;
+  // Verificar si ya se hizo la migración para este usuario (flag en Firebase)
+  db.ref(`maah_gastos_meta/${currentUser.id}/migracion_v1`).once('value', snap=>{
+    if(snap.exists() && snap.val() === true){
+      gMigracionEjecutada = true;
+      return; // Ya migrado, no volver a hacer nada
+    }
+    // Hacer la migración
+    console.log('[MAAH] Iniciando migración v1: cristalizar meses legacy con plantilla actual...');
+    db.ref(`maah_gastos_mes/${currentUser.id}`).once('value', mesesSnap=>{
+      const meses = mesesSnap.val() || {};
+      const updates = {};
+      const plantilla = (gFijosPlantilla||[]).map(f=>({
+        id: f.id, nombre: f.nombre, monto: gToNum(f.monto)
+      }));
+      let count = 0;
+      Object.keys(meses).forEach(ym=>{
+        const data = meses[ym] || {};
+        // Si NO tiene fijos guardados (legacy), cristalizar con la plantilla actual
+        if(!Array.isArray(data.fijos) || data.fijos.length === 0){
+          updates[`maah_gastos_mes/${currentUser.id}/${ym}/fijos`] = plantilla;
+          count++;
+        }
+      });
+      // Marcar la migración como hecha
+      updates[`maah_gastos_meta/${currentUser.id}/migracion_v1`] = true;
+      updates[`maah_gastos_meta/${currentUser.id}/migracion_v1_fecha`] = new Date().toISOString();
+
+      db.ref().update(updates, err=>{
+        if(err){
+          console.error('[MAAH] Error en migración:', err);
+          return;
+        }
+        gMigracionEjecutada = true;
+        console.log('[MAAH] Migración completada. '+count+' mes'+(count!==1?'es':'')+' cristalizado'+(count!==1?'s':'')+'.');
+        // Refrescar dashboard si está visible
+        if(typeof renderGastosDashboard === 'function') renderGastosDashboard();
+      });
+    });
+  });
+}
+
+// ── DASHBOARD GASTOS HOME ───────────────────────────────────
+let dashYear = new Date().getFullYear();
+
+function dashCambiarAno(delta){
+  dashYear += delta;
+  document.getElementById('dash-year-title').textContent = 'Año ' + dashYear;
+  renderGastosDashboard();
+}
+
+// Calcula el total gastado de un mes guardado (fijos pagados + variables)
+function dashTotalMes(data){
+  if(!data) return 0;
+  let total = 0;
+  // Sumar fijos PAGADOS (los que el usuario tildó)
+  const fijos = Array.isArray(data.fijos) ? data.fijos : [];
+  const fijosPagados = data.fijosPagados || {};
+  fijos.forEach(f => { if(fijosPagados[f.id]) total += gToNum(f.monto); });
+  // Sumar gastos variables (todos)
+  const variables = Array.isArray(data.variables) ? data.variables : [];
+  variables.forEach(v => { total += gToNum(v.monto); });
+  return total;
+}
+
+const MESES_LARGOS_DASH = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+
+function renderGastosDashboard(){
+  if(!currentUser) return;
+  // Etiqueta del año
+  const lbl = document.getElementById('dash-year-title');
+  if(lbl) lbl.textContent = 'Año ' + dashYear;
+
+  // Resetear tarjetas mientras carga
+  document.getElementById('dash-total').textContent = '...';
+  document.getElementById('dash-total-sub').textContent = 'Cargando...';
+
+  db.ref(`maah_gastos_mes/${currentUser.id}`).once('value').then(snap=>{
+    const all = snap.val() || {};
+    // Filtrar al año dashYear (claves YYYY-MM)
+    const prefix = String(dashYear) + '-';
+    const mesesDelAno = []; // [{ ym, total, mesNum, mesNombre }]
+    Object.keys(all).forEach(ym=>{
+      if(!ym.startsWith(prefix)) return;
+      const total = dashTotalMes(all[ym]);
+      const mesNum = parseInt(ym.split('-')[1], 10);
+      mesesDelAno.push({ ym, total, mesNum, mesNombre: MESES_LARGOS_DASH[mesNum-1] || ym });
+    });
+
+    if(mesesDelAno.length === 0){
+      document.getElementById('dash-total').textContent = '$0';
+      document.getElementById('dash-total-sub').textContent = 'Sin datos en ' + dashYear;
+      document.getElementById('dash-prom').textContent = '$0';
+      document.getElementById('dash-prom-sub').textContent = '—';
+      document.getElementById('dash-caro').textContent = '$0';
+      document.getElementById('dash-caro-sub').textContent = '—';
+      document.getElementById('dash-barato').textContent = '$0';
+      document.getElementById('dash-barato-sub').textContent = '—';
+      return;
+    }
+
+    // Calcular métricas
+    const total = mesesDelAno.reduce((s,m)=>s+m.total, 0);
+    const promedio = total / mesesDelAno.length;
+    // Solo considerar meses con al menos algún gasto para "más caro/barato"
+    const conGasto = mesesDelAno.filter(m=>m.total > 0);
+    let mesCaro = null, mesBarato = null;
+    if(conGasto.length){
+      mesCaro = conGasto.reduce((a,b)=> a.total > b.total ? a : b);
+      mesBarato = conGasto.reduce((a,b)=> a.total < b.total ? a : b);
+    }
+
+    // Pintar
+    document.getElementById('dash-total').textContent = fmt$(total);
+    document.getElementById('dash-total-sub').textContent = mesesDelAno.length + ' mes' + (mesesDelAno.length!==1?'es':'') + ' con datos';
+    document.getElementById('dash-prom').textContent = fmt$(Math.round(promedio));
+    document.getElementById('dash-prom-sub').textContent = 'Por mes registrado';
+    if(mesCaro){
+      document.getElementById('dash-caro').textContent = fmt$(mesCaro.total);
+      document.getElementById('dash-caro-sub').textContent = mesCaro.mesNombre;
+    } else {
+      document.getElementById('dash-caro').textContent = '$0';
+      document.getElementById('dash-caro-sub').textContent = '—';
+    }
+    if(mesBarato){
+      document.getElementById('dash-barato').textContent = fmt$(mesBarato.total);
+      document.getElementById('dash-barato-sub').textContent = mesBarato.mesNombre;
+    } else {
+      document.getElementById('dash-barato').textContent = '$0';
+      document.getElementById('dash-barato-sub').textContent = '—';
+    }
+  }).catch(err=>{
+    console.warn('[MAAH] Error cargando dashboard:', err);
+    document.getElementById('dash-total').textContent = '—';
+    document.getElementById('dash-total-sub').textContent = 'Error al cargar';
   });
 }
 
@@ -2371,6 +2603,7 @@ function gShowView(name){
     gRenderFijos(); // render inmediato con lo que haya en memoria
   }
   if(name==='historial')gLoadHistorial();
+  if(name==='home') renderGastosDashboard();
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -2461,12 +2694,16 @@ function gCrearMes(){
       }
       return;
     }
+    // Mes nuevo: tomar la plantilla actual como snapshot inicial
+    const fijosSnapshot = (gFijosPlantilla||[]).map(f=>({
+      id: f.id, nombre: f.nombre, monto: gToNum(f.monto)
+    }));
     gMesActual={
       mes:mes,
       ingresos:[{nombre:'SUELDO BASE',monto:0}],
-      fijos:[], // Se llenará automáticamente con la plantilla al renderizar
+      fijos: fijosSnapshot,
       variables:[],
-      fijosPagados:{} // Mes nuevo: nada pagado aún
+      fijosPagados:{}
     };
     gShowView('mes');
     gRenderMes();
@@ -2481,10 +2718,29 @@ function gAbrirMes(ym,data){
     categoria:v.categoria||'',
     pagado:!!v.pagado
   }));
+  // ── SNAPSHOT DE FIJOS POR MES ──
+  // Si el mes ya tiene un snapshot guardado de fijos (data.fijos con length>0),
+  // usar ESE snapshot. Eso garantiza que un mes ya guardado nunca se altere por
+  // cambios futuros en la plantilla.
+  // Si NO tiene snapshot (mes viejo guardado antes de este cambio), usar la
+  // plantilla actual y se cristalizará al guardar.
+  let fijosDelMes;
+  if(Array.isArray(data.fijos) && data.fijos.length > 0){
+    fijosDelMes = data.fijos.map(f=>({
+      id: f.id || ('legacy_'+Math.random().toString(36).slice(2,9)),
+      nombre: f.nombre || '',
+      monto: gToNum(f.monto)
+    }));
+  } else {
+    // Legacy: copiar de la plantilla actual (se guardará como snapshot al primer Guardar)
+    fijosDelMes = (gFijosPlantilla||[]).map(f=>({
+      id: f.id, nombre: f.nombre, monto: gToNum(f.monto)
+    }));
+  }
   gMesActual={
     mes:ym,
     ingresos:data.ingresos||[],
-    fijos:[], // Los fijos SIEMPRE se leen de la plantilla actual
+    fijos:fijosDelMes, // Snapshot del mes (NO la plantilla viva)
     variables:variables,
     fijosPagados:data.fijosPagados||{} // Pagos de fijos de ESTE mes
   };
@@ -2525,20 +2781,19 @@ function gDelIngreso(i){gMesActual.ingresos.splice(i,1);gRenderIngresos();gRecal
 
 function gRenderFijosMes(){
   const el=document.getElementById('gfij-list');
-  // Los fijos SIEMPRE vienen de la plantilla, no del mes guardado
-  const fijos=gFijosPlantilla||[];
-  // Asegurar que el objeto de pagos exista
+  // Los fijos vienen del SNAPSHOT del mes (gMesActual.fijos), no de la plantilla
+  const fijos=gMesActual.fijos||[];
   if(!gMesActual.fijosPagados)gMesActual.fijosPagados={};
-  // Actualizar la referencia en el estado del mes para que el cálculo funcione
-  // Cada fijo conserva su id (de la plantilla) para poder mapear el pagado
-  gMesActual.fijos=fijos.map(f=>({id:f.id,nombre:f.nombre,monto:gToNum(f.monto),pagado:!!gMesActual.fijosPagados[f.id]}));
   if(!fijos.length){
-    el.innerHTML='<div style="text-align:center;color:#a0aec0;padding:15px 0;font-size:12px;">No hay gastos fijos en tu plantilla.<br>Agrégalos desde "Gastos Fijos Permanentes".</div>';
+    el.innerHTML='<div style="text-align:center;color:#a0aec0;padding:15px 0;font-size:12px;">No hay gastos fijos en este mes.<br><button class="btn-primary" style="font-size:11px;padding:6px 12px;margin-top:8px;" onclick="gAddFijoMes()">+ Agregar gasto fijo</button></div>';
     return;
   }
-  el.innerHTML=`<div style="display:grid;grid-template-columns:30px 1fr 130px;gap:6px;font-size:10px;color:#c62828;text-transform:uppercase;font-weight:700;margin-bottom:4px;padding:0 2px;">
-    <div title="Pagado">✓</div><div>RUBRO</div><div style="text-align:right;">MONTO</div>
-  </div>`+fijos.map(it=>{
+  el.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+    <div style="display:grid;grid-template-columns:30px 1fr 130px 60px;gap:6px;font-size:10px;color:#c62828;text-transform:uppercase;font-weight:700;padding:0 2px;flex:1;">
+      <div title="Pagado">✓</div><div>RUBRO</div><div style="text-align:right;">MONTO</div><div></div>
+    </div>
+    <button class="btn-primary" style="font-size:10px;padding:4px 9px;margin-left:8px;" onclick="gAddFijoMes()">+ Agregar</button>
+  </div>`+fijos.map((it,idx)=>{
     const pagado=!!gMesActual.fijosPagados[it.id];
     const bg=pagado?'#f0fff4':'#fff';
     const bd=pagado?'#b8e0c2':'#ffcdd2';
@@ -2546,11 +2801,42 @@ function gRenderFijosMes(){
     const tachado=pagado?'text-decoration:line-through;opacity:.7;':'';
     const colorNom=pagado?'#2f855a':'#2d3748';
     return `
-    <div style="display:grid;grid-template-columns:30px 1fr 130px;gap:6px;align-items:center;padding:7px 9px;font-size:13px;background:${bg};border:0.5px solid ${bd};border-radius:4px;margin-bottom:4px;transition:background .15s;">
+    <div style="display:grid;grid-template-columns:30px 1fr 130px 60px;gap:6px;align-items:center;padding:7px 9px;font-size:13px;background:${bg};border:0.5px solid ${bd};border-radius:4px;margin-bottom:4px;transition:background .15s;">
       <input type="checkbox" ${pagado?'checked':''} onchange="gToggleFijoPagado('${gEscapeAttr(it.id)}',this.checked)" style="width:18px;height:18px;cursor:pointer;accent-color:#38a169;" title="Marcar como pagado">
       <span style="font-weight:600;color:${colorNom};${tachado}">${gEscapeAttr(it.nombre||'(sin nombre)')}</span>
       <span style="text-align:right;font-weight:700;color:${colorMonto};${tachado}">${fmt$(it.monto)}</span>
+      <span style="text-align:right;display:flex;gap:3px;justify-content:flex-end;">
+        <button onclick="gEditFijoMes(${idx})" title="Editar (solo este mes)" style="background:#fff;border:0.5px solid #cbd5e0;color:#1a3f6f;width:22px;height:22px;border-radius:4px;cursor:pointer;font-size:11px;padding:0;">&#9998;</button>
+        <button onclick="gDelFijoMes(${idx})" title="Eliminar (solo este mes)" style="background:#fff;border:0.5px solid #cbd5e0;color:#c62828;width:22px;height:22px;border-radius:4px;cursor:pointer;font-size:13px;padding:0;">&times;</button>
+      </span>
     </div>`;}).join('');
+}
+// Editar un fijo SOLO en el snapshot del mes actual (no toca la plantilla)
+function gEditFijoMes(idx){
+  const f = gMesActual.fijos[idx];
+  if(!f) return;
+  const nuevoNombre = prompt('Nombre del rubro:', f.nombre || '');
+  if(nuevoNombre === null) return;
+  const nuevoMontoStr = prompt('Monto:', String(f.monto || 0));
+  if(nuevoMontoStr === null) return;
+  const nuevoMonto = gToNum(nuevoMontoStr);
+  gMesActual.fijos[idx].nombre = nuevoNombre.trim().toUpperCase();
+  gMesActual.fijos[idx].monto = nuevoMonto;
+  gRenderFijosMes();
+  gRecalcular();
+}
+// Agregar un nuevo fijo SOLO al snapshot del mes actual
+function gAddFijoMes(){
+  const nombre = prompt('Nombre del nuevo rubro fijo:');
+  if(!nombre) return;
+  const montoStr = prompt('Monto:', '0');
+  if(montoStr === null) return;
+  const monto = gToNum(montoStr);
+  const nuevoId = 'mes_' + Date.now() + '_' + Math.random().toString(36).slice(2,7);
+  if(!Array.isArray(gMesActual.fijos)) gMesActual.fijos = [];
+  gMesActual.fijos.push({ id: nuevoId, nombre: nombre.trim().toUpperCase(), monto: monto });
+  gRenderFijosMes();
+  gRecalcular();
 }
 function gToggleFijoPagado(id,checked){
   if(!gMesActual.fijosPagados)gMesActual.fijosPagados={};
@@ -2560,7 +2846,14 @@ function gToggleFijoPagado(id,checked){
   gRecalcular();
 }
 function gDelFijoMes(i){
-  alert('Los gastos fijos no se editan desde aquí.\n\nPara eliminar o modificar un rubro fijo, ve a "Gastos Fijos Permanentes".');
+  const f = gMesActual.fijos[i];
+  if(!f) return;
+  if(!confirm(`¿Eliminar "${f.nombre}" SOLO de este mes?\n\nLa plantilla y los meses anteriores no se verán afectados.`)) return;
+  // Quitar también del listado de pagados
+  if(f.id && gMesActual.fijosPagados) delete gMesActual.fijosPagados[f.id];
+  gMesActual.fijos.splice(i,1);
+  gRenderFijosMes();
+  gRecalcular();
 }
 function gCargarFijosAlMes(){
   // Ya no se necesita, los fijos se cargan automáticamente
@@ -2633,8 +2926,14 @@ function gRecalcular(){
 function gGuardarMes(){
   const clean={
     ingresos:gMesActual.ingresos.filter(x=>x.nombre||gToNum(x.monto)>0),
-    // Los fijos NO se guardan: siempre se leen en vivo desde la plantilla
-    // Pero SÍ guardamos qué fijos están marcados como pagados ESTE mes
+    // ── SNAPSHOT DE FIJOS DEL MES ──
+    // Guardamos los fijos tal como están en este mes (con sus modificaciones).
+    // Esto garantiza que cambios futuros en la plantilla NO afecten este mes.
+    fijos:(gMesActual.fijos||[]).filter(f=>f.nombre||gToNum(f.monto)>0).map(f=>({
+      id: f.id,
+      nombre: f.nombre || '',
+      monto: gToNum(f.monto)
+    })),
     fijosPagados:gMesActual.fijosPagados||{},
     variables:gMesActual.variables.filter(x=>x.desc||gToNum(x.monto)>0).map(v=>({
       fecha:v.fecha||'',
@@ -2644,14 +2943,16 @@ function gGuardarMes(){
       pagado:!!v.pagado
     }))
   };
-  if(!clean.ingresos.length && !clean.variables.length && !Object.keys(clean.fijosPagados).length){
-    alert('No hay datos para guardar. Ingresa al menos un ingreso, gasto variable, o tiquea un gasto fijo como pagado.');
+  if(!clean.ingresos.length && !clean.variables.length && !clean.fijos.length && !Object.keys(clean.fijosPagados).length){
+    alert('No hay datos para guardar. Ingresa al menos un ingreso, gasto fijo o variable.');
     return;
   }
   db.ref(`maah_gastos_mes/${currentUser.id}/${gMesActual.mes}`).set(clean,err=>{
     if(err){alert('Error al guardar: '+err.message);return;}
     alert(`✓ Mes de ${gMesLabel(gMesActual.mes)} guardado correctamente.`);
     gShowView('home');
+    // Refrescar el dashboard de la home
+    if(typeof renderGastosDashboard === 'function') renderGastosDashboard();
   });
 }
 
@@ -2678,15 +2979,40 @@ function gVerMesHistorial(){
   db.ref(`maah_gastos_mes/${currentUser.id}/${ym}`).once('value',snap=>{
     if(!snap.exists()){c.innerHTML='<div class="gempty" style="background:#fff;border-radius:10px;border:0.5px solid #dde3ed;">No hay datos para este mes.</div>';return;}
     const d=snap.val();
-    // Los fijos SIEMPRE vienen de la plantilla actual (no del mes guardado)
-    const fijosPlantilla=gFijosPlantilla.map(f=>({nombre:f.nombre,monto:gToNum(f.monto)}));
+    // ── SNAPSHOT DEL MES ──
+    // Usar los fijos GUARDADOS en este mes (d.fijos), NO la plantilla actual.
+    // Si el mes es legacy (no tiene fijos guardados), usar la plantilla como fallback.
+    let fijosDelMes;
+    let esLegacy = false;
+    if(Array.isArray(d.fijos) && d.fijos.length > 0){
+      fijosDelMes = d.fijos.map(f=>({
+        id: f.id || '',
+        nombre: f.nombre || '',
+        monto: gToNum(f.monto)
+      }));
+    } else {
+      // Mes guardado antes del cambio → mostrar plantilla actual y avisar
+      esLegacy = true;
+      fijosDelMes = (gFijosPlantilla||[]).map(f=>({
+        id: f.id, nombre: f.nombre, monto: gToNum(f.monto)
+      }));
+    }
+    const fijosPagados = d.fijosPagados || {};
     const tIng=(d.ingresos||[]).reduce((s,x)=>s+gToNum(x.monto),0);
-    const tFij=fijosPlantilla.reduce((s,x)=>s+gToNum(x.monto),0);
+    // El total de fijos del mes solo cuenta los PAGADOS (consistente con dashTotalMes)
+    const tFij = fijosDelMes.reduce((s,x)=> s + (fijosPagados[x.id] ? gToNum(x.monto) : 0), 0);
+    // Total de TODOS los fijos (pagados o no) - útil para mostrar al lado
+    const tFijTotal = fijosDelMes.reduce((s,x)=>s+gToNum(x.monto),0);
     const tVar=(d.variables||[]).reduce((s,x)=>s+gToNum(x.monto),0);
     const saldo=tIng-tFij-tVar;
     const catsMap={};
     (d.variables||[]).forEach(v=>{const k=v.categoria||'SIN CATEGORÍA';catsMap[k]=(catsMap[k]||0)+gToNum(v.monto);});
     const catsList=Object.entries(catsMap).sort((a,b)=>b[1]-a[1]);
+
+    // Etiqueta de origen de los fijos
+    const labelFijos = esLegacy
+      ? '<small style="font-weight:normal;opacity:.7;color:#92400e;">(de tu plantilla — guarda el mes para fijar)</small>'
+      : '<small style="font-weight:normal;opacity:.7;">(snapshot del mes)</small>';
 
     c.innerHTML=`
     <div style="background:#fff;border-radius:10px;border:0.5px solid #dde3ed;padding:16px;">
@@ -2701,7 +3027,7 @@ function gVerMesHistorial(){
 
       <div class="gstats-grid">
         <div class="gstat-box"><div class="gstat-lbl">Ingresos</div><div class="gstat-val verde">${fmt$(tIng)}</div></div>
-        <div class="gstat-box"><div class="gstat-lbl">Gastos fijos</div><div class="gstat-val rojo">${fmt$(tFij)}</div></div>
+        <div class="gstat-box"><div class="gstat-lbl">Gastos fijos pagados</div><div class="gstat-val rojo">${fmt$(tFij)}</div></div>
         <div class="gstat-box"><div class="gstat-lbl">Gastos variables</div><div class="gstat-val rojo">${fmt$(tVar)}</div></div>
         <div class="gstat-box"><div class="gstat-lbl">Saldo</div><div class="gstat-val ${saldo<0?'rojo':'verde'}">${fmt$(saldo)}</div></div>
       </div>
@@ -2712,10 +3038,15 @@ function gVerMesHistorial(){
         ${(d.ingresos||[]).map(x=>`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:0.5px solid #eef2f7;font-size:13px;"><span>${x.nombre||'-'}</span><span style="color:#2f855a;font-weight:700;">${fmt$(x.monto)}</span></div>`).join('')}
       </div>`:''}
 
-      ${fijosPlantilla.length?`
+      ${fijosDelMes.length?`
       <div style="margin-top:14px;">
-        <div style="font-size:12px;font-weight:700;color:#c62828;margin-bottom:6px;text-transform:uppercase;letter-spacing:.3px;">Gastos fijos <small style="font-weight:normal;opacity:.7;">(de tu plantilla actual)</small></div>
-        ${fijosPlantilla.map(x=>`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:0.5px solid #eef2f7;font-size:13px;"><span>${x.nombre||'-'}</span><span style="color:#c62828;font-weight:700;">${fmt$(x.monto)}</span></div>`).join('')}
+        <div style="font-size:12px;font-weight:700;color:#c62828;margin-bottom:6px;text-transform:uppercase;letter-spacing:.3px;">Gastos fijos ${labelFijos}</div>
+        ${fijosDelMes.map(x=>{
+          const pagado = !!fijosPagados[x.id];
+          const tachado = pagado ? '' : 'opacity:0.55;';
+          const checkIcon = pagado ? '<span style="color:#2f855a;font-weight:700;font-size:11px;">✓ pagado</span>' : '<span style="color:#a0aec0;font-size:10px;">no pagado</span>';
+          return `<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:0.5px solid #eef2f7;font-size:13px;${tachado}"><span style="flex:1;">${x.nombre||'-'} ${checkIcon}</span><span style="color:#c62828;font-weight:700;">${fmt$(x.monto)}</span></div>`;
+        }).join('')}
       </div>`:''}
 
       ${(d.variables||[]).length?`
@@ -2752,16 +3083,22 @@ function gExportarPDFDesdeHist(ym){
   db.ref(`maah_gastos_mes/${currentUser.id}/${ym}`).once('value',snap=>{
     if(!snap.exists())return;
     const d=snap.val();
-    // Los fijos siempre vienen de la plantilla actual, pero llevamos los pagados del mes
+    // Usar el SNAPSHOT del mes (d.fijos) si existe; fallback a plantilla solo si es legacy
     const pagados=d.fijosPagados||{};
-    const fijosActuales=gFijosPlantilla.map(f=>({id:f.id,nombre:f.nombre,monto:gToNum(f.monto),pagado:!!pagados[f.id]}));
-    gBuildPDF(ym,d.ingresos||[],fijosActuales,d.variables||[]);
+    let fijosBase;
+    if(Array.isArray(d.fijos) && d.fijos.length > 0){
+      fijosBase = d.fijos.map(f=>({id:f.id||'',nombre:f.nombre||'',monto:gToNum(f.monto),pagado:!!pagados[f.id]}));
+    } else {
+      // Mes legacy
+      fijosBase = (gFijosPlantilla||[]).map(f=>({id:f.id,nombre:f.nombre,monto:gToNum(f.monto),pagado:!!pagados[f.id]}));
+    }
+    gBuildPDF(ym,d.ingresos||[],fijosBase,d.variables||[]);
   });
 }
 function gExportarPDF(){
-  // Los fijos del mes actual siempre vienen de la plantilla, con su estado de pagado
+  // Los fijos del mes actual vienen del SNAPSHOT en memoria (gMesActual.fijos)
   const pagados=gMesActual.fijosPagados||{};
-  const fijosActuales=gFijosPlantilla.map(f=>({id:f.id,nombre:f.nombre,monto:gToNum(f.monto),pagado:!!pagados[f.id]}));
+  const fijosActuales=(gMesActual.fijos||[]).map(f=>({id:f.id,nombre:f.nombre,monto:gToNum(f.monto),pagado:!!pagados[f.id]}));
   gBuildPDF(gMesActual.mes,gMesActual.ingresos,fijosActuales,gMesActual.variables);
 }
 
@@ -2823,7 +3160,7 @@ function gBuildResumenTexto(ym,ingresos,fijos,variables){
 
 function gEnviarEmail(){
   const pagados=gMesActual.fijosPagados||{};
-  const fijosActuales=gFijosPlantilla.map(f=>({id:f.id,nombre:f.nombre,monto:gToNum(f.monto),pagado:!!pagados[f.id]}));
+  const fijosActuales=(gMesActual.fijos||[]).map(f=>({id:f.id,nombre:f.nombre,monto:gToNum(f.monto),pagado:!!pagados[f.id]}));
   const txt=gBuildResumenTexto(gMesActual.mes,gMesActual.ingresos,fijosActuales,gMesActual.variables);
   const nombreMes=gMesLabel(gMesActual.mes).toUpperCase();
   const asunto=encodeURIComponent(`Presupuesto MAAH — ${nombreMes}`);
@@ -2839,7 +3176,7 @@ function gEnviarEmail(){
 
 function gEnviarWhatsApp(){
   const pagados=gMesActual.fijosPagados||{};
-  const fijosActuales=gFijosPlantilla.map(f=>({id:f.id,nombre:f.nombre,monto:gToNum(f.monto),pagado:!!pagados[f.id]}));
+  const fijosActuales=(gMesActual.fijos||[]).map(f=>({id:f.id,nombre:f.nombre,monto:gToNum(f.monto),pagado:!!pagados[f.id]}));
   const txt=gBuildResumenTexto(gMesActual.mes,gMesActual.ingresos,fijosActuales,gMesActual.variables);
   // Preguntar si también quiere abrir el PDF
   if(confirm('¿Quieres también abrir el PDF para guardarlo y adjuntarlo manualmente al WhatsApp?\n\n(WhatsApp se abrirá con el resumen en texto)')){
