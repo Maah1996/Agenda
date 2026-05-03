@@ -1526,6 +1526,8 @@ function guardarAgenda(){
     const obj=combined.reduce((o,a,i)=>{o[i]=a;return o;},{});
 
     db.ref(`maah_agenda/${currentUser.id}/${fecha}`).set(obj,()=>{
+      // Invalidar cache del overview para que refleje cambios
+      _agendaDataCache = null;
       // Sincronizar las marcadas a la Carta Gantt (no bloquea el flujo de la agenda).
       if(ganttActs.length){
         sincronizarAGantt(fecha, ganttActs);
@@ -1688,9 +1690,16 @@ let calendarMonthOffset = 0; // 0 = mes del día seleccionado, -1 = anterior, +1
 
 function calNavMes(delta){
   calendarMonthOffset += delta;
-  // Re-pintar el overview manteniendo el día seleccionado
-  // Necesitamos recalcular el conteo de actividades del día actual
+  // Re-pintar el overview manteniendo el día seleccionado y SIN parpadeo
+  // Usamos el cache si ya tenemos los datos de agenda
   const fecha = fmtDateKey(tlCurrent);
+  // Si tenemos cache, usar el conteo del día actual desde ahí
+  if(_agendaDataCache){
+    const acts = _agendaDataCache[fecha] ? Object.keys(_agendaDataCache[fecha]).length : 0;
+    renderAgendaOverview(tlCurrent, acts);
+    return;
+  }
+  // Fallback (primera vez): leer Firebase
   db.ref(`maah_agenda/${currentUser.id}/${fecha}`).once('value').then(snap=>{
     const data = snap.val();
     const acts = data ? Object.values(data) : [];
@@ -1698,40 +1707,43 @@ function calNavMes(delta){
   });
 }
 
+// Cache de datos del agenda completo del usuario (para evitar parpadeo y queries repetidas)
+let _agendaDataCache = null;
+let _agendaDataCacheTime = 0;
+const AGENDA_CACHE_MS = 30000; // 30 segundos
+
 // ── AGENDA OVERVIEW: mini-calendario + estadísticas ──
 // Pinta encima del timeline cuando estamos en modo "Día".
 // Lee Firebase para saber qué días tienen actividades en el mes mostrado.
 function renderAgendaOverview(refDate, currentDayActsCount){
   const ov = document.getElementById('agenda-overview');
   if(!ov || !currentUser) return;
-  ov.innerHTML = '';
 
   // Solo mostrarlo en modo Día (en semana/mes la propia vista ya cubre el periodo)
-  if(tlMode !== 'dia') return;
+  if(tlMode !== 'dia'){
+    ov.innerHTML = '';
+    return;
+  }
 
-  // Calcular el mes a mostrar según el offset (puede ser distinto al día seleccionado)
-  const baseDate = new Date(refDate);
-  baseDate.setDate(1);
-  baseDate.setMonth(baseDate.getMonth() + calendarMonthOffset);
-  const year = baseDate.getFullYear();
-  const month = baseDate.getMonth();
+  // ── Función interna que pinta con datos ya cargados ──
+  // Se separa así para que podamos usar cache (sin parpadeo) o Firebase (primera vez)
+  const pintar = (data)=>{
+    // Calcular el mes a mostrar según el offset
+    const baseDate = new Date(refDate);
+    baseDate.setDate(1);
+    baseDate.setMonth(baseDate.getMonth() + calendarMonthOffset);
+    const year = baseDate.getFullYear();
+    const month = baseDate.getMonth();
 
-  // Feriados de este año
-  const feriados = getFeriadosChile(year);
-
-  // Pedir TODAS las fechas con actividad de ese mes
-  const prefix = year+'-'+String(month+1).padStart(2,'0');
-  db.ref('maah_agenda/'+currentUser.id).once('value').then(snap=>{
-    const data = snap.val() || {};
+    const feriados = getFeriadosChile(year);
+    const prefix = year+'-'+String(month+1).padStart(2,'0');
     const fechasConAct = new Set();
     let totalMes = 0, totalSemana = 0;
 
-    // Determinar lunes y domingo de la semana del día SELECCIONADO (no del mes mostrado)
     const monRef = tlGetMonday(refDate);
     const sunRef = new Date(monRef); sunRef.setDate(monRef.getDate()+6);
     const monKey = fmtDateKey(monRef);
     const sunKey = fmtDateKey(sunRef);
-    // Para "hoy" usamos el día seleccionado real
     const refMonthPrefix = refDate.getFullYear()+'-'+String(refDate.getMonth()+1).padStart(2,'0');
 
     Object.keys(data).forEach(k=>{
@@ -1739,24 +1751,20 @@ function renderAgendaOverview(refDate, currentDayActsCount){
       if(!acts) return;
       const cant = Object.keys(acts).length;
       if(cant === 0) return;
-      // Mes que se está mostrando en el calendario
       if(k.startsWith(prefix)){
         fechasConAct.add(k);
       }
-      // Total mes del día seleccionado
       if(k.startsWith(refMonthPrefix)){
         totalMes += cant;
       }
-      // Semana actual del día seleccionado
       if(k >= monKey && k <= sunKey){
         totalSemana += cant;
       }
     });
 
-    // ── Construir HTML ──
+    // ── Construir HTML COMPLETO antes de tocar el DOM ──
     let html = '';
 
-    // Si no hay actividades para este día, mostrar mensaje cálido
     if(currentDayActsCount === 0){
       const fechaLabel = fmtDateLabel(refDate);
       html += `
@@ -1767,7 +1775,6 @@ function renderAgendaOverview(refDate, currentDayActsCount){
         </div>`;
     }
 
-    // Mini-calendario del mes con flechas
     html += '<div class="ov-cal">';
     html += '<div class="ov-cal-head">';
     html += '<button type="button" class="cal-arrow-btn" onclick="calNavMes(-1)" title="Mes anterior">‹</button>';
@@ -1779,7 +1786,7 @@ function renderAgendaOverview(refDate, currentDayActsCount){
       html += '<div class="ov-cal-cell dow">'+d+'</div>';
     });
     const firstDay = new Date(year, month, 1);
-    const offset = (firstDay.getDay()+6)%7; // Lun=0
+    const offset = (firstDay.getDay()+6)%7;
     const daysInMonth = new Date(year, month+1, 0).getDate();
     for(let i=0; i<offset; i++) html += '<div class="ov-cal-cell other"></div>';
     const todayKey = fmtDateKey(TODAY);
@@ -1802,7 +1809,6 @@ function renderAgendaOverview(refDate, currentDayActsCount){
     }
     html += '</div></div>';
 
-    // Estadísticas
     const diasMes = new Set();
     Object.keys(data).forEach(k=>{ if(k.startsWith(refMonthPrefix) && data[k] && Object.keys(data[k]).length>0) diasMes.add(k); });
     const refMonthName = MESES_LARGO[refDate.getMonth()];
@@ -1813,10 +1819,28 @@ function renderAgendaOverview(refDate, currentDayActsCount){
     html += '<div class="ov-stats-row"><span class="ov-stats-label">Total '+refMonthName+'</span><span class="ov-stats-value">'+totalMes+' actividad'+(totalMes!==1?'es':'')+'</span></div>';
     html += '</div>';
 
+    // Reemplazar contenido en UNA sola operación (sin parpadeo)
     ov.innerHTML = html;
+  };
+
+  // ── Estrategia de carga: cache primero, Firebase si está vencido ──
+  const ahora = Date.now();
+  if(_agendaDataCache && (ahora - _agendaDataCacheTime) < AGENDA_CACHE_MS){
+    // Cache válido: pintar al instante (sin parpadeo)
+    pintar(_agendaDataCache);
+    return;
+  }
+
+  // Cache vencido o nunca cargado: leer Firebase
+  // PERO no borramos el contenido viejo todavía — el DOM se actualiza solo cuando lleguen los datos
+  db.ref('maah_agenda/'+currentUser.id).once('value').then(snap=>{
+    const data = snap.val() || {};
+    _agendaDataCache = data;
+    _agendaDataCacheTime = Date.now();
+    pintar(data);
   }).catch(err=>{
     console.warn('[MAAH] Error cargando overview:', err);
-    ov.innerHTML = '';
+    // No borrar nada en caso de error
   });
 }
 
@@ -1995,6 +2019,7 @@ function saveEditAct(){
   const obs=document.getElementById('edit-act-obs').value.toUpperCase().trim();
   if(!act){alert('Ingrese una descripción.');return;}
   db.ref(`maah_agenda/${currentUser.id}/${editingActDate}/${editingActKey}`).set({hora,act,obs},()=>{
+    _agendaDataCache = null; // Invalidar cache
     closeModal('modal-edit-act');
     loadAgendaForDate(editingActDate);
     // Edita el mensaje existente en Telegram con la agenda actualizada
@@ -2008,6 +2033,7 @@ function saveEditAct(){
 function deleteAct(fecha,idx,hora,act,obs){
   if(!confirm('¿Eliminar esta actividad?')) return;
   db.ref(`maah_agenda/${currentUser.id}/${fecha}/${idx}`).remove(()=>{
+    _agendaDataCache = null; // Invalidar cache
     loadAgendaForDate(fecha);
     const chatId=currentUser.tgid||TG_ADMIN_CHATID;
     const inclFrase=document.getElementById('tg-frase').checked;
