@@ -42,27 +42,93 @@ body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100
 .btn-logout{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.3);color:#fff;padding:3px 10px;border-radius:5px;font-size:10px;cursor:pointer;}
 
 /* INFO BAR */
-.info-bar{background:#15325a;padding:18px 28px;display:flex;align-items:center;justify-content:space-between;gap:20px;}
-.info-left{display:flex;align-items:center;gap:20px;}
-.clock-block{display:flex;flex-direction:column;min-width:130px;}
-.hora-mil{font-size:52px;font-weight:700;color:#fff;letter-spacing:3px;font-variant-numeric:tabular-nums;line-height:1;}
-.fecha-mil{font-size:13px;color:rgba(255,255,255,.65);letter-spacing:1px;margin-top:6px;text-transform:uppercase;}
-.info-div{width:1px;align-self:stretch;background:rgba(255,255,255,.2);margin:0 8px;}
-.clima-hoy{display:flex;align-items:center;gap:14px;}
-.clima-icon{font-size:42px;line-height:1;}
-.clima-temp{font-size:44px;font-weight:700;color:#fff;line-height:1;}
-.clima-details{display:flex;flex-direction:column;gap:6px;}
-.clima-city{font-size:14px;color:rgba(255,255,255,.85);font-weight:600;letter-spacing:.5px;}
-.clima-pills{display:flex;gap:7px;flex-wrap:wrap;}
-.clima-pill{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:20px;padding:4px 11px;font-size:13px;color:rgba(255,255,255,.92);}
-.clima-desc{display:none;}
-.clima-man{display:flex;flex-direction:column;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:12px 18px;min-width:150px;gap:4px;}
-.man-label{font-size:11px;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:1px;}
-.man-top{display:flex;align-items:center;gap:8px;margin-top:2px;}
-.man-temp{font-size:24px;font-weight:700;color:#fff;}
-.man-minmax{font-size:12px;color:rgba(255,255,255,.6);}
-.man-desc{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px;}
-.man-pill{font-size:11px;background:rgba(255,255,255,.08);border-radius:10px;padding:2px 8px;color:rgba(255,255,255,.75);}
+/* CLIMA NUEVO BLOQUE — fondo claro, tarjetas blancas */
+.clima-bloque{background:#f8fafc;padding:10px 16px 12px;font-family:'Segoe UI',Arial,sans-serif;border-bottom:0.5px solid #e2e8f0;position:relative;}
+.cb-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:6px;}
+.cb-city-info{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.cb-pin{color:#c62828;font-size:12px;}
+.cb-city-name{font-size:13px;font-weight:700;color:#1a3f6f;}
+.cb-date{font-size:10px;color:#5F5E5A;}
+.cb-btn-change{background:#fff;border:0.5px solid #cbd5e0;border-radius:6px;padding:4px 10px;font-size:10px;color:#1a3f6f;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:4px;font-family:inherit;margin-left:6px;}
+.cb-btn-change:hover{background:#eef4fb;border-color:#1a3f6f;}
+.cb-btn-reset{background:#0F6E56;border:none;border-radius:6px;padding:4px 9px;font-size:12px;color:#fff;cursor:pointer;font-weight:700;font-family:inherit;margin-left:4px;}
+.cb-btn-reset:hover{background:#0a5642;}
+
+/* GRID DE 4 COLUMNAS (todos en línea) */
+.cb-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1.6fr;gap:8px;}
+
+.cb-card{background:#fff;border-radius:10px;border:0.5px solid #dde3ed;padding:9px 11px;}
+.cb-card-head{font-size:8px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:6px;display:block;}
+
+/* AHORA */
+.cb-now-row{display:flex;align-items:center;gap:10px;}
+.cb-now-icon{font-size:30px;line-height:1;}
+.cb-now-temp{font-size:24px;font-weight:200;color:#1a3f6f;line-height:1;letter-spacing:-0.5px;}
+.cb-now-desc{font-size:9px;color:#5F5E5A;margin-top:2px;line-height:1.3;}
+.cb-now-stats{display:grid;grid-template-columns:1fr 1fr;gap:3px;margin-top:7px;}
+.cb-stat{background:#f7fafc;padding:3px 6px;border-radius:4px;display:flex;align-items:center;gap:4px;font-size:9px;}
+.cb-stat-icon{font-size:10px;flex-shrink:0;}
+.cb-stat-lbl{color:#5F5E5A;font-size:9px;}
+.cb-stat-val{color:#1a3f6f;font-weight:700;font-size:9px;margin-left:auto;}
+
+/* SOL */
+.cb-sun-circle{width:38px;height:38px;border-radius:50%;background:radial-gradient(circle,#fbbf24 0%,#f59e0b 70%,#d97706 100%);display:flex;align-items:center;justify-content:center;margin:0 auto 5px;font-size:18px;line-height:1;box-shadow:0 0 8px rgba(245,158,11,0.3);}
+.cb-sun-data{font-size:9px;line-height:1.4;}
+.cb-row{display:flex;justify-content:space-between;align-items:center;padding:2px 0;border-bottom:0.5px dashed #e2e8f0;}
+.cb-row:last-child{border-bottom:none;}
+.cb-row-lbl{color:#5F5E5A;font-size:9px;}
+.cb-row-val{font-weight:700;font-size:9px;}
+.cb-sun-val{color:#854F0B;}
+.cb-moon-val{color:#185fa5;}
+
+/* LUNA */
+.cb-moon-wrap{display:flex;justify-content:center;margin-bottom:4px;}
+.cb-moon-circle{width:38px;height:38px;border-radius:50%;background:#e2e8f0;position:relative;overflow:hidden;box-shadow:0 0 8px rgba(180,200,240,0.35);}
+.cb-moon-shadow{position:absolute;top:0;height:100%;background:#0c447c;}
+.cb-moon-circle::before{content:"";position:absolute;width:5px;height:5px;background:rgba(120,140,180,0.18);border-radius:50%;top:9px;left:8px;z-index:2;}
+.cb-moon-circle::after{content:"";position:absolute;width:3px;height:3px;background:rgba(120,140,180,0.15);border-radius:50%;top:21px;left:17px;z-index:2;}
+.cb-moon-fase{font-size:9px;text-align:center;font-weight:700;color:#1a3f6f;margin-bottom:2px;}
+.cb-moon-ilum{text-align:center;font-size:8px;color:#5F5E5A;margin-bottom:5px;}
+
+/* MAÑANA (compacto en horizontal) */
+.cb-card-tomorrow{padding:9px 11px;}
+.cb-tomorrow-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
+.cb-tomorrow-date{font-size:8px;color:#5F5E5A;}
+.cb-tomorrow-main{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.cb-tomorrow-icon{font-size:26px;line-height:1;}
+.cb-tomorrow-info{flex:1;min-width:0;}
+.cb-tomorrow-desc{font-size:11px;font-weight:700;color:#1a3f6f;line-height:1.2;}
+.cb-tomorrow-range{font-size:9px;color:#5F5E5A;margin-top:1px;display:flex;gap:8px;}
+.cb-max{color:#c62828;font-weight:700;}
+.cb-min{color:#185fa5;font-weight:700;}
+.cb-tomorrow-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;}
+.cb-tom-stat{background:#f7fafc;padding:4px 2px;border-radius:4px;text-align:center;}
+.cb-tom-icon{font-size:10px;line-height:1;margin-bottom:1px;}
+.cb-tom-val{font-size:9px;font-weight:700;color:#1a3f6f;line-height:1.1;}
+.cb-tom-lbl{font-size:7px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.2px;margin-top:1px;}
+
+/* RELOJ COMPACTO (esquina superior derecha del bloque) */
+.cb-clock{position:absolute;top:8px;right:14px;display:flex;flex-direction:column;align-items:flex-end;gap:0px;}
+.cb-clock-time{font-size:16px;font-weight:700;color:#1a3f6f;font-variant-numeric:tabular-nums;line-height:1.1;letter-spacing:0.8px;}
+.cb-clock-date{font-size:8px;color:#5F5E5A;letter-spacing:0.4px;text-transform:uppercase;font-weight:600;}
+
+/* RESPONSIVE */
+@media (max-width: 1100px){
+  .cb-grid{grid-template-columns:1fr 1fr;}
+}
+@media (max-width: 600px){
+  .cb-grid{grid-template-columns:1fr;}
+  .cb-tomorrow-stats{grid-template-columns:repeat(4,1fr);}
+  .cb-clock{position:static;flex-direction:row;align-items:center;gap:6px;margin-top:4px;}
+}
+
+/* Resultados de búsqueda de ciudad */
+.ciudad-result-item{padding:9px 12px;border:0.5px solid #e2e8f0;border-radius:7px;margin-bottom:5px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:background 0.15s;}
+.ciudad-result-item:hover{background:#eef4fb;border-color:#1a3f6f;}
+.ciudad-result-name{font-size:12px;font-weight:600;color:#1a3f6f;}
+.ciudad-result-loc{font-size:10px;color:#5F5E5A;margin-top:1px;}
+.ciudad-result-coord{font-size:9px;color:#94a3b8;}
+.ciudad-buscando{text-align:center;color:#94a3b8;padding:14px;font-size:11px;}
 
 /* FRASE BAR */
 .frase-bar{background:#1a3f6f;border-top:1px solid rgba(255,255,255,.08);padding:7px 20px;display:flex;gap:16px;align-items:center;}
@@ -607,36 +673,115 @@ body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100
     </div>
   </div>
 
-  <!-- INFO BAR: hora + clima -->
-  <div class="info-bar">
-    <div class="info-left">
-      <div class="clock-block">
-        <div class="hora-mil" id="hora-mil">00:00</div>
-        <div class="fecha-mil" id="fecha-mil">--</div>
+  <!-- BLOQUE CLIMA: Ahora · Sol · Luna · Mañana -->
+  <div class="clima-bloque" id="clima-bloque">
+    <!-- Header con ciudad y botón cambiar AL LADO -->
+    <div class="cb-header">
+      <div class="cb-city-info">
+        <span class="cb-pin">📍</span>
+        <span class="cb-city-name" id="cb-city-name">Punta Arenas, Chile</span>
+        <button class="cb-btn-change" onclick="abrirModalCiudad()">🌍 Cambiar ciudad</button>
+        <button class="cb-btn-reset" id="cb-btn-reset" onclick="climaResetCity()" style="display:none;" title="Volver a Punta Arenas">↩</button>
+        <span class="cb-date" id="cb-date">--</span>
       </div>
-      <div class="info-div"></div>
-      <div class="clima-hoy">
-        <div class="clima-icon" id="clima-icon">⛅</div>
-        <div class="clima-temp" id="clima-temp">--°C</div>
-        <div class="clima-details">
-          <div class="clima-city">Punta Arenas, Chile</div>
-          <div class="clima-pills" id="clima-pills">
-            <div class="clima-pill">💨 --</div>
-            <div class="clima-pill">🌧 --</div>
-            <div class="clima-pill">❄️ --</div>
-            <div class="clima-pill">☀️ UV --</div>
+    </div>
+
+    <!-- 4 tarjetas en una sola línea: Ahora · Sol · Luna · Mañana -->
+    <div class="cb-grid">
+      <!-- AHORA -->
+      <div class="cb-card cb-card-now">
+        <div class="cb-card-head">CLIMA AHORA</div>
+        <div class="cb-now-row">
+          <div class="cb-now-icon" id="clima-icon">⛅</div>
+          <div>
+            <div class="cb-now-temp" id="clima-temp">--°C</div>
+            <div class="cb-now-desc" id="clima-desc">Cargando...</div>
           </div>
+        </div>
+        <div class="cb-now-stats">
+          <div class="cb-stat"><span class="cb-stat-icon">💨</span><span class="cb-stat-lbl">Viento</span><span class="cb-stat-val" id="cb-wind">--</span></div>
+          <div class="cb-stat"><span class="cb-stat-icon">💧</span><span class="cb-stat-lbl">Humedad</span><span class="cb-stat-val" id="cb-hum">--</span></div>
+          <div class="cb-stat"><span class="cb-stat-icon">🌧</span><span class="cb-stat-lbl">Lluvia</span><span class="cb-stat-val" id="cb-rain">--</span></div>
+          <div class="cb-stat"><span class="cb-stat-icon">☀</span><span class="cb-stat-lbl">UV</span><span class="cb-stat-val" id="cb-uv">--</span></div>
+        </div>
+      </div>
+
+      <!-- SOL -->
+      <div class="cb-card cb-card-sun">
+        <div class="cb-card-head">SOL HOY</div>
+        <div class="cb-sun-circle">☀️</div>
+        <div class="cb-sun-data">
+          <div class="cb-row"><span class="cb-row-lbl">🌅 Amanecer</span><span class="cb-row-val cb-sun-val" id="cb-sunrise">--</span></div>
+          <div class="cb-row"><span class="cb-row-lbl">🌇 Atardecer</span><span class="cb-row-val cb-sun-val" id="cb-sunset">--</span></div>
+          <div class="cb-row"><span class="cb-row-lbl">⏱ Duración</span><span class="cb-row-val cb-sun-val" id="cb-daylen">--</span></div>
+        </div>
+      </div>
+
+      <!-- LUNA -->
+      <div class="cb-card cb-card-moon">
+        <div class="cb-card-head">LUNA HOY</div>
+        <div class="cb-moon-wrap">
+          <div class="cb-moon-circle" id="cb-moon-circle">
+            <div class="cb-moon-shadow" id="cb-moon-shadow"></div>
+          </div>
+        </div>
+        <div class="cb-moon-fase" id="cb-moon-fase">--</div>
+        <div class="cb-moon-ilum" id="cb-moon-ilum">--</div>
+        <div class="cb-sun-data">
+          <div class="cb-row"><span class="cb-row-lbl">🌙 Salida</span><span class="cb-row-val cb-moon-val" id="cb-moonrise">--</span></div>
+          <div class="cb-row"><span class="cb-row-lbl">🌑 Puesta</span><span class="cb-row-val cb-moon-val" id="cb-moonset">--</span></div>
+        </div>
+      </div>
+
+      <!-- MAÑANA (ahora dentro del grid) -->
+      <div class="cb-card cb-card-tomorrow">
+        <div class="cb-tomorrow-head">
+          <span class="cb-card-head" style="margin:0;">MAÑANA</span>
+          <span class="cb-tomorrow-date" id="cb-tomorrow-date">--</span>
+        </div>
+        <div class="cb-tomorrow-main">
+          <div class="cb-tomorrow-icon" id="man-icon">🌡</div>
+          <div class="cb-tomorrow-info">
+            <div class="cb-tomorrow-desc" id="cb-tomorrow-desc">Cargando...</div>
+            <div class="cb-tomorrow-range">
+              <span><b class="cb-max" id="cb-tom-max">--°</b> Máx</span>
+              <span><b class="cb-min" id="cb-tom-min">--°</b> Mín</span>
+            </div>
+          </div>
+        </div>
+        <div class="cb-tomorrow-stats">
+          <div class="cb-tom-stat"><div class="cb-tom-icon">💨</div><div class="cb-tom-val" id="cb-tom-wind">--</div><div class="cb-tom-lbl">Viento</div></div>
+          <div class="cb-tom-stat"><div class="cb-tom-icon">🌧</div><div class="cb-tom-val" id="cb-tom-rain">--</div><div class="cb-tom-lbl">Lluvia</div></div>
+          <div class="cb-tom-stat"><div class="cb-tom-icon">❄</div><div class="cb-tom-val" id="cb-tom-snow">--</div><div class="cb-tom-lbl">Nieve</div></div>
+          <div class="cb-tom-stat"><div class="cb-tom-icon">☀</div><div class="cb-tom-val" id="cb-tom-uv">--</div><div class="cb-tom-lbl">UV</div></div>
         </div>
       </div>
     </div>
-    <div class="clima-man">
-      <div class="man-label">Mañana</div>
-      <div class="man-top">
-        <span id="man-icon">🌡</span>
-        <span class="man-temp" id="man-temp">--°C</span>
+
+    <!-- Reloj suelto a la derecha (compacto) -->
+    <div class="cb-clock" id="cb-clock-wrap">
+      <span class="cb-clock-time" id="hora-mil">00:00</span>
+      <span class="cb-clock-date" id="fecha-mil">--</span>
+    </div>
+  </div>
+
+  <!-- MODAL: Cambiar ciudad -->
+  <div class="modal-overlay" id="modal-cambiar-ciudad" onclick="if(event.target===this)cerrarModalCiudad()">
+    <div class="modal-box" style="max-width:440px;">
+      <div class="modal-head">
+        <h3 style="margin:0;font-size:14px;color:#1a3f6f;">🌍 Cambiar ciudad</h3>
+        <button class="modal-close" onclick="cerrarModalCiudad()">×</button>
       </div>
-      <div class="man-minmax" id="man-minmax">--</div>
-      <div class="man-desc" id="man-desc"></div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Buscar ciudad</label>
+          <input type="text" id="ciudad-buscar" class="form-input" placeholder="Ej: Santiago, Buenos Aires, Madrid..." oninput="buscarCiudad(this.value)" autocomplete="off">
+        </div>
+        <div id="ciudad-resultados" style="max-height:280px;overflow-y:auto;margin-top:10px;"></div>
+        <div style="margin-top:14px;padding-top:12px;border-top:0.5px solid #e2e8f0;">
+          <button class="btn-primary" onclick="climaResetCity()" style="width:100%;background:#0F6E56;">↩ Volver a Punta Arenas (predeterminada)</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -1171,47 +1316,279 @@ function iconFromCode(c){return CLIMA_ICONS[String(c)]||'🌡';}
 function uvLabel(uv){if(uv<=2)return'Bajo';if(uv<=5)return'Moderado';if(uv<=7)return'Alto';if(uv<=10)return'Muy alto';return'Extremo';}
 function makePill(icon,val){const d=document.createElement('div');d.className='clima-pill';d.textContent=icon+' '+val;return d;}
 function makeManPill(txt){const s=document.createElement('span');s.className='man-pill';s.textContent=txt;return s;}
+// ── CLIMA: Estado de la ciudad ─────────────────────────────
+// Ciudad por defecto: Punta Arenas, Chile
+const CIUDAD_DEFAULT = { name:'Punta Arenas, Chile', lat:-53.15, lon:-70.92, tz:'America/Santiago' };
+let climaCiudad = CIUDAD_DEFAULT;
+
+// Cargar ciudad guardada (si existe)
+try{
+  const saved = localStorage.getItem('maah_clima_ciudad');
+  if(saved){
+    climaCiudad = JSON.parse(saved);
+  }
+}catch(e){}
+
+// Descripción del código weathercode (Open-Meteo)
+function descFromCode(c){
+  const map = {
+    0:'Despejado', 1:'Mayormente despejado', 2:'Parcialmente nublado', 3:'Nublado',
+    45:'Niebla', 48:'Niebla con escarcha',
+    51:'Llovizna ligera', 53:'Llovizna moderada', 55:'Llovizna densa',
+    56:'Llovizna helada', 57:'Llovizna helada densa',
+    61:'Lluvia ligera', 63:'Lluvia moderada', 65:'Lluvia fuerte',
+    66:'Lluvia helada', 67:'Lluvia helada fuerte',
+    71:'Nevada ligera', 73:'Nevada moderada', 75:'Nevada fuerte', 77:'Aguanieve',
+    80:'Chubascos ligeros', 81:'Chubascos moderados', 82:'Chubascos fuertes',
+    85:'Chubascos de nieve', 86:'Chubascos de nieve fuertes',
+    95:'Tormenta', 96:'Tormenta con granizo', 99:'Tormenta fuerte con granizo'
+  };
+  return map[c] || 'Sin datos';
+}
+
+// Calcula la fase de la luna para una fecha dada
+// Devuelve: { name, illum (0-100), waxing (true=creciente, false=menguante), shadowSide ('left'|'right'), shadowWidth (0-100%) }
+function calcularFaseLuna(date){
+  // Algoritmo simplificado basado en una luna nueva conocida
+  // Luna nueva de referencia: 6 enero 2000, 18:14 UTC
+  const refNew = new Date(Date.UTC(2000,0,6,18,14,0));
+  const synodic = 29.530588853; // días entre lunas nuevas
+  const diff = (date - refNew) / 86400000; // días desde la referencia
+  const phase = ((diff % synodic) + synodic) % synodic; // 0..29.53
+  const ratio = phase / synodic; // 0..1
+
+  // Iluminación (cosenoidal): 0=nueva, 0.5=llena, 1=nueva
+  const illum = Math.round((1 - Math.cos(2*Math.PI*ratio)) / 2 * 100);
+
+  // Nombre de la fase
+  let name;
+  if(ratio < 0.03 || ratio > 0.97) name = 'Luna nueva';
+  else if(ratio < 0.22) name = 'Creciente';
+  else if(ratio < 0.28) name = 'Cuarto creciente';
+  else if(ratio < 0.47) name = 'Gibosa creciente';
+  else if(ratio < 0.53) name = 'Luna llena';
+  else if(ratio < 0.72) name = 'Gibosa menguante';
+  else if(ratio < 0.78) name = 'Cuarto menguante';
+  else name = 'Menguante';
+
+  // Para el render visual: dirección de la sombra
+  const waxing = ratio < 0.5; // creciente cuando la iluminación está aumentando
+  // Posición y ancho de la sombra para representar la fase visualmente
+  // En creciente: sombra a la izquierda; en menguante: sombra a la derecha
+  // Ancho de la sombra: 100% en luna nueva, 0% en llena
+  let shadowSide, shadowWidth;
+  if(waxing){
+    // Creciente: sombra ocupa la parte izquierda
+    shadowSide = 'left';
+    shadowWidth = (1 - ratio*2) * 100; // de 100% (nueva) a 0% (llena)
+  } else {
+    // Menguante: sombra ocupa la parte derecha
+    shadowSide = 'right';
+    shadowWidth = ((ratio - 0.5)*2) * 100; // de 0% (llena) a 100% (nueva)
+  }
+  return { name, illum, waxing, shadowSide, shadowWidth };
+}
+
 function loadClima(){
-  fetch('https://api.open-meteo.com/v1/forecast?latitude=-53.15&longitude=-70.92&current=temperature_2m,weathercode,windspeed_10m,precipitation,snowfall,uv_index&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,snowfall_sum,windspeed_10m_max,uv_index_max&timezone=America%2FSantiago&forecast_days=2')
+  const lat = climaCiudad.lat;
+  const lon = climaCiudad.lon;
+  const tz = climaCiudad.tz || 'America/Santiago';
+  const url = 'https://api.open-meteo.com/v1/forecast'
+    + '?latitude=' + lat
+    + '&longitude=' + lon
+    + '&current=temperature_2m,relative_humidity_2m,apparent_temperature,weathercode,windspeed_10m,precipitation,snowfall,uv_index'
+    + '&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,snowfall_sum,windspeed_10m_max,uv_index_max,sunrise,sunset'
+    + '&timezone=' + encodeURIComponent(tz)
+    + '&forecast_days=2';
+
+  // Mostrar nombre de la ciudad
+  document.getElementById('cb-city-name').textContent = climaCiudad.name;
+  // Mostrar/ocultar botón "volver a Punta Arenas" si la ciudad NO es la default
+  const btnReset = document.getElementById('cb-btn-reset');
+  if(btnReset) btnReset.style.display = (climaCiudad.name !== CIUDAD_DEFAULT.name) ? '' : 'none';
+
+  // Mostrar fecha actual
+  const hoy = new Date();
+  const DIAS = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+  const MES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  document.getElementById('cb-date').textContent = '· ' + DIAS[hoy.getDay()] + ' ' + hoy.getDate() + ' de ' + MES[hoy.getMonth()];
+
+  fetch(url)
     .then(r=>r.json()).then(d=>{
-      const cur=d.current;
-      const temp=Math.round(cur.temperature_2m);
-      const code=cur.weathercode;
-      const wind=Math.round(cur.windspeed_10m);
-      const rain=cur.precipitation.toFixed(1);
-      const snow=cur.snowfall.toFixed(1);
-      const uv=parseFloat(cur.uv_index.toFixed(1));
-      const manTemp=Math.round(d.daily.temperature_2m_max[1]);
-      const manMin=Math.round(d.daily.temperature_2m_min[1]);
-      const manCode=d.daily.weathercode[1];
-      const manRain=d.daily.precipitation_sum[1].toFixed(1);
-      const manSnow=d.daily.snowfall_sum[1].toFixed(1);
-      const manWind=Math.round(d.daily.windspeed_10m_max[1]);
-      const manUV=d.daily.uv_index_max[1].toFixed(1);
+      const cur = d.current;
+      const temp = Math.round(cur.temperature_2m);
+      const code = cur.weathercode;
+      const wind = Math.round(cur.windspeed_10m);
+      const rain = (cur.precipitation||0).toFixed(1);
+      const snow = (cur.snowfall||0).toFixed(1);
+      const hum = Math.round(cur.relative_humidity_2m||0);
+      const feels = Math.round(cur.apparent_temperature||cur.temperature_2m);
+      const uv = parseFloat((cur.uv_index||0).toFixed(1));
 
-      document.getElementById('clima-icon').textContent=iconFromCode(code);
-      document.getElementById('clima-temp').textContent=temp+'°C';
+      // ── AHORA ──
+      document.getElementById('clima-icon').textContent = iconFromCode(code);
+      document.getElementById('clima-temp').textContent = temp + '°C';
+      document.getElementById('clima-desc').textContent = descFromCode(code) + ' · Sensación ' + feels + '°C';
+      document.getElementById('cb-wind').textContent = wind + ' km/h';
+      document.getElementById('cb-hum').textContent = hum + '%';
+      document.getElementById('cb-rain').textContent = rain + ' mm';
+      document.getElementById('cb-uv').textContent = uv + ' — ' + uvLabel(uv);
 
-      const pills=document.getElementById('clima-pills');
-      pills.innerHTML='';
-      pills.appendChild(makePill('💨',wind+' km/h'));
-      pills.appendChild(makePill('🌧',rain+' mm'));
-      pills.appendChild(makePill('❄️',snow+' cm'));
-      pills.appendChild(makePill('☀️','UV '+uv+' — '+uvLabel(uv)));
+      // ── SOL ──
+      const sunriseStr = d.daily.sunrise && d.daily.sunrise[0];
+      const sunsetStr  = d.daily.sunset  && d.daily.sunset[0];
+      if(sunriseStr && sunsetStr){
+        const sr = new Date(sunriseStr);
+        const ss = new Date(sunsetStr);
+        const fmtH = dt => String(dt.getHours()).padStart(2,'0') + ':' + String(dt.getMinutes()).padStart(2,'0');
+        document.getElementById('cb-sunrise').textContent = fmtH(sr);
+        document.getElementById('cb-sunset').textContent = fmtH(ss);
+        // Duración del día
+        const diffMs = ss - sr;
+        const diffH = Math.floor(diffMs / 3600000);
+        const diffM = Math.floor((diffMs % 3600000) / 60000);
+        document.getElementById('cb-daylen').textContent = diffH + 'h ' + diffM + 'm';
+      }
 
-      document.getElementById('man-icon').textContent=iconFromCode(manCode);
-      document.getElementById('man-temp').textContent=manTemp+'°C';
-      document.getElementById('man-minmax').textContent='Mín '+manMin+'°C · Máx '+manTemp+'°C';
+      // ── LUNA ──
+      const luna = calcularFaseLuna(new Date());
+      document.getElementById('cb-moon-fase').textContent = luna.name;
+      document.getElementById('cb-moon-ilum').textContent = 'Iluminación: ' + luna.illum + '%';
+      // Pintar la sombra de la luna
+      const shadow = document.getElementById('cb-moon-shadow');
+      if(shadow){
+        if(luna.shadowSide === 'left'){
+          shadow.style.left = '0';
+          shadow.style.right = 'auto';
+        } else {
+          shadow.style.right = '0';
+          shadow.style.left = 'auto';
+        }
+        shadow.style.width = luna.shadowWidth + '%';
+      }
+      // Fondo de la luna (parte iluminada): si es luna llena → blanco amarillento, si es nueva → casi negro
+      const moonCircle = document.getElementById('cb-moon-circle');
+      if(moonCircle){
+        if(luna.illum > 80) moonCircle.style.background = '#f5f3e8'; // llena
+        else if(luna.illum > 30) moonCircle.style.background = '#dde2eb';
+        else moonCircle.style.background = '#a0aec0';
+      }
+      // Las horas de salida/puesta de la luna no las da Open-Meteo gratis, dejamos un cálculo simple
+      // Como aproximación: la luna sale ~50min después cada día de la luna nueva
+      const moonriseSet = calcularSalidaPuestaLuna(new Date(), luna);
+      document.getElementById('cb-moonrise').textContent = moonriseSet.salida;
+      document.getElementById('cb-moonset').textContent = moonriseSet.puesta;
 
-      const mdesc=document.getElementById('man-desc');
-      mdesc.innerHTML='';
-      mdesc.appendChild(makeManPill('💨 '+manWind+' km/h'));
-      mdesc.appendChild(makeManPill('🌧 '+manRain+' mm'));
-      mdesc.appendChild(makeManPill('❄️ '+manSnow+' cm'));
-      mdesc.appendChild(makeManPill('UV '+manUV));
-    }).catch(()=>{
+      // ── MAÑANA ──
+      const manTemp = Math.round(d.daily.temperature_2m_max[1]);
+      const manMin = Math.round(d.daily.temperature_2m_min[1]);
+      const manCode = d.daily.weathercode[1];
+      const manRain = (d.daily.precipitation_sum[1]||0).toFixed(1);
+      const manSnow = (d.daily.snowfall_sum[1]||0).toFixed(1);
+      const manWind = Math.round(d.daily.windspeed_10m_max[1]||0);
+      const manUV = (d.daily.uv_index_max[1]||0).toFixed(1);
+
+      document.getElementById('man-icon').textContent = iconFromCode(manCode);
+      document.getElementById('cb-tomorrow-desc').textContent = descFromCode(manCode);
+      document.getElementById('cb-tom-max').textContent = manTemp + '°';
+      document.getElementById('cb-tom-min').textContent = manMin + '°';
+      document.getElementById('cb-tom-wind').textContent = manWind + ' km/h';
+      document.getElementById('cb-tom-rain').textContent = manRain + ' mm';
+      document.getElementById('cb-tom-snow').textContent = manSnow + ' cm';
+      document.getElementById('cb-tom-uv').textContent = 'UV ' + manUV;
+      // Fecha de mañana
+      const manDate = new Date(); manDate.setDate(manDate.getDate()+1);
+      document.getElementById('cb-tomorrow-date').textContent = DIAS[manDate.getDay()] + ' ' + manDate.getDate() + ' de ' + MES[manDate.getMonth()];
+
+    }).catch(err=>{
+      console.warn('[MAAH] Error cargando clima:', err);
       document.getElementById('clima-temp').textContent='Sin datos';
+      document.getElementById('clima-desc').textContent='Verifica tu conexión';
     });
+}
+
+// Aproximación simple de salida y puesta de luna basada en fase
+// La luna sale ~50 minutos más tarde cada día desde luna nueva
+function calcularSalidaPuestaLuna(date, fase){
+  // Calcular los días desde la última luna nueva
+  const refNew = new Date(Date.UTC(2000,0,6,18,14,0));
+  const synodic = 29.530588853;
+  const diff = (date - refNew) / 86400000;
+  const days = (diff % synodic + synodic) % synodic;
+  // En luna nueva: sale ~6:00, se pone ~18:00 (junto con el sol)
+  // En luna llena (15 días): sale ~18:00, se pone ~6:00 (opuesto al sol)
+  const salidaH = (6 + days * 50/60) % 24; // suma 50min por día
+  const puestaH = (18 + days * 50/60) % 24;
+  const fmt = h => {
+    const hh = Math.floor(h);
+    const mm = Math.round((h - hh) * 60);
+    return String(hh).padStart(2,'0') + ':' + String(mm).padStart(2,'0');
+  };
+  return { salida: fmt(salidaH), puesta: fmt(puestaH) };
+}
+
+// ── MODAL DE CAMBIAR CIUDAD ─────────────────────────────────
+function abrirModalCiudad(){
+  document.getElementById('modal-cambiar-ciudad').classList.add('open');
+  setTimeout(()=>{
+    const inp = document.getElementById('ciudad-buscar');
+    if(inp){ inp.value=''; inp.focus(); }
+    document.getElementById('ciudad-resultados').innerHTML='';
+  },100);
+}
+function cerrarModalCiudad(){
+  document.getElementById('modal-cambiar-ciudad').classList.remove('open');
+}
+
+let _ciudadBuscarTimer = null;
+function buscarCiudad(query){
+  const cont = document.getElementById('ciudad-resultados');
+  query = (query||'').trim();
+  if(query.length < 2){
+    cont.innerHTML = '<div class="ciudad-buscando">Escribe al menos 2 letras...</div>';
+    return;
+  }
+  // Debounce: esperar 350ms antes de buscar
+  if(_ciudadBuscarTimer) clearTimeout(_ciudadBuscarTimer);
+  cont.innerHTML = '<div class="ciudad-buscando">Buscando...</div>';
+  _ciudadBuscarTimer = setTimeout(()=>{
+    fetch('https://geocoding-api.open-meteo.com/v1/search?name='+encodeURIComponent(query)+'&count=8&language=es&format=json')
+      .then(r=>r.json())
+      .then(d=>{
+        if(!d.results || !d.results.length){
+          cont.innerHTML = '<div class="ciudad-buscando">No se encontraron resultados.</div>';
+          return;
+        }
+        cont.innerHTML = d.results.map(r=>{
+          const loc = [r.admin1, r.country].filter(Boolean).join(' · ');
+          const nombreFmt = r.name + (r.country ? ', ' + r.country : '');
+          const tz = r.timezone || 'America/Santiago';
+          return `<div class="ciudad-result-item" onclick="climaSetCity('${nombreFmt.replace(/'/g,"\\'")}',${r.latitude},${r.longitude},'${tz}')">
+            <div>
+              <div class="ciudad-result-name">${r.name}</div>
+              <div class="ciudad-result-loc">${loc}</div>
+            </div>
+            <div class="ciudad-result-coord">${r.latitude.toFixed(2)}, ${r.longitude.toFixed(2)}</div>
+          </div>`;
+        }).join('');
+      }).catch(err=>{
+        cont.innerHTML = '<div class="ciudad-buscando">Error en la búsqueda. Intenta de nuevo.</div>';
+      });
+  }, 350);
+}
+
+function climaSetCity(name, lat, lon, tz){
+  climaCiudad = { name, lat, lon, tz };
+  try{ localStorage.setItem('maah_clima_ciudad', JSON.stringify(climaCiudad)); }catch(e){}
+  cerrarModalCiudad();
+  loadClima();
+}
+
+function climaResetCity(){
+  climaCiudad = CIUDAD_DEFAULT;
+  try{ localStorage.removeItem('maah_clima_ciudad'); }catch(e){}
+  cerrarModalCiudad();
+  loadClima();
 }
 
 // ── ESTADO ───────────────────────────────────────────────────
