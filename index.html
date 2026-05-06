@@ -2352,11 +2352,13 @@ function renderAgendaOverview(refDate, currentDayActsCount){
     const fechasConAct = new Set();
     let totalMes = 0, totalSemana = 0;
 
-    const monRef = tlGetMonday(refDate);
-    const sunRef = new Date(monRef); sunRef.setDate(monRef.getDate()+6);
-    const monKey = fmtDateKey(monRef);
-    const sunKey = fmtDateKey(sunRef);
-    const refMonthPrefix = refDate.getFullYear()+'-'+String(refDate.getMonth()+1).padStart(2,'0');
+    // Semana de referencia: misma posición de día dentro del mes visualizado
+    const dispDay = Math.min(refDate.getDate(), new Date(year, month+1, 0).getDate());
+    const dispRef = new Date(year, month, dispDay);
+    const monDisp = tlGetMonday(dispRef);
+    const sunDisp = new Date(monDisp); sunDisp.setDate(monDisp.getDate()+6);
+    const monKey = fmtDateKey(monDisp);
+    const sunKey = fmtDateKey(sunDisp);
 
     Object.keys(data).forEach(k=>{
       const acts = data[k];
@@ -2365,8 +2367,6 @@ function renderAgendaOverview(refDate, currentDayActsCount){
       if(cant === 0) return;
       if(k.startsWith(prefix)){
         fechasConAct.add(k);
-      }
-      if(k.startsWith(refMonthPrefix)){
         totalMes += cant;
       }
       if(k >= monKey && k <= sunKey){
@@ -2375,10 +2375,7 @@ function renderAgendaOverview(refDate, currentDayActsCount){
     });
 
     // ── Construir HTML COMPLETO antes de tocar el DOM ──
-    const diasMes = new Set();
-    Object.keys(data).forEach(k=>{ if(k.startsWith(refMonthPrefix) && data[k] && Object.keys(data[k]).length>0) diasMes.add(k); });
-    const refMonthName = MESES_LARGO[refDate.getMonth()];
-    const refMonthShort = refMonthName.substring(0,3).toUpperCase();
+    const refMonthName = MESES_LARGO[month];
 
     let html = '';
 
@@ -2471,25 +2468,33 @@ function showActsPanel(tipo){
   if(!_agendaDataCache) return;
   const ref = tlCurrent;
   const refKey = fmtDateKey(ref);
-  const refMonthPrefix = ref.getFullYear()+'-'+String(ref.getMonth()+1).padStart(2,'0');
-  const monRef = tlGetMonday(ref);
-  const sunRef = new Date(monRef); sunRef.setDate(monRef.getDate()+6);
-  const monKey = fmtDateKey(monRef);
-  const sunKey = fmtDateKey(sunRef);
   const DLONG = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
   const MLONG = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
 
+  // Mes visualizado en el calendario (respeta la navegación con flechas)
+  const dispBase = new Date(ref); dispBase.setDate(1);
+  dispBase.setMonth(dispBase.getMonth() + calendarMonthOffset);
+  const dispYear = dispBase.getFullYear();
+  const dispMonth = dispBase.getMonth();
+  const dispMonthPrefix = dispYear+'-'+String(dispMonth+1).padStart(2,'0');
+  const dispDay = Math.min(ref.getDate(), new Date(dispYear, dispMonth+1, 0).getDate());
+  const dispRef = new Date(dispYear, dispMonth, dispDay);
+  const monDisp = tlGetMonday(dispRef);
+  const sunDisp = new Date(monDisp); sunDisp.setDate(monDisp.getDate()+6);
+  const monKey = fmtDateKey(monDisp);
+  const sunKey = fmtDateKey(sunDisp);
+
   const titulos = {
     hoy: 'Actividades de hoy — '+DLONG[ref.getDay()]+' '+ref.getDate()+' de '+MLONG[ref.getMonth()],
-    semana: 'Actividades de la semana',
-    diasmes: 'Días con actividades — '+MLONG[ref.getMonth()]+' '+ref.getFullYear(),
-    mes: 'Total de actividades — '+MLONG[ref.getMonth()]+' '+ref.getFullYear(),
+    semana: 'Actividades semana del '+monDisp.getDate()+' al '+sunDisp.getDate()+' de '+MLONG[dispMonth]+' '+dispYear,
+    diasmes: 'Días con actividades — '+MLONG[dispMonth]+' '+dispYear,
+    mes: 'Total de actividades — '+MLONG[dispMonth]+' '+dispYear,
   };
   const filtros = {
     hoy: k => k === refKey,
     semana: k => k >= monKey && k <= sunKey,
-    diasmes: k => k.startsWith(refMonthPrefix),
-    mes: k => k.startsWith(refMonthPrefix),
+    diasmes: k => k.startsWith(dispMonthPrefix),
+    mes: k => k.startsWith(dispMonthPrefix),
   };
 
   const fechas = Object.keys(_agendaDataCache)
