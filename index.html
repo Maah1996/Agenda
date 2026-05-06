@@ -43,74 +43,81 @@ body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100
 
 /* INFO BAR */
 /* CLIMA NUEVO BLOQUE — fondo claro, tarjetas blancas */
-.clima-bloque{background:#f8fafc;padding:10px 16px 12px;font-family:'Segoe UI',Arial,sans-serif;border-bottom:0.5px solid #e2e8f0;position:relative;}
+.clima-bloque{background:linear-gradient(135deg,#dbeafe 0%,#eff6ff 50%,#e0f2fe 100%);padding:12px 16px 14px;font-family:'Segoe UI',Arial,sans-serif;border-bottom:1px solid #bfdbfe;position:relative;}
 .cb-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:6px;}
 .cb-city-info{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
-.cb-pin{color:#c62828;font-size:12px;}
-.cb-city-name{font-size:13px;font-weight:700;color:#1a3f6f;}
-.cb-date{font-size:10px;color:#5F5E5A;}
-.cb-btn-change{background:#fff;border:0.5px solid #cbd5e0;border-radius:6px;padding:4px 10px;font-size:10px;color:#1a3f6f;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:4px;font-family:inherit;margin-left:6px;}
-.cb-btn-change:hover{background:#eef4fb;border-color:#1a3f6f;}
+.cb-pin{color:#c62828;font-size:16px;}
+.cb-city-name{font-size:19px;font-weight:800;color:#1a3f6f;letter-spacing:-0.3px;}
+.cb-date{font-size:12px;color:#5F5E5A;font-weight:600;margin-left:2px;}
+.cb-btn-change{background:#1a3f6f;border:none;border-radius:20px;padding:6px 16px;font-size:11px;color:#fff;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:5px;font-family:inherit;margin-left:10px;transition:all .15s;letter-spacing:0.3px;box-shadow:0 2px 8px rgba(26,63,111,.25);}
+.cb-btn-change:hover{background:#15325a;box-shadow:0 4px 12px rgba(26,63,111,.35);transform:translateY(-1px);}
 .cb-btn-reset{background:#0F6E56;border:none;border-radius:6px;padding:4px 9px;font-size:12px;color:#fff;cursor:pointer;font-weight:700;font-family:inherit;margin-left:4px;}
 .cb-btn-reset:hover{background:#0a5642;}
 
 /* GRID DE 4 COLUMNAS (todos en línea) */
 .cb-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1.6fr;gap:8px;}
 
-.cb-card{background:#fff;border-radius:10px;border:0.5px solid #dde3ed;padding:9px 11px;}
-.cb-card-head{font-size:8px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:6px;display:block;}
+.cb-card{background:#fff;border-radius:14px;border:none;box-shadow:0 2px 14px rgba(26,63,111,.10),0 1px 3px rgba(0,0,0,.05);padding:11px 13px;}
+.cb-card-head{font-size:clamp(9px,1.1vw,13px);font-weight:800;text-transform:uppercase;letter-spacing:0.6px;margin-bottom:9px;display:inline-block;padding:3px 10px;border-radius:12px;}
+.cb-card-now{border-top:3px solid #1a3f6f;}
+.cb-card-sun{border-top:3px solid #f59e0b;}
+.cb-card-moon{border-top:3px solid #6366f1;}
+.cb-card-tomorrow{border-top:3px solid #10b981;}
+.cb-card-now .cb-card-head{background:#dbeafe;color:#1a3f6f;}
+.cb-card-sun .cb-card-head{background:#fef3c7;color:#92400e;}
+.cb-card-moon .cb-card-head{background:#ede9fe;color:#4c1d95;}
+.cb-card-tomorrow .cb-card-head{background:#d1fae5;color:#065f46;}
 
 /* AHORA */
 .cb-now-row{display:flex;align-items:center;gap:10px;}
-.cb-now-icon{font-size:30px;line-height:1;}
-.cb-now-temp{font-size:24px;font-weight:200;color:#1a3f6f;line-height:1;letter-spacing:-0.5px;}
-.cb-now-desc{font-size:9px;color:#5F5E5A;margin-top:2px;line-height:1.3;}
-.cb-now-stats{display:grid;grid-template-columns:1fr 1fr;gap:3px;margin-top:7px;}
-.cb-stat{background:#f7fafc;padding:3px 6px;border-radius:4px;display:flex;align-items:center;gap:4px;font-size:9px;}
-.cb-stat-icon{font-size:10px;flex-shrink:0;}
-.cb-stat-lbl{color:#5F5E5A;font-size:9px;}
-.cb-stat-val{color:#1a3f6f;font-weight:700;font-size:9px;margin-left:auto;}
+.cb-now-icon{font-size:clamp(36px,4.5vw,52px);line-height:1;}
+.cb-now-temp{font-size:clamp(30px,4vw,46px);font-weight:200;color:#1a3f6f;line-height:1;letter-spacing:-1px;}
+.cb-now-desc{font-size:clamp(11px,1.3vw,15px);color:#5F5E5A;margin-top:3px;line-height:1.3;font-weight:600;}
+.cb-now-stats{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:9px;}
+.cb-stat{background:#f0f7ff;padding:5px 8px;border-radius:6px;display:flex;align-items:center;gap:5px;border:0.5px solid #dbeafe;}
+.cb-stat-icon{font-size:clamp(12px,1.4vw,16px);flex-shrink:0;}
+.cb-stat-lbl{color:#5F5E5A;font-size:clamp(10px,1.1vw,13px);}
+.cb-stat-val{color:#1a3f6f;font-weight:700;font-size:clamp(10px,1.1vw,13px);margin-left:auto;}
 
 /* SOL */
-.cb-sun-circle{width:38px;height:38px;border-radius:50%;background:radial-gradient(circle,#fbbf24 0%,#f59e0b 70%,#d97706 100%);display:flex;align-items:center;justify-content:center;margin:0 auto 5px;font-size:18px;line-height:1;box-shadow:0 0 8px rgba(245,158,11,0.3);}
-.cb-sun-data{font-size:9px;line-height:1.4;}
-.cb-row{display:flex;justify-content:space-between;align-items:center;padding:2px 0;border-bottom:0.5px dashed #e2e8f0;}
+.cb-sun-circle{width:clamp(48px,5.5vw,64px);height:clamp(48px,5.5vw,64px);border-radius:50%;background:radial-gradient(circle,#fcd34d 0%,#f59e0b 60%,#d97706 100%);display:flex;align-items:center;justify-content:center;margin:0 auto 8px;font-size:clamp(22px,2.8vw,32px);line-height:1;box-shadow:0 0 18px rgba(245,158,11,.45);}
+.cb-sun-data{line-height:1.6;}
+.cb-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:0.5px dashed #e2e8f0;}
 .cb-row:last-child{border-bottom:none;}
-.cb-row-lbl{color:#5F5E5A;font-size:9px;}
-.cb-row-val{font-weight:700;font-size:9px;}
+.cb-row-lbl{color:#5F5E5A;font-size:clamp(10px,1.2vw,14px);}
+.cb-row-val{font-weight:700;font-size:clamp(10px,1.2vw,14px);}
 .cb-sun-val{color:#854F0B;}
 .cb-moon-val{color:#185fa5;}
 
 /* LUNA */
 .cb-moon-wrap{display:flex;justify-content:center;margin-bottom:4px;}
-.cb-moon-circle{width:38px;height:38px;border-radius:50%;background:#e2e8f0;position:relative;overflow:hidden;box-shadow:0 0 8px rgba(180,200,240,0.35);}
+.cb-moon-circle{width:48px;height:48px;border-radius:50%;background:#dde6f5;position:relative;overflow:hidden;box-shadow:0 0 16px rgba(99,102,241,.30);}
 .cb-moon-shadow{position:absolute;top:0;height:100%;background:#0c447c;}
 .cb-moon-circle::before{content:"";position:absolute;width:5px;height:5px;background:rgba(120,140,180,0.18);border-radius:50%;top:9px;left:8px;z-index:2;}
 .cb-moon-circle::after{content:"";position:absolute;width:3px;height:3px;background:rgba(120,140,180,0.15);border-radius:50%;top:21px;left:17px;z-index:2;}
-.cb-moon-fase{font-size:9px;text-align:center;font-weight:700;color:#1a3f6f;margin-bottom:2px;}
-.cb-moon-ilum{text-align:center;font-size:8px;color:#5F5E5A;margin-bottom:5px;}
+.cb-moon-fase{font-size:clamp(11px,1.3vw,15px);text-align:center;font-weight:700;color:#4c1d95;margin-bottom:3px;}
+.cb-moon-ilum{text-align:center;font-size:clamp(10px,1.1vw,13px);color:#5F5E5A;margin-bottom:6px;}
 
 /* MAÑANA (compacto en horizontal) */
 .cb-card-tomorrow{padding:9px 11px;}
 .cb-tomorrow-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
-.cb-tomorrow-date{font-size:8px;color:#5F5E5A;}
-.cb-tomorrow-main{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
-.cb-tomorrow-icon{font-size:26px;line-height:1;}
+.cb-tomorrow-date{font-size:clamp(10px,1.1vw,13px);color:#5F5E5A;}
+.cb-tomorrow-main{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.cb-tomorrow-icon{font-size:clamp(28px,3.5vw,40px);line-height:1;}
 .cb-tomorrow-info{flex:1;min-width:0;}
-.cb-tomorrow-desc{font-size:11px;font-weight:700;color:#1a3f6f;line-height:1.2;}
-.cb-tomorrow-range{font-size:9px;color:#5F5E5A;margin-top:1px;display:flex;gap:8px;}
+.cb-tomorrow-desc{font-size:clamp(12px,1.4vw,16px);font-weight:700;color:#065f46;line-height:1.2;}
+.cb-tomorrow-range{font-size:clamp(11px,1.2vw,14px);color:#5F5E5A;margin-top:3px;display:flex;gap:10px;}
 .cb-max{color:#c62828;font-weight:700;}
 .cb-min{color:#185fa5;font-weight:700;}
-.cb-tomorrow-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;}
-.cb-tom-stat{background:#f7fafc;padding:4px 2px;border-radius:4px;text-align:center;}
-.cb-tom-icon{font-size:10px;line-height:1;margin-bottom:1px;}
-.cb-tom-val{font-size:9px;font-weight:700;color:#1a3f6f;line-height:1.1;}
-.cb-tom-lbl{font-size:7px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.2px;margin-top:1px;}
+.cb-tomorrow-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;}
+.cb-tom-stat{background:#f0fdf4;padding:5px 3px;border-radius:6px;text-align:center;border:0.5px solid #d1fae5;}
+.cb-tom-icon{font-size:clamp(13px,1.5vw,17px);line-height:1;margin-bottom:2px;}
+.cb-tom-val{font-size:clamp(10px,1.2vw,14px);font-weight:700;color:#065f46;line-height:1.1;}
+.cb-tom-lbl{font-size:clamp(8px,0.9vw,11px);color:#6b7280;text-transform:uppercase;letter-spacing:0.2px;margin-top:1px;}
 
 /* RELOJ COMPACTO (esquina superior derecha del bloque) */
-.cb-clock{position:absolute;top:8px;right:14px;display:flex;flex-direction:column;align-items:flex-end;gap:0px;}
-.cb-clock-time{font-size:16px;font-weight:700;color:#1a3f6f;font-variant-numeric:tabular-nums;line-height:1.1;letter-spacing:0.8px;}
-.cb-clock-date{font-size:8px;color:#5F5E5A;letter-spacing:0.4px;text-transform:uppercase;font-weight:600;}
+.cb-clock{position:absolute;top:10px;right:16px;background:rgba(255,255,255,.75);padding:7px 16px;border-radius:12px;backdrop-filter:blur(6px);box-shadow:0 2px 10px rgba(26,63,111,.13);}
+.cb-clock-time{font-size:20px;font-weight:700;color:#1a3f6f;font-variant-numeric:tabular-nums;line-height:1;letter-spacing:1.5px;display:block;}
 
 /* RESPONSIVE */
 @media (max-width: 1100px){
@@ -123,12 +130,19 @@ body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100
 }
 
 /* Resultados de búsqueda de ciudad */
-.ciudad-result-item{padding:9px 12px;border:0.5px solid #e2e8f0;border-radius:7px;margin-bottom:5px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:background 0.15s;}
-.ciudad-result-item:hover{background:#eef4fb;border-color:#1a3f6f;}
-.ciudad-result-name{font-size:12px;font-weight:600;color:#1a3f6f;}
-.ciudad-result-loc{font-size:10px;color:#5F5E5A;margin-top:1px;}
+.ciudad-result-item{padding:11px 14px;border:1px solid #e2e8f0;border-radius:10px;margin-bottom:6px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all 0.15s;background:#fafbff;}
+.ciudad-result-item:hover{background:#eff6ff;border-color:#1a3f6f;box-shadow:0 2px 8px rgba(26,63,111,.10);transform:translateY(-1px);}
+.ciudad-result-name{font-size:13px;font-weight:700;color:#1a3f6f;}
+.ciudad-result-loc{font-size:10px;color:#718096;margin-top:2px;}
 .ciudad-result-coord{font-size:9px;color:#94a3b8;}
-.ciudad-buscando{text-align:center;color:#94a3b8;padding:14px;font-size:11px;}
+.ciudad-buscando{text-align:center;color:#94a3b8;padding:18px;font-size:11px;}
+.modal-head{background:linear-gradient(135deg,#1a3f6f,#1e56a0);color:#fff;padding:16px 20px;border-radius:10px 10px 0 0;display:flex;align-items:center;justify-content:space-between;margin:-22px -22px 18px;}
+.modal-close{background:rgba(255,255,255,.15);border:none;color:#fff;font-size:20px;cursor:pointer;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:300;line-height:1;}
+.modal-close:hover{background:rgba(255,255,255,.30);}
+.form-group{margin-bottom:14px;}
+.form-label{display:block;font-size:11px;font-weight:700;color:#4a5568;margin-bottom:6px;text-transform:uppercase;letter-spacing:.4px;}
+.form-input{width:100%;font-size:14px;padding:11px 14px;border:2px solid #e2e8f0;border-radius:8px;color:#2d3748;transition:border-color .15s;outline:none;font-family:inherit;}
+.form-input:focus{border-color:#1a3f6f;box-shadow:0 0 0 3px rgba(26,63,111,.10);}
 
 /* FRASE BAR */
 .frase-bar{background:#1a3f6f;border-top:1px solid rgba(255,255,255,.08);padding:7px 20px;display:flex;gap:16px;align-items:center;}
@@ -345,7 +359,7 @@ body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100
 .exp-divider{height:0.5px;background:#eef2f7;}
 
 /* MODALES */
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center;}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
 .modal-overlay.open{display:flex;}
 .modal-box{background:#fff;border-radius:10px;padding:22px;width:360px;max-width:95vw;box-shadow:0 20px 60px rgba(0,0,0,.25);}
 .modal-box h3{font-size:13px;font-weight:700;color:#1a3f6f;margin-bottom:14px;}
@@ -680,7 +694,7 @@ body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100
       <div class="cb-city-info">
         <span class="cb-pin">📍</span>
         <span class="cb-city-name" id="cb-city-name">Punta Arenas, Chile</span>
-        <button class="cb-btn-change" onclick="abrirModalCiudad()">🌍 Cambiar ciudad</button>
+        <button class="cb-btn-change" onclick="abrirModalCiudad()">🌍 Elegir ciudad</button>
         <button class="cb-btn-reset" id="cb-btn-reset" onclick="climaResetCity()" style="display:none;" title="Volver a Punta Arenas">↩</button>
         <span class="cb-date" id="cb-date">--</span>
       </div>
@@ -761,7 +775,6 @@ body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100
     <!-- Reloj suelto a la derecha (compacto) -->
     <div class="cb-clock" id="cb-clock-wrap">
       <span class="cb-clock-time" id="hora-mil">00:00</span>
-      <span class="cb-clock-date" id="fecha-mil">--</span>
     </div>
   </div>
 
@@ -769,7 +782,7 @@ body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100
   <div class="modal-overlay" id="modal-cambiar-ciudad" onclick="if(event.target===this)cerrarModalCiudad()">
     <div class="modal-box" style="max-width:440px;">
       <div class="modal-head">
-        <h3 style="margin:0;font-size:14px;color:#1a3f6f;">🌍 Cambiar ciudad</h3>
+        <h3 style="margin:0;font-size:14px;color:#fff;">🌍 Elegir ciudad</h3>
         <button class="modal-close" onclick="cerrarModalCiudad()">×</button>
       </div>
       <div class="modal-body">
@@ -1306,7 +1319,6 @@ const MESES_ES=['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV
 function updateClock(){
   const n=new Date();
   document.getElementById('hora-mil').textContent=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
-  document.getElementById('fecha-mil').textContent=DIAS_ES[n.getDay()]+' '+String(n.getDate()).padStart(2,'0')+'/'+MESES_ES[n.getMonth()]+'/'+n.getFullYear();
 }
 updateClock(); setInterval(updateClock,1000);
 
