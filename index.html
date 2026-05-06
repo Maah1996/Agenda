@@ -1,17 +1,17 @@
 <!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
+<!-- saved from url=(0034)https://maah1996.github.io/Agenda/ -->
+<html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Sistema MAAH</title>
-<link rel="icon" href="favicon.ico">
+<link rel="icon" href="https://maah1996.github.io/Agenda/favicon.ico">
 <meta name="theme-color" content="#1a3f6f">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Sistema MAAH">
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="manifest" href="https://maah1996.github.io/Agenda/manifest.json">
+<link rel="apple-touch-icon" href="https://maah1996.github.io/Agenda/icon-192.png">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
@@ -44,7 +44,7 @@ body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100
 /* INFO BAR */
 /* CLIMA NUEVO BLOQUE — fondo claro, tarjetas blancas */
 .clima-bloque{background:linear-gradient(135deg,#dbeafe 0%,#eff6ff 50%,#e0f2fe 100%);padding:12px 16px 14px;font-family:'Segoe UI',Arial,sans-serif;border-bottom:1px solid #bfdbfe;position:relative;}
-.cb-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:6px;}
+.cb-header{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;margin-bottom:6px;}
 .cb-city-info{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
 .cb-pin{color:#c62828;font-size:16px;}
 .cb-city-name{font-size:19px;font-weight:800;color:#1a3f6f;letter-spacing:-0.3px;}
@@ -62,6 +62,10 @@ body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100
 .cb-card-now{border-top:3px solid #1a3f6f;}
 .cb-card-sun{border-top:3px solid #f59e0b;}
 .cb-card-moon{border-top:3px solid #6366f1;}
+.cb-hora-inline{display:flex;align-items:center;justify-content:center;gap:7px;}
+.cb-hora-bar-icon{font-size:15px;}
+.cb-hora-bar-time{font-size:22px;font-weight:700;color:#0e7490;letter-spacing:2px;font-variant-numeric:tabular-nums;line-height:1;}
+.cb-hora-bar-tz{font-size:10px;color:#64748b;font-weight:600;background:#e0f2fe;padding:2px 7px;border-radius:10px;}
 .cb-card-tomorrow{border-top:3px solid #10b981;}
 .cb-card-now .cb-card-head{background:#dbeafe;color:#1a3f6f;}
 .cb-card-sun .cb-card-head{background:#fef3c7;color:#92400e;}
@@ -96,7 +100,8 @@ body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100
 .cb-moon-circle::before{content:"";position:absolute;width:5px;height:5px;background:rgba(120,140,180,0.18);border-radius:50%;top:9px;left:8px;z-index:2;}
 .cb-moon-circle::after{content:"";position:absolute;width:3px;height:3px;background:rgba(120,140,180,0.15);border-radius:50%;top:21px;left:17px;z-index:2;}
 .cb-moon-fase{font-size:clamp(11px,1.3vw,15px);text-align:center;font-weight:700;color:#4c1d95;margin-bottom:3px;}
-.cb-moon-ilum{text-align:center;font-size:clamp(10px,1.1vw,13px);color:#5F5E5A;margin-bottom:6px;}
+.cb-moon-ilum{text-align:center;font-size:clamp(10px,1.1vw,13px);color:#5F5E5A;margin-bottom:3px;}
+.cb-moon-desc{font-size:clamp(9px,1vw,11px);color:#4a5568;text-align:center;line-height:1.45;margin:0 0 6px;font-style:italic;padding:4px 6px;background:#f0f4ff;border-radius:6px;border:0.5px solid #c6d4f0;}
 
 /* MAÑANA (compacto en horizontal) */
 .cb-card-tomorrow{padding:9px 11px;}
@@ -683,7 +688,7 @@ body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100
 <body>
 
 <!-- LOGIN -->
-<div id="screen-login" class="screen active">
+<div id="screen-login" class="screen">
   <div class="login-card">
     <div class="login-logo">
       <div class="logo-circle">M</div>
@@ -692,11 +697,11 @@ body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100
     </div>
     <div class="lfg">
       <label>Usuario</label>
-      <input type="text" id="login-user" placeholder="Nombre de usuario" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()">
+      <input type="text" id="login-user" placeholder="Nombre de usuario" autocomplete="username" onkeydown="if(event.key===&#39;Enter&#39;)doLogin()">
     </div>
     <div class="lfg">
       <label>Contraseña</label>
-      <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+      <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key===&#39;Enter&#39;)doLogin()">
     </div>
     <button class="btn-login" onclick="doLogin()">Ingresar al sistema</button>
     <div class="login-error" id="login-error">Usuario o contraseña incorrectos</div>
@@ -704,14 +709,14 @@ body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100
 </div>
 
 <!-- APP -->
-<div id="screen-app" class="screen">
+<div id="screen-app" class="screen active">
 
   <div class="app-header">
-    <h1>&#9632;&nbsp; SISTEMA MAAH</h1>
+    <h1>■&nbsp; SISTEMA MAAH</h1>
     <div class="header-right">
-      <span class="user-badge" id="header-username"></span>
-      <button class="btn-logout" onclick="openChangePass()" title="Cambiar mi clave" style="background:rgba(255,255,255,.15);">&#128273; Clave</button>
-      <button class="btn-logout" onclick="doLogout()">&#128275; Salir</button>
+      <span class="user-badge" id="header-username">ADMIN ★</span>
+      <button class="btn-logout" onclick="openChangePass()" title="Cambiar mi clave" style="background:rgba(255,255,255,.15);">🔑 Clave</button>
+      <button class="btn-logout" onclick="doLogout()">🔓 Salir</button>
     </div>
   </div>
 
@@ -721,10 +726,15 @@ body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100
     <div class="cb-header">
       <div class="cb-city-info">
         <span class="cb-pin">📍</span>
-        <span class="cb-city-name" id="cb-city-name">Punta Arenas, Chile</span>
+        <span class="cb-city-name" id="cb-city-name">Santiago de Chile, Chile</span>
         <button class="cb-btn-change" onclick="abrirModalCiudad()">🌍 Elegir ciudad</button>
-        <button class="cb-btn-reset" id="cb-btn-reset" onclick="climaResetCity()" style="display:none;" title="Volver a Punta Arenas">↩</button>
-        <span class="cb-date" id="cb-date">--</span>
+        <button class="cb-btn-reset" id="cb-btn-reset" onclick="climaResetCity()" style="" title="Volver a Punta Arenas">↩</button>
+        <span class="cb-date" id="cb-date">· Miércoles 6 de mayo</span>
+      </div>
+      <div class="cb-hora-inline">
+        <span class="cb-hora-bar-icon">🕐</span>
+        <span class="cb-hora-bar-time" id="cb-hora-city">--:--</span>
+        <span class="cb-hora-bar-tz" id="cb-hora-tz"></span>
       </div>
     </div>
 
@@ -734,17 +744,17 @@ body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100
       <div class="cb-card cb-card-now">
         <div class="cb-card-head">CLIMA AHORA</div>
         <div class="cb-now-row">
-          <div class="cb-now-icon" id="clima-icon">⛅</div>
+          <div class="cb-now-icon" id="clima-icon">🌧</div>
           <div>
-            <div class="cb-now-temp" id="clima-temp">--°C</div>
-            <div class="cb-now-desc" id="clima-desc">Cargando...</div>
+            <div class="cb-now-temp" id="clima-temp">12°C</div>
+            <div class="cb-now-desc" id="clima-desc">Lluvia moderada · Sensación 11°C</div>
           </div>
         </div>
         <div class="cb-now-stats">
-          <div class="cb-stat"><span class="cb-stat-icon">💨</span><span class="cb-stat-lbl">Viento</span><span class="cb-stat-val" id="cb-wind">--</span></div>
-          <div class="cb-stat"><span class="cb-stat-icon">💧</span><span class="cb-stat-lbl">Humedad</span><span class="cb-stat-val" id="cb-hum">--</span></div>
-          <div class="cb-stat"><span class="cb-stat-icon">🌧</span><span class="cb-stat-lbl">Lluvia</span><span class="cb-stat-val" id="cb-rain">--</span></div>
-          <div class="cb-stat"><span class="cb-stat-icon">☀</span><span class="cb-stat-lbl">UV</span><span class="cb-stat-val" id="cb-uv">--</span></div>
+          <div class="cb-stat"><span class="cb-stat-icon">💨</span><span class="cb-stat-lbl">Viento</span><span class="cb-stat-val" id="cb-wind">8 km/h</span></div>
+          <div class="cb-stat"><span class="cb-stat-icon">💧</span><span class="cb-stat-lbl">Humedad</span><span class="cb-stat-val" id="cb-hum">91%</span></div>
+          <div class="cb-stat"><span class="cb-stat-icon">🌧</span><span class="cb-stat-lbl">Lluvia</span><span class="cb-stat-val" id="cb-rain">0.7 mm</span></div>
+          <div class="cb-stat"><span class="cb-stat-icon">☀</span><span class="cb-stat-lbl">UV</span><span class="cb-stat-val" id="cb-uv">0.1 — Bajo</span></div>
         </div>
       </div>
 
@@ -753,9 +763,9 @@ body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100
         <div class="cb-card-head">SOL HOY</div>
         <div class="cb-sun-circle">☀️</div>
         <div class="cb-sun-data">
-          <div class="cb-row"><span class="cb-row-lbl">🌅 Amanecer</span><span class="cb-row-val cb-sun-val" id="cb-sunrise">--</span></div>
-          <div class="cb-row"><span class="cb-row-lbl">🌇 Atardecer</span><span class="cb-row-val cb-sun-val" id="cb-sunset">--</span></div>
-          <div class="cb-row"><span class="cb-row-lbl">⏱ Duración</span><span class="cb-row-val cb-sun-val" id="cb-daylen">--</span></div>
+          <div class="cb-row"><span class="cb-row-lbl">🌅 Amanecer</span><span class="cb-row-val cb-sun-val" id="cb-sunrise">07:20</span></div>
+          <div class="cb-row"><span class="cb-row-lbl">🌇 Atardecer</span><span class="cb-row-val cb-sun-val" id="cb-sunset">17:57</span></div>
+          <div class="cb-row"><span class="cb-row-lbl">⏱ Duración</span><span class="cb-row-val cb-sun-val" id="cb-daylen">10h 37m</span></div>
         </div>
       </div>
 
@@ -763,15 +773,16 @@ body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100
       <div class="cb-card cb-card-moon">
         <div class="cb-card-head">LUNA HOY</div>
         <div class="cb-moon-wrap">
-          <div class="cb-moon-circle" id="cb-moon-circle">
-            <div class="cb-moon-shadow" id="cb-moon-shadow"></div>
+          <div class="cb-moon-circle" id="cb-moon-circle" style="background: rgb(221, 226, 235);">
+            <div class="cb-moon-shadow" id="cb-moon-shadow" style="right: 0px; left: auto; width: 33.5318%;"></div>
           </div>
         </div>
-        <div class="cb-moon-fase" id="cb-moon-fase">--</div>
-        <div class="cb-moon-ilum" id="cb-moon-ilum">--</div>
+        <div class="cb-moon-fase" id="cb-moon-fase">Gibosa menguante</div>
+        <div class="cb-moon-ilum" id="cb-moon-ilum">Iluminación: 75%</div>
+        <div class="cb-moon-desc" id="cb-moon-desc"></div>
         <div class="cb-sun-data">
-          <div class="cb-row"><span class="cb-row-lbl">🌙 Salida</span><span class="cb-row-val cb-moon-val" id="cb-moonrise">--</span></div>
-          <div class="cb-row"><span class="cb-row-lbl">🌑 Puesta</span><span class="cb-row-val cb-moon-val" id="cb-moonset">--</span></div>
+          <div class="cb-row"><span class="cb-row-lbl">🌙 Salida</span><span class="cb-row-val cb-moon-val" id="cb-moonrise">22:26</span></div>
+          <div class="cb-row"><span class="cb-row-lbl">🌑 Puesta</span><span class="cb-row-val cb-moon-val" id="cb-moonset">10:26</span></div>
         </div>
       </div>
 
@@ -779,31 +790,27 @@ body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100
       <div class="cb-card cb-card-tomorrow">
         <div class="cb-tomorrow-head">
           <span class="cb-card-head" style="margin:0;">MAÑANA</span>
-          <span class="cb-tomorrow-date" id="cb-tomorrow-date">--</span>
+          <span class="cb-tomorrow-date" id="cb-tomorrow-date">Jueves 7 de mayo</span>
         </div>
         <div class="cb-tomorrow-main">
-          <div class="cb-tomorrow-icon" id="man-icon">🌡</div>
+          <div class="cb-tomorrow-icon" id="man-icon">🌦</div>
           <div class="cb-tomorrow-info">
-            <div class="cb-tomorrow-desc" id="cb-tomorrow-desc">Cargando...</div>
+            <div class="cb-tomorrow-desc" id="cb-tomorrow-desc">Llovizna ligera</div>
             <div class="cb-tomorrow-range">
-              <span><b class="cb-max" id="cb-tom-max">--°</b> Máx</span>
-              <span><b class="cb-min" id="cb-tom-min">--°</b> Mín</span>
+              <span><b class="cb-max" id="cb-tom-max">15°</b> Máx</span>
+              <span><b class="cb-min" id="cb-tom-min">9°</b> Mín</span>
             </div>
           </div>
         </div>
         <div class="cb-tomorrow-stats">
-          <div class="cb-tom-stat"><div class="cb-tom-icon">💨</div><div class="cb-tom-val" id="cb-tom-wind">--</div><div class="cb-tom-lbl">Viento</div></div>
-          <div class="cb-tom-stat"><div class="cb-tom-icon">🌧</div><div class="cb-tom-val" id="cb-tom-rain">--</div><div class="cb-tom-lbl">Lluvia</div></div>
-          <div class="cb-tom-stat"><div class="cb-tom-icon">❄</div><div class="cb-tom-val" id="cb-tom-snow">--</div><div class="cb-tom-lbl">Nieve</div></div>
-          <div class="cb-tom-stat"><div class="cb-tom-icon">☀</div><div class="cb-tom-val" id="cb-tom-uv">--</div><div class="cb-tom-lbl">UV</div></div>
+          <div class="cb-tom-stat"><div class="cb-tom-icon">💨</div><div class="cb-tom-val" id="cb-tom-wind">9 km/h</div><div class="cb-tom-lbl">Viento</div></div>
+          <div class="cb-tom-stat"><div class="cb-tom-icon">🌧</div><div class="cb-tom-val" id="cb-tom-rain">0.3 mm</div><div class="cb-tom-lbl">Lluvia</div></div>
+          <div class="cb-tom-stat"><div class="cb-tom-icon">❄</div><div class="cb-tom-val" id="cb-tom-snow">0.0 cm</div><div class="cb-tom-lbl">Nieve</div></div>
+          <div class="cb-tom-stat"><div class="cb-tom-icon">☀</div><div class="cb-tom-val" id="cb-tom-uv">UV 4.7</div><div class="cb-tom-lbl">UV</div></div>
         </div>
       </div>
     </div>
 
-    <!-- Reloj suelto a la derecha (compacto) -->
-    <div class="cb-clock" id="cb-clock-wrap">
-      <span class="cb-clock-time" id="hora-mil">00:00</span>
-    </div>
   </div>
 
   <!-- MODAL: Cambiar ciudad -->
@@ -818,7 +825,55 @@ body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100
           <label class="form-label">Buscar ciudad</label>
           <input type="text" id="ciudad-buscar" class="form-input" placeholder="Ej: Santiago, Buenos Aires, Madrid..." oninput="buscarCiudad(this.value)" autocomplete="off">
         </div>
-        <div id="ciudad-resultados" style="max-height:280px;overflow-y:auto;margin-top:10px;"></div>
+        <div id="ciudad-resultados" style="max-height:280px;overflow-y:auto;margin-top:10px;"><div class="ciudad-result-item" onclick="climaSetCity(&#39;Santiago de Chile, Chile&#39;,-33.45694,-70.64827,&#39;America/Santiago&#39;)">
+            <div>
+              <div class="ciudad-result-name">Santiago de Chile</div>
+              <div class="ciudad-result-loc">Región Metropolitana de Santiago de Chile · Chile</div>
+            </div>
+            <div class="ciudad-result-coord">-33.46, -70.65</div>
+          </div><div class="ciudad-result-item" onclick="climaSetCity(&#39;Santiago de Cuba, Cuba&#39;,20.02287,-75.82171,&#39;America/Havana&#39;)">
+            <div>
+              <div class="ciudad-result-name">Santiago de Cuba</div>
+              <div class="ciudad-result-loc">Provincia de Santiago de Cuba · Cuba</div>
+            </div>
+            <div class="ciudad-result-coord">20.02, -75.82</div>
+          </div><div class="ciudad-result-item" onclick="climaSetCity(&#39;Santi, Italia&#39;,45.34338,7.60559,&#39;Europe/Rome&#39;)">
+            <div>
+              <div class="ciudad-result-name">Santi</div>
+              <div class="ciudad-result-loc">Región de Piamonte · Italia</div>
+            </div>
+            <div class="ciudad-result-coord">45.34, 7.61</div>
+          </div><div class="ciudad-result-item" onclick="climaSetCity(&#39;Santi, Italia&#39;,44.98803,12.01441,&#39;Europe/Rome&#39;)">
+            <div>
+              <div class="ciudad-result-name">Santi</div>
+              <div class="ciudad-result-loc">Región de Véneto · Italia</div>
+            </div>
+            <div class="ciudad-result-coord">44.99, 12.01</div>
+          </div><div class="ciudad-result-item" onclick="climaSetCity(&#39;Santi, Italia&#39;,42.40261,13.24138,&#39;Europe/Rome&#39;)">
+            <div>
+              <div class="ciudad-result-name">Santi</div>
+              <div class="ciudad-result-loc">Región de Los Abruzos · Italia</div>
+            </div>
+            <div class="ciudad-result-coord">42.40, 13.24</div>
+          </div><div class="ciudad-result-item" onclick="climaSetCity(&#39;Santi, Italia&#39;,45.56871,11.23251,&#39;Europe/Rome&#39;)">
+            <div>
+              <div class="ciudad-result-name">Santi</div>
+              <div class="ciudad-result-loc">Región de Véneto · Italia</div>
+            </div>
+            <div class="ciudad-result-coord">45.57, 11.23</div>
+          </div><div class="ciudad-result-item" onclick="climaSetCity(&#39;Santi, Burkina Faso&#39;,12.63333,-0.66667,&#39;Africa/Ouagadougou&#39;)">
+            <div>
+              <div class="ciudad-result-name">Santi</div>
+              <div class="ciudad-result-loc">Región Plateau-Central · Burkina Faso</div>
+            </div>
+            <div class="ciudad-result-coord">12.63, -0.67</div>
+          </div><div class="ciudad-result-item" onclick="climaSetCity(&#39;Santi, Guinea&#39;,9.93028,-13.89944,&#39;Africa/Conakry&#39;)">
+            <div>
+              <div class="ciudad-result-name">Santi</div>
+              <div class="ciudad-result-loc">Boké · Guinea</div>
+            </div>
+            <div class="ciudad-result-coord">9.93, -13.90</div>
+          </div></div>
         <div style="margin-top:14px;padding-top:12px;border-top:0.5px solid #e2e8f0;">
           <button class="btn-primary" onclick="climaResetCity()" style="width:100%;background:#0F6E56;">↩ Volver a Punta Arenas (predeterminada)</button>
         </div>
@@ -829,21 +884,21 @@ body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100
   <!-- FRASE DEL DÍA -->
   <div class="frase-bar">
     <div class="frase-item">
-      <span class="frase-icon">&#128218;</span>
-      <div class="frase-txt" id="frase-proverbio"><strong>Cargando...</strong></div>
+      <span class="frase-icon">📚</span>
+      <div class="frase-txt" id="frase-proverbio"><strong>PROVERBIOS 21:5 </strong>—  Los planes del diligente ciertamente llevan a la abundancia.</div>
     </div>
     <div class="frase-div"></div>
     <div class="frase-item">
-      <span class="frase-icon">&#129504;</span>
-      <div class="frase-txt" id="frase-estoica"><strong>Cargando...</strong></div>
+      <span class="frase-icon">🧠</span>
+      <div class="frase-txt" id="frase-estoica"><strong>Marco Aurelio</strong> — Pierde el tiempo el que busca lo que no puede encontrar.</div>
     </div>
   </div>
 
   <div class="nav-tabs" id="nav-tabs">
-    <div class="tab active" onclick="showTab('agenda',this)">&#128197; Mi Agenda</div>
-    <div class="tab" onclick="showTab('gantt',this)">&#128200; Carta Gantt</div>
-    <div class="tab" id="tab-gastos-btn" onclick="showTab('gastos',this)">&#128181; Mis Gastos</div>
-    <div class="tab" id="tab-admin-btn" onclick="showTab('admin',this)" style="display:none;">&#9881; Administrador</div>
+    <div class="tab active" onclick="showTab(&#39;agenda&#39;,this)" title="">📅 Mi Agenda</div>
+    <div class="tab" onclick="showTab(&#39;gantt&#39;,this)" title="">📈 Carta Gantt</div>
+    <div class="tab" id="tab-gastos-btn" onclick="showTab(&#39;gastos&#39;,this)" title="" style="display: block;">💵 Mis Gastos</div>
+    <div class="tab" id="tab-admin-btn" onclick="showTab(&#39;admin&#39;,this)" style="display: block;">⚙ Administrador</div>
   </div>
 
   <!-- AGENDA -->
@@ -853,58 +908,63 @@ body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100
       <div class="form-card">
         <div class="card-title">+ Ingresar actividades del día</div>
         <div class="date-row">
-          <label>&#128197; Fecha:</label>
+          <label>📅 Fecha:</label>
           <input type="date" id="agenda-fecha">
         </div>
         <table class="acts-table">
           <thead><tr><th>Hora</th><th>Actividad</th><th>OBS</th><th title="Enviar a Carta Gantt" style="width:54px;text-align:center;">GANTT</th><th title="Repetir todos los años" style="width:54px;text-align:center;">ANUAL</th><th></th></tr></thead>
-          <tbody id="acts-body"></tbody>
+          <tbody id="acts-body"><tr><td><input type="time" value="08:00"></td>
+    <td><input type="text" placeholder="Actividad..." oninput="this.value=this.value.toUpperCase()"></td>
+    <td class="obs-td"><textarea placeholder="OBS..." rows="1" oninput="this.value=this.value.toUpperCase();autoGrow(this);" onkeydown="if(event.key===&#39;Enter&#39;){event.stopPropagation();}"></textarea></td>
+    <td class="chk-cell"><input type="checkbox" class="chk-gantt" title="Enviar esta actividad a la Carta Gantt" onchange="onChkGanttChange(this)"></td>
+    <td class="chk-cell"><input type="checkbox" class="chk-anual" title="Repetir todos los años (también la envía a la Gantt)" disabled="" onchange="onChkAnualChange(this)"></td>
+    <td><button class="del-r" onclick="this.closest(&#39;tr&#39;).remove()">✕</button></td></tr></tbody>
         </table>
         <button class="btn-addrow" onclick="addActRow()">+ Agregar otra actividad</button>
-        <button class="btn-guardar" onclick="guardarAgenda()">&#10003; Guardar agenda del día</button>
+        <button class="btn-guardar" onclick="guardarAgenda()">✓ Guardar agenda del día</button>
 
         <div class="tg-box">
-          <div class="tg-title">&#128276; Notificación Telegram — BD26MAAHBOT</div>
+          <div class="tg-title">🔔 Notificación Telegram — BD26MAAHBOT</div>
           <div class="tg-row">
-            <input type="checkbox" id="tg-auto" checked>
+            <input type="checkbox" id="tg-auto" checked="">
             <label>Envío automático diario a las</label>
             <input type="time" id="tg-hora" value="08:00">
           </div>
           <div class="tg-row">
-            <input type="checkbox" id="tg-frase" checked>
+            <input type="checkbox" id="tg-frase" checked="">
             <label>Incluir frase del día siempre (aunque no haya actividades)</label>
           </div>
-          <button class="btn-tg" onclick="enviarTelegram()">&#9992; Enviar resumen ahora</button>
+          <button class="btn-tg" onclick="enviarTelegram()">✈ Enviar resumen ahora</button>
         </div>
       </div>
 
       <div class="timeline-card">
         <div class="card-title">ACTIVIDADES DE LA AGENDA</div>
         <div class="tl-header">
-          <div class="tl-num" id="tl-num">--</div>
+          <div class="tl-num" id="tl-num">6</div>
           <div class="tl-info">
-            <div class="tl-nombre" id="tl-nombre">Seleccione una fecha</div>
-            <div class="tl-sub" id="tl-sub">y guarde para ver la agenda</div>
+            <div class="tl-nombre" id="tl-nombre">Miércoles — Semana 19</div>
+            <div class="tl-sub" id="tl-sub">06/may/26 · 1 actividad</div>
           </div>
           <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
             <div class="resumen-wrap">
               <button class="resumen-btn" id="resumen-btn" onclick="toggleResumenMenu()">📊 Resumen <span style="font-size:9px;">▾</span></button>
               <div class="resumen-popup" id="resumen-popup">
-                <div class="resumen-item" onclick="abrirResumenModal('dia')">
+                <div class="resumen-item" onclick="abrirResumenModal(&#39;dia&#39;)">
                   <div class="resumen-icon">📅</div>
                   <div class="resumen-text">
                     <div class="resumen-title">Resumen del día</div>
                     <div class="resumen-sub">Actividades de hoy</div>
                   </div>
                 </div>
-                <div class="resumen-item" onclick="abrirResumenModal('semana')">
+                <div class="resumen-item" onclick="abrirResumenModal(&#39;semana&#39;)">
                   <div class="resumen-icon">📆</div>
                   <div class="resumen-text">
                     <div class="resumen-title">Resumen semanal</div>
                     <div class="resumen-sub">Lunes a domingo</div>
                   </div>
                 </div>
-                <div class="resumen-item" onclick="abrirResumenModal('mes')">
+                <div class="resumen-item" onclick="abrirResumenModal(&#39;mes&#39;)">
                   <div class="resumen-icon">🗓</div>
                   <div class="resumen-text">
                     <div class="resumen-title">Resumen mensual</div>
@@ -914,7 +974,7 @@ body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100
               </div>
             </div>
             <div class="export-wrap">
-              <button class="export-btn" id="export-btn" onclick="toggleExportMenu()">&#8681; Exportar <span class="export-arrow">▼</span></button>
+              <button class="export-btn" id="export-btn" onclick="toggleExportMenu()">⇩ Exportar <span class="export-arrow">▼</span></button>
               <div class="export-menu" id="export-menu">
                 <div class="exp-item" onclick="exportarPDF()">
                   <div class="exp-icon" style="background:#ffebee;">📄</div>
@@ -945,10 +1005,31 @@ body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100
             </div>
           </div>
         </div>
-        <div id="agenda-overview"></div>
-        <div class="timeline" id="timeline-view">
-          <div class="empty-tl">No hay actividades para este día.</div>
+        <div id="agenda-overview"><div class="ov-pills-row"><div class="ov-pill green" onclick="showActsPanel(&#39;hoy&#39;)">
+      <div class="ov-pill-lbl">ACT. HOY</div>
+      <div class="ov-pill-val">1</div>
+      <div class="ov-pill-sub">actividad</div></div><div class="ov-pill" onclick="showActsPanel(&#39;semana&#39;)">
+      <div class="ov-pill-lbl">SEMANA</div>
+      <div class="ov-pill-val">2</div>
+      <div class="ov-pill-sub">actividades</div></div><div class="ov-pill" onclick="showActsPanel(&#39;mes&#39;)">
+      <div class="ov-pill-lbl">TOTAL ACTIVIDADES MAYO</div>
+      <div class="ov-pill-val">5</div>
+      <div class="ov-pill-sub">actividades</div></div></div><div class="ov-cal"><div class="ov-cal-head"><div style="display:flex;align-items:center;gap:6px;"><button type="button" class="cal-arrow-btn" onclick="calNavMes(-1)" title="Mes anterior">‹</button><div class="ov-cal-title">Mayo 2026</div><button type="button" class="cal-arrow-btn" onclick="calNavMes(1)" title="Mes siguiente">›</button></div><div class="cal-pais-wrap"><button class="cal-pais-btn" onclick="togglePaisDD(event)">🇨🇱 Chile ▾</button><div class="cal-pais-dd" id="cal-pais-dd"><div class="cal-pais-item active" onclick="selectPais(&#39;CL&#39;)"><span class="cal-pais-flag">🇨🇱</span><span>Chile</span></div><div class="cal-pais-item" onclick="selectPais(&#39;AR&#39;)"><span class="cal-pais-flag">🇦🇷</span><span>Argentina</span></div><div class="cal-pais-item" onclick="selectPais(&#39;ES&#39;)"><span class="cal-pais-flag">🇪🇸</span><span>España</span></div><div class="cal-pais-item" onclick="selectPais(&#39;BR&#39;)"><span class="cal-pais-flag">🇧🇷</span><span>Brasil</span></div><div class="cal-pais-item" onclick="selectPais(&#39;MX&#39;)"><span class="cal-pais-flag">🇲🇽</span><span>México</span></div><div class="cal-pais-item" onclick="selectPais(&#39;CO&#39;)"><span class="cal-pais-flag">🇨🇴</span><span>Colombia</span></div><div class="cal-pais-item" onclick="selectPais(&#39;PE&#39;)"><span class="cal-pais-flag">🇵🇪</span><span>Perú</span></div><div class="cal-pais-item" onclick="selectPais(&#39;UY&#39;)"><span class="cal-pais-flag">🇺🇾</span><span>Uruguay</span></div></div></div></div><div class="ov-cal-grid"><div class="ov-cal-cell dow">L</div><div class="ov-cal-cell dow">M</div><div class="ov-cal-cell dow">M</div><div class="ov-cal-cell dow">J</div><div class="ov-cal-cell dow">V</div><div class="ov-cal-cell dow">S</div><div class="ov-cal-cell dow">D</div><div class="ov-cal-cell other"></div><div class="ov-cal-cell other"></div><div class="ov-cal-cell other"></div><div class="ov-cal-cell other"></div><div class="ov-cal-cell day feriado" onclick="selectDay(&#39;2026-05-01&#39;)" title="Día del Trabajo">1</div><div class="ov-cal-cell day" onclick="selectDay(&#39;2026-05-02&#39;)" title="">2</div><div class="ov-cal-cell day" onclick="selectDay(&#39;2026-05-03&#39;)" title="">3</div><div class="ov-cal-cell day" onclick="selectDay(&#39;2026-05-04&#39;)" title="">4</div><div class="ov-cal-cell day has-act" onclick="selectDay(&#39;2026-05-05&#39;)" title="Día con actividades">5</div><div class="ov-cal-cell day has-act today" onclick="selectDay(&#39;2026-05-06&#39;)" title="Día con actividades">6</div><div class="ov-cal-cell day" onclick="selectDay(&#39;2026-05-07&#39;)" title="">7</div><div class="ov-cal-cell day" onclick="selectDay(&#39;2026-05-08&#39;)" title="">8</div><div class="ov-cal-cell day" onclick="selectDay(&#39;2026-05-09&#39;)" title="">9</div><div class="ov-cal-cell day" onclick="selectDay(&#39;2026-05-10&#39;)" title="">10</div><div class="ov-cal-cell day has-act" onclick="selectDay(&#39;2026-05-11&#39;)" title="Día con actividades">11</div><div class="ov-cal-cell day has-act" onclick="selectDay(&#39;2026-05-12&#39;)" title="Día con actividades">12</div><div class="ov-cal-cell day has-act" onclick="selectDay(&#39;2026-05-13&#39;)" title="Día con actividades">13</div><div class="ov-cal-cell day" onclick="selectDay(&#39;2026-05-14&#39;)" title="">14</div><div class="ov-cal-cell day" onclick="selectDay(&#39;2026-05-15&#39;)" title="">15</div><div class="ov-cal-cell day" onclick="selectDay(&#39;2026-05-16&#39;)" title="">16</div><div class="ov-cal-cell day" onclick="selectDay(&#39;2026-05-17&#39;)" title="">17</div><div class="ov-cal-cell day" onclick="selectDay(&#39;2026-05-18&#39;)" title="">18</div><div class="ov-cal-cell day" onclick="selectDay(&#39;2026-05-19&#39;)" title="">19</div><div class="ov-cal-cell day" onclick="selectDay(&#39;2026-05-20&#39;)" title="">20</div><div class="ov-cal-cell day feriado" onclick="selectDay(&#39;2026-05-21&#39;)" title="Día de las Glorias Navales">21</div><div class="ov-cal-cell day" onclick="selectDay(&#39;2026-05-22&#39;)" title="">22</div><div class="ov-cal-cell day" onclick="selectDay(&#39;2026-05-23&#39;)" title="">23</div><div class="ov-cal-cell day" onclick="selectDay(&#39;2026-05-24&#39;)" title="">24</div><div class="ov-cal-cell day" onclick="selectDay(&#39;2026-05-25&#39;)" title="">25</div><div class="ov-cal-cell day" onclick="selectDay(&#39;2026-05-26&#39;)" title="">26</div><div class="ov-cal-cell day" onclick="selectDay(&#39;2026-05-27&#39;)" title="">27</div><div class="ov-cal-cell day" onclick="selectDay(&#39;2026-05-28&#39;)" title="">28</div><div class="ov-cal-cell day" onclick="selectDay(&#39;2026-05-29&#39;)" title="">29</div><div class="ov-cal-cell day" onclick="selectDay(&#39;2026-05-30&#39;)" title="">30</div><div class="ov-cal-cell day" onclick="selectDay(&#39;2026-05-31&#39;)" title="">31</div></div></div></div>
+        <div class="timeline" id="timeline-view"><div class="tl-item">
+      <div class="tl-left">
+        <div class="tl-circle" style="background:#2c5282;">08:00</div>
+        <div class="tl-ampm">AM</div>
+      </div>
+      <div class="tl-card-item">
+        <h4>CJ - FORMACIÓN</h4>
+        <div class="meta">08:00</div>
+        <div class="obs-tag">BRIACO</div>
+        <div class="tl-actions">
+          <button class="tl-btn" onclick="openEditAct(&#39;2026-05-06&#39;,0,&#39;08:00&#39;,&#39;CJ - FORMACIÓN&#39;,&#39;BRIACO&#39;)">✎ Editar</button>
+          <button class="tl-btn del" onclick="deleteAct(&#39;2026-05-06&#39;,0,&#39;08:00&#39;,&#39;CJ - FORMACIÓN&#39;,&#39;BRIACO&#39;)">✕ Eliminar</button>
         </div>
+      </div>
+    </div></div>
       </div>
 
     </div>
@@ -958,9 +1039,8 @@ body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100
   <div class="tab-content" id="tab-content-gantt">
     <div style="background:#fff;border-radius:10px;border:0.5px solid #dde3ed;padding:24px;text-align:center;">
       <p style="font-size:13px;color:#4a5568;margin-bottom:14px;">La Carta Gantt MAAH se abre en su propia página.</p>
-      <button type="button" onclick="abrirCartaGantt()"
-         style="display:inline-block;padding:12px 24px;background:#1a3f6f;color:#fff;border-radius:8px;font-size:13px;font-weight:700;text-decoration:none;border:none;cursor:pointer;font-family:inherit;">
-        &#128200; Abrir Carta Gantt MAAH
+      <button type="button" onclick="abrirCartaGantt()" style="display:inline-block;padding:12px 24px;background:#1a3f6f;color:#fff;border-radius:8px;font-size:13px;font-weight:700;text-decoration:none;border:none;cursor:pointer;font-family:inherit;">
+        📈 Abrir Carta Gantt MAAH
       </button>
     </div>
   </div>
@@ -987,40 +1067,40 @@ body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100
         <div class="dash-card dash-total">
           <div class="dash-icon">💸</div>
           <div class="dash-info">
-            <div class="dash-num" id="dash-total">$0</div>
+            <div class="dash-num" id="dash-total">$2.424.000</div>
             <div class="dash-lbl">TOTAL ANUAL</div>
-            <div class="dash-sub" id="dash-total-sub">—</div>
+            <div class="dash-sub" id="dash-total-sub">1 mes con datos</div>
           </div>
         </div>
         <div class="dash-card dash-prom">
           <div class="dash-icon">📊</div>
           <div class="dash-info">
-            <div class="dash-num" id="dash-prom">$0</div>
+            <div class="dash-num" id="dash-prom">$2.424.000</div>
             <div class="dash-lbl">PROMEDIO MENSUAL</div>
-            <div class="dash-sub" id="dash-prom-sub">—</div>
+            <div class="dash-sub" id="dash-prom-sub">Por mes registrado</div>
           </div>
         </div>
         <div class="dash-card dash-caro">
           <div class="dash-icon">⬆</div>
           <div class="dash-info">
-            <div class="dash-num" id="dash-caro">$0</div>
+            <div class="dash-num" id="dash-caro">$2.424.000</div>
             <div class="dash-lbl">MES MÁS CARO</div>
-            <div class="dash-sub" id="dash-caro-sub">—</div>
+            <div class="dash-sub" id="dash-caro-sub">Abril</div>
           </div>
         </div>
         <div class="dash-card dash-barato">
           <div class="dash-icon">⬇</div>
           <div class="dash-info">
-            <div class="dash-num" id="dash-barato">$0</div>
+            <div class="dash-num" id="dash-barato">$2.424.000</div>
             <div class="dash-lbl">MES MÁS BARATO</div>
-            <div class="dash-sub" id="dash-barato-sub">—</div>
+            <div class="dash-sub" id="dash-barato-sub">Abril</div>
           </div>
         </div>
       </div>
 
       <!-- 3 tarjetas de acciones en GRID horizontal -->
       <div id="gastos-actions-grid">
-        <button class="gcard-action fijos" onclick="gShowView('fijos')" type="button">
+        <button class="gcard-action fijos" onclick="gShowView(&#39;fijos&#39;)" type="button">
           <div class="ga-icon">⚙</div>
           <div class="ga-title">Gastos Fijos Permanentes</div>
           <div class="ga-desc">Plantilla de rubros que se repiten cada mes</div>
@@ -1032,7 +1112,7 @@ body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100
           <div class="ga-desc">Sueldo, bonos, fijos y gastos variables</div>
           <div class="ga-arrow">→</div>
         </button>
-        <button class="gcard-action historial" onclick="gShowView('historial')" type="button">
+        <button class="gcard-action historial" onclick="gShowView(&#39;historial&#39;)" type="button">
           <div class="ga-icon">📅</div>
           <div class="ga-title">Ver Gastos por Mes</div>
           <div class="ga-desc">Historial completo y descarga de PDF</div>
@@ -1045,10 +1125,10 @@ body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100
     <div class="gview" id="gview-fijos">
       <div class="gview-header">
         <div class="gvh-left">
-          <button class="gbtn-back" onclick="gShowView('home')">&larr; Volver</button>
-          <div class="gview-title">&#9881; GASTOS FIJOS PERMANENTES</div>
+          <button class="gbtn-back" onclick="gShowView(&#39;home&#39;)">← Volver</button>
+          <div class="gview-title">⚙ GASTOS FIJOS PERMANENTES</div>
         </div>
-        <button class="btn-primary" style="padding:8px 14px;font-size:11px;" onclick="gOpenAddFijo()">&#43; Agregar rubro</button>
+        <button class="btn-primary" style="padding:8px 14px;font-size:11px;" onclick="gOpenAddFijo()">+ Agregar rubro</button>
       </div>
       <div class="ghint-box">
         Esta lista se usa como plantilla base para cada mes. Cuando crees un mes nuevo podrás copiar estos gastos y ajustar los montos.
@@ -1074,31 +1154,31 @@ body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100
     <div class="gview" id="gview-mes">
       <div class="gview-header">
         <div class="gvh-left">
-          <button class="gbtn-back" onclick="gBackFromMes()">&larr; Volver</button>
-          <div class="gview-title" id="gmes-title">&#128197; MES</div>
+          <button class="gbtn-back" onclick="gBackFromMes()">← Volver</button>
+          <div class="gview-title" id="gmes-title">📅 MES</div>
         </div>
         <div style="display:flex;gap:6px;flex-wrap:wrap;">
-          <button class="btn-primary" style="padding:8px 12px;font-size:11px;background:#c8960a;" onclick="gExportarPDF()">&#128196; PDF</button>
-          <button class="btn-primary" style="padding:8px 12px;font-size:11px;background:#1976d2;" onclick="gEnviarEmail()" title="Enviar resumen por email">&#9993; Email</button>
-          <button class="btn-primary" style="padding:8px 12px;font-size:11px;background:#25a244;" onclick="gEnviarWhatsApp()" title="Enviar resumen por WhatsApp">&#128241; WhatsApp</button>
-          <button class="btn-primary" style="padding:8px 12px;font-size:11px;background:#25a244;" onclick="gGuardarMes()">&#128190; Guardar</button>
+          <button class="btn-primary" style="padding:8px 12px;font-size:11px;background:#c8960a;" onclick="gExportarPDF()">📄 PDF</button>
+          <button class="btn-primary" style="padding:8px 12px;font-size:11px;background:#1976d2;" onclick="gEnviarEmail()" title="Enviar resumen por email">✉ Email</button>
+          <button class="btn-primary" style="padding:8px 12px;font-size:11px;background:#25a244;" onclick="gEnviarWhatsApp()" title="Enviar resumen por WhatsApp">📱 WhatsApp</button>
+          <button class="btn-primary" style="padding:8px 12px;font-size:11px;background:#25a244;" onclick="gGuardarMes()">💾 Guardar</button>
         </div>
       </div>
 
       <div class="gmes-grid">
         <div class="gmes-card ing">
           <div class="gmc-head">
-            <span>&#43; INGRESOS</span>
+            <span>+ INGRESOS</span>
             <span id="gtotal-ing" style="font-size:13px;">$0</span>
           </div>
           <div id="ging-list"></div>
-          <button class="gmc-add ing" onclick="gAddIngreso()">&#43; Agregar ingreso</button>
+          <button class="gmc-add ing" onclick="gAddIngreso()">+ Agregar ingreso</button>
           <div class="gmc-total ing"><span>Total</span><span id="gtotal-ing2">$0</span></div>
         </div>
 
         <div class="gmes-card fij">
           <div class="gmc-head">
-            <span>&minus; GASTOS FIJOS <small style="font-weight:normal;font-size:10px;opacity:.75;">(de tu plantilla)</small></span>
+            <span>− GASTOS FIJOS <small style="font-weight:normal;font-size:10px;opacity:.75;">(de tu plantilla)</small></span>
             <span id="gtotal-fij" style="font-size:13px;">$0</span>
           </div>
           <div id="gfij-list"></div>
@@ -1111,8 +1191,8 @@ body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100
 
       <div class="gvar-card">
         <div class="gvar-head">
-          <span class="gvar-title">&minus; GASTOS VARIABLES (DÍA A DÍA)</span>
-          <button class="btn-primary" style="padding:6px 12px;font-size:11px;background:#c8960a;" onclick="gAddVariable()">&#43; Agregar</button>
+          <span class="gvar-title">− GASTOS VARIABLES (DÍA A DÍA)</span>
+          <button class="btn-primary" style="padding:6px 12px;font-size:11px;background:#c8960a;" onclick="gAddVariable()">+ Agregar</button>
         </div>
         <div id="gvar-list-head" style="display:none;grid-template-columns:32px 85px 1fr 110px 100px 30px;gap:6px;font-size:10px;color:#854f0b;text-transform:uppercase;letter-spacing:.3px;padding-bottom:5px;border-bottom:0.5px solid #fde68a;font-weight:700;">
           <div title="Pagado" style="text-align:center;">✓</div><div>FECHA</div><div>DESCRIPCIÓN</div><div style="text-align:right;">MONTO</div><div>CATEGORÍA</div><div></div>
@@ -1134,8 +1214,8 @@ body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100
     <div class="gview" id="gview-historial">
       <div class="gview-header">
         <div class="gvh-left">
-          <button class="gbtn-back" onclick="gShowView('home')">&larr; Volver</button>
-          <div class="gview-title">&#128197; HISTORIAL DE GASTOS</div>
+          <button class="gbtn-back" onclick="gShowView(&#39;home&#39;)">← Volver</button>
+          <div class="gview-title">📅 HISTORIAL DE GASTOS</div>
         </div>
       </div>
       <div style="background:#fff;border-radius:10px;border:0.5px solid #dde3ed;padding:16px;margin-bottom:14px;">
@@ -1165,9 +1245,44 @@ body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100
       <div class="admin-card">
         <div class="card-title" style="display:flex;justify-content:space-between;align-items:center;">
           <span>Usuarios del sistema</span>
-          <button onclick="loadUserList()" style="background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);color:#fff;padding:3px 10px;border-radius:4px;font-size:10px;cursor:pointer;font-weight:700;font-family:'Times New Roman',Times,serif;">🔄 Recargar</button>
+          <button onclick="loadUserList()" style="background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);color:#fff;padding:3px 10px;border-radius:4px;font-size:10px;cursor:pointer;font-weight:700;font-family:&#39;Times New Roman&#39;,Times,serif;">🔄 Recargar</button>
         </div>
-        <div id="user-list"></div>
+        <div id="user-list">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:11px;color:#5F5E5A;">
+        <span>2 usuarios registrados</span>
+        <span><b style="color:#0F6E56;">7</b> accesos activos</span>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:12px;font-size:11px;">
+        <div style="flex:1;background:#f0fff4;border:1px solid #9ae6b4;padding:6px 10px;border-radius:5px;text-align:center;"><b style="color:#2f855a;">2</b> <span style="color:#276749;">activos</span></div>
+        <div style="flex:1;background:#ffebee;border:1px solid #ffcdd2;padding:6px 10px;border-radius:5px;text-align:center;"><b style="color:#c62828;">0</b> <span style="color:#c62828;">bloqueados</span></div>
+      </div>
+    
+      <div class="user-list-item" style="">
+        <div class="user-avatar adm">AD</div>
+        <div class="user-info">
+          <div class="uname">ADMIN <span style="color:#1a3f6f;font-size:10px;">(tú)</span> <span style="background:#2f855a;color:#fff;font-size:9px;padding:1px 6px;border-radius:8px;font-weight:700;margin-left:4px;">ACTIVO</span></div>
+          <div class="urole">Administrador · TG:8290529563</div>
+        </div>
+        <div class="svc-mini-row"><div class="svc-mini on locked" title="Gantt (admin: siempre activo)">📅</div><div class="svc-mini on locked" title="Agenda (admin: siempre activo)">📒</div><div class="svc-mini on locked" title="Gastos (admin: siempre activo)">💰</div><div class="svc-mini on locked" title="Tareas (admin: siempre activo)">✅</div></div>
+        <div class="user-actions">
+          
+          <button class="ubtn" onclick="openEditUser(&#39;-OqDuWldQ3W-Lp1UPN9_&#39;,&#39;ADMIN&#39;,&#39;admin&#39;,&#39;8290529563&#39;)" title="Editar">✎</button>
+          
+        </div>
+      </div>
+      <div class="user-list-item" style="">
+        <div class="user-avatar ">BB</div>
+        <div class="user-info">
+          <div class="uname">BB <span style="background:#2f855a;color:#fff;font-size:9px;padding:1px 6px;border-radius:8px;font-weight:700;margin-left:4px;">ACTIVO</span></div>
+          <div class="urole">Usuario · TG:7889124903</div>
+        </div>
+        <div class="svc-mini-row"><div class="svc-mini on" onclick="toggleServicioUsuario(&#39;-Oqh7ryVVKXE6Iz7ibpi&#39;,&#39;gantt&#39;,true)" title="Gantt: activado — clic para desactivar">📅</div><div class="svc-mini on" onclick="toggleServicioUsuario(&#39;-Oqh7ryVVKXE6Iz7ibpi&#39;,&#39;agenda&#39;,true)" title="Agenda: activado — clic para desactivar">📒</div><div class="svc-mini on" onclick="toggleServicioUsuario(&#39;-Oqh7ryVVKXE6Iz7ibpi&#39;,&#39;gastos&#39;,true)" title="Gastos: activado — clic para desactivar">💰</div><div class="svc-mini off" onclick="toggleServicioUsuario(&#39;-Oqh7ryVVKXE6Iz7ibpi&#39;,&#39;tareas&#39;,false)" title="Tareas: desactivado — clic para activar">✅</div></div>
+        <div class="user-actions">
+          <button class="ubtn" style="background:#c62828;color:#fff;border-color:#c62828;" onclick="toggleBloqueoUser(&#39;-Oqh7ryVVKXE6Iz7ibpi&#39;,&#39;BB&#39;,false)" title="Bloquear">🚫 Bloquear</button>
+          <button class="ubtn" onclick="openEditUser(&#39;-Oqh7ryVVKXE6Iz7ibpi&#39;,&#39;BB&#39;,&#39;usuario&#39;,&#39;7889124903&#39;)" title="Editar">✎</button>
+          <button class="ubtn del" onclick="deleteUser(&#39;-Oqh7ryVVKXE6Iz7ibpi&#39;,&#39;BB&#39;)" title="Eliminar">✕</button>
+        </div>
+      </div></div>
       </div>
     </div>
   </div>
@@ -1177,12 +1292,12 @@ body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100
 <!-- MODAL EDITAR ACTIVIDAD -->
 <div class="modal-overlay" id="modal-edit-act">
   <div class="modal-box">
-    <h3>&#9998; Editar actividad</h3>
+    <h3>✎ Editar actividad</h3>
     <div class="mfg"><label>Hora</label><input type="time" id="edit-act-hora"></div>
     <div class="mfg"><label>Actividad</label><input type="text" id="edit-act-desc" oninput="this.value=this.value.toUpperCase()"></div>
-    <div class="mfg"><label>OBS</label><textarea id="edit-act-obs" rows="3" style="width:100%;font-size:12px;padding:7px 10px;border:1px solid #cbd5e0;border-radius:5px;color:#2d3748;font-family:'Times New Roman',Times,serif;background:#fffde7;resize:vertical;line-height:1.4;" oninput="this.value=this.value.toUpperCase()"></textarea></div>
+    <div class="mfg"><label>OBS</label><textarea id="edit-act-obs" rows="3" style="width:100%;font-size:12px;padding:7px 10px;border:1px solid #cbd5e0;border-radius:5px;color:#2d3748;font-family:&#39;Times New Roman&#39;,Times,serif;background:#fffde7;resize:vertical;line-height:1.4;" oninput="this.value=this.value.toUpperCase()"></textarea></div>
     <div class="modal-btns">
-      <button class="btn-cancel-m" onclick="closeModal('modal-edit-act')">Cancelar</button>
+      <button class="btn-cancel-m" onclick="closeModal(&#39;modal-edit-act&#39;)">Cancelar</button>
       <button class="btn-save-m" onclick="saveEditAct()">Guardar cambios</button>
     </div>
   </div>
@@ -1191,13 +1306,13 @@ body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100
 <!-- MODAL EDITAR USUARIO -->
 <div class="modal-overlay" id="modal-edit-user">
   <div class="modal-box">
-    <h3>&#9998; Editar usuario</h3>
+    <h3>✎ Editar usuario</h3>
     <div class="mfg"><label>Nombre</label><input type="text" id="eu-nombre" oninput="this.value=this.value.toUpperCase()"></div>
     <div class="mfg"><label>Nueva contraseña (dejar vacío para no cambiar)</label><input type="password" id="eu-pass" placeholder="Nueva clave..."></div>
     <div class="mfg"><label>Rol</label><select id="eu-rol"><option value="usuario">Usuario</option><option value="admin">Administrador</option></select></div>
     <div class="mfg"><label>Chat ID Telegram</label><input type="text" id="eu-tgid"></div>
     <div class="modal-btns">
-      <button class="btn-cancel-m" onclick="closeModal('modal-edit-user')">Cancelar</button>
+      <button class="btn-cancel-m" onclick="closeModal(&#39;modal-edit-user&#39;)">Cancelar</button>
       <button class="btn-save-m" onclick="saveEditUser()">Guardar cambios</button>
     </div>
   </div>
@@ -1206,13 +1321,13 @@ body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100
 <!-- MODAL CAMBIAR CLAVE (para todos los usuarios) -->
 <div class="modal-overlay" id="modal-change-pass">
   <div class="modal-box">
-    <h3>&#128273; Cambiar mi clave</h3>
+    <h3>🔑 Cambiar mi clave</h3>
     <div class="mfg"><label>Clave actual</label><input type="password" id="cp-actual" placeholder="Tu clave actual"></div>
     <div class="mfg"><label>Nueva clave</label><input type="password" id="cp-nueva" placeholder="Mínimo 4 caracteres"></div>
     <div class="mfg"><label>Repetir nueva clave</label><input type="password" id="cp-nueva2" placeholder="Confirma la nueva clave"></div>
     <div id="cp-msg" style="font-size:11px;text-align:center;margin-top:6px;display:none;padding:6px;border-radius:4px;"></div>
     <div class="modal-btns">
-      <button class="btn-cancel-m" onclick="closeModal('modal-change-pass')">Cancelar</button>
+      <button class="btn-cancel-m" onclick="closeModal(&#39;modal-change-pass&#39;)">Cancelar</button>
       <button class="btn-save-m" onclick="doChangePass()">Cambiar clave</button>
     </div>
   </div>
@@ -1222,10 +1337,10 @@ body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100
 <div class="modal-overlay" id="modal-gfijo">
   <div class="modal-box">
     <h3 id="modal-gfijo-title">Agregar rubro fijo</h3>
-    <div class="mfg"><label>Nombre del rubro</label><input type="text" id="gfijo-nombre" placeholder="Ej: Arriendo, Luz..." oninput="this.value=this.value.toUpperCase()" onkeydown="if(event.key==='Enter')gSaveFijo()"></div>
-    <div class="mfg"><label>Monto base mensual</label><input type="text" inputmode="numeric" id="gfijo-monto" placeholder="$0" oninput="this.value=fmtMiles(gToNum(this.value))" onkeydown="if(event.key==='Enter')gSaveFijo()"></div>
+    <div class="mfg"><label>Nombre del rubro</label><input type="text" id="gfijo-nombre" placeholder="Ej: Arriendo, Luz..." oninput="this.value=this.value.toUpperCase()" onkeydown="if(event.key===&#39;Enter&#39;)gSaveFijo()"></div>
+    <div class="mfg"><label>Monto base mensual</label><input type="text" inputmode="numeric" id="gfijo-monto" placeholder="$0" oninput="this.value=fmtMiles(gToNum(this.value))" onkeydown="if(event.key===&#39;Enter&#39;)gSaveFijo()"></div>
     <div class="modal-btns">
-      <button class="btn-cancel-m" onclick="closeModal('modal-gfijo')">Cancelar</button>
+      <button class="btn-cancel-m" onclick="closeModal(&#39;modal-gfijo&#39;)">Cancelar</button>
       <button class="btn-save-m" onclick="gSaveFijo()">Guardar</button>
     </div>
   </div>
@@ -1238,15 +1353,15 @@ body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100
     <p style="font-size:13px;color:#4a5568;margin-bottom:14px;line-height:1.5;">Los gastos fijos de tu plantilla se cargarán automáticamente.</p>
     <div class="mfg"><label>Mes y año</label><input type="month" id="nuevo-mes-valor"></div>
     <div class="modal-btns">
-      <button class="btn-cancel-m" onclick="closeModal('modal-nuevo-mes')">Cancelar</button>
+      <button class="btn-cancel-m" onclick="closeModal(&#39;modal-nuevo-mes&#39;)">Cancelar</button>
       <button class="btn-save-m" onclick="gCrearMes()">Aceptar</button>
     </div>
   </div>
 </div>
 
 
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<script src="./index_files/firebase-app-compat.js.descargar"></script>
+<script src="./index_files/firebase-database-compat.js.descargar"></script>
 <script>
 // ── FIREBASE ─────────────────────────────────────────────────
 const FB_CONFIG={
@@ -1345,10 +1460,22 @@ function mostrarFrases(){
 const DIAS_ES=['DOMINGO','LUNES','MARTES','MIÉRCOLES','JUEVES','VIERNES','SÁBADO'];
 const MESES_ES=['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
 function updateClock(){
-  const n=new Date();
-  document.getElementById('hora-mil').textContent=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
+  let tz = 'America/Santiago';
+  try { if(climaCiudad && climaCiudad.tz) tz = climaCiudad.tz; } catch(e){}
+  const n = new Date();
+  const cityTime = n.toLocaleTimeString('es-CL', {timeZone: tz, hour:'2-digit', minute:'2-digit', hour12:false});
+  const horaEl = document.getElementById('cb-hora-city');
+  if(horaEl) horaEl.textContent = cityTime;
+  const tzEl = document.getElementById('cb-hora-tz');
+  if(tzEl){
+    try {
+      const parts = new Intl.DateTimeFormat('en', {timeZone: tz, timeZoneName:'short'}).formatToParts(n);
+      const tzName = parts.find(p=>p.type==='timeZoneName');
+      tzEl.textContent = tzName ? tzName.value : '';
+    } catch(e){ tzEl.textContent = ''; }
+  }
 }
-updateClock(); setInterval(updateClock,1000);
+setInterval(updateClock,1000);
 
 // ── CLIMA ─────────────────────────────────────────────────────
 const CLIMA_ICONS={'0':'☀️','1':'🌤','2':'⛅','3':'☁️','45':'🌫','48':'🌫','51':'🌦','53':'🌦','55':'🌧','61':'🌧','63':'🌧','65':'🌧','71':'🌨','73':'❄️','75':'❄️','77':'🌨','80':'🌦','81':'🌧','82':'⛈','85':'🌨','86':'❄️','95':'⛈','96':'⛈','99':'⛈'};
@@ -1368,6 +1495,7 @@ try{
     climaCiudad = JSON.parse(saved);
   }
 }catch(e){}
+updateClock();
 
 // Descripción del código weathercode (Open-Meteo)
 function descFromCode(c){
@@ -1453,6 +1581,29 @@ function loadClima(){
   const MES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
   document.getElementById('cb-date').textContent = '· ' + DIAS[hoy.getDay()] + ' ' + hoy.getDate() + ' de ' + MES[hoy.getMonth()];
 
+  // ── LUNA (fase y descripción no dependen de la ciudad) ──
+  const lunaHoy = calcularFaseLuna(new Date());
+  document.getElementById('cb-moon-fase').textContent = lunaHoy.name;
+  document.getElementById('cb-moon-ilum').textContent = 'Iluminación: ' + lunaHoy.illum + '%';
+  const lunaDescEl = document.getElementById('cb-moon-desc');
+  if(lunaDescEl) lunaDescEl.textContent = descripcionFaseLuna(lunaHoy.name);
+  const lunaShadow = document.getElementById('cb-moon-shadow');
+  if(lunaShadow){
+    if(lunaHoy.shadowSide === 'left'){ lunaShadow.style.left='0'; lunaShadow.style.right='auto'; }
+    else { lunaShadow.style.right='0'; lunaShadow.style.left='auto'; }
+    lunaShadow.style.width = lunaHoy.shadowWidth + '%';
+  }
+  const lunaCircle = document.getElementById('cb-moon-circle');
+  if(lunaCircle){
+    if(lunaHoy.illum > 80) lunaCircle.style.background = '#f5f3e8';
+    else if(lunaHoy.illum > 30) lunaCircle.style.background = '#dde2eb';
+    else lunaCircle.style.background = '#a0aec0';
+  }
+  // Horarios de luna ajustados por lat/lon de la ciudad seleccionada
+  const moonTimes = calcularSalidaPuestaLuna(lat, lon, new Date());
+  document.getElementById('cb-moonrise').textContent = moonTimes.salida;
+  document.getElementById('cb-moonset').textContent  = moonTimes.puesta;
+
   fetch(url)
     .then(r=>r.json()).then(d=>{
       const cur = d.current;
@@ -1490,34 +1641,6 @@ function loadClima(){
         document.getElementById('cb-daylen').textContent = diffH + 'h ' + diffM + 'm';
       }
 
-      // ── LUNA ──
-      const luna = calcularFaseLuna(new Date());
-      document.getElementById('cb-moon-fase').textContent = luna.name;
-      document.getElementById('cb-moon-ilum').textContent = 'Iluminación: ' + luna.illum + '%';
-      // Pintar la sombra de la luna
-      const shadow = document.getElementById('cb-moon-shadow');
-      if(shadow){
-        if(luna.shadowSide === 'left'){
-          shadow.style.left = '0';
-          shadow.style.right = 'auto';
-        } else {
-          shadow.style.right = '0';
-          shadow.style.left = 'auto';
-        }
-        shadow.style.width = luna.shadowWidth + '%';
-      }
-      // Fondo de la luna (parte iluminada): si es luna llena → blanco amarillento, si es nueva → casi negro
-      const moonCircle = document.getElementById('cb-moon-circle');
-      if(moonCircle){
-        if(luna.illum > 80) moonCircle.style.background = '#f5f3e8'; // llena
-        else if(luna.illum > 30) moonCircle.style.background = '#dde2eb';
-        else moonCircle.style.background = '#a0aec0';
-      }
-      // Las horas de salida/puesta de la luna no las da Open-Meteo gratis, dejamos un cálculo simple
-      // Como aproximación: la luna sale ~50min después cada día de la luna nueva
-      const moonriseSet = calcularSalidaPuestaLuna(new Date(), luna);
-      document.getElementById('cb-moonrise').textContent = moonriseSet.salida;
-      document.getElementById('cb-moonset').textContent = moonriseSet.puesta;
 
       // ── MAÑANA ──
       const manTemp = Math.round(d.daily.temperature_2m_max[1]);
@@ -1547,24 +1670,38 @@ function loadClima(){
     });
 }
 
-// Aproximación simple de salida y puesta de luna basada en fase
-// La luna sale ~50 minutos más tarde cada día desde luna nueva
-function calcularSalidaPuestaLuna(date, fase){
-  // Calcular los días desde la última luna nueva
+function calcularSalidaPuestaLuna(lat, lon, date){
   const refNew = new Date(Date.UTC(2000,0,6,18,14,0));
   const synodic = 29.530588853;
   const diff = (date - refNew) / 86400000;
-  const days = (diff % synodic + synodic) % synodic;
-  // En luna nueva: sale ~6:00, se pone ~18:00 (junto con el sol)
-  // En luna llena (15 días): sale ~18:00, se pone ~6:00 (opuesto al sol)
-  const salidaH = (6 + days * 50/60) % 24; // suma 50min por día
-  const puestaH = (18 + days * 50/60) % 24;
+  const days = ((diff % synodic) + synodic) % synodic;
+  // Base en UTC: luna nueva sale ~6h UTC, pone ~18h UTC. Cada día se retrasa 50 min.
+  const utcRise = (6  + days * (50/60)) % 24;
+  const utcSet  = (18 + days * (50/60)) % 24;
+  // Convertir a hora local según longitud (1h por cada 15°)
+  const lonOffset = lon / 15;
+  const localRise = ((utcRise + lonOffset) % 24 + 24) % 24;
+  const localSet  = ((utcSet  + lonOffset) % 24 + 24) % 24;
   const fmt = h => {
-    const hh = Math.floor(h);
-    const mm = Math.round((h - hh) * 60);
+    const hh = Math.floor(h) % 24;
+    const mm = Math.round((h - Math.floor(h)) * 60) % 60;
     return String(hh).padStart(2,'0') + ':' + String(mm).padStart(2,'0');
   };
-  return { salida: fmt(salidaH), puesta: fmt(puestaH) };
+  return { salida: fmt(localRise), puesta: fmt(localSet) };
+}
+
+function descripcionFaseLuna(nombre){
+  const desc = {
+    'Luna nueva':       'El lado iluminado mira hacia el sol, la luna no se ve de noche. Momento de nuevos comienzos.',
+    'Creciente':        'La luna comienza a iluminarse. Buena etapa para iniciar proyectos y ganar energía.',
+    'Cuarto creciente': 'Mitad iluminada. La luna sube al mediodía y se pone a medianoche. Momento de acción.',
+    'Gibosa creciente': 'Más de la mitad iluminada. La energía y la luz van en aumento hacia la luna llena.',
+    'Luna llena':       'La luna está completamente iluminada. Alta energía, emociones intensas y noches claras.',
+    'Gibosa menguante': 'La iluminación comienza a disminuir. Tiempo de reflexión y de evaluar lo logrado.',
+    'Cuarto menguante': 'Mitad iluminada, pero decrece. La luna sale a medianoche. Momento de soltar y descansar.',
+    'Menguante':        'La luna casi desaparece. Etapa de cierre, descanso y preparación para un nuevo ciclo.',
+  };
+  return desc[nombre] || '';
 }
 
 // ── MODAL DE CAMBIAR CIUDAD ─────────────────────────────────
@@ -4260,5 +4397,6 @@ if ('serviceWorker' in navigator) {
   });
 }
 </script>
-</body>
-</html>
+
+
+</body></html>
