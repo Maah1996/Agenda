@@ -261,38 +261,66 @@ body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100
 .tl-btn.del:hover{background:#fff0f0;color:#c62828;}
 .empty-tl{text-align:center;padding:18px;color:#94a3b8;font-size:11px;font-style:italic;background:#fafbfc;border-radius:8px;border:1px dashed #e2e8f0;}
 
-/* === AGENDA OVERVIEW (mini calendario + estadísticas) === */
-#agenda-overview{margin:10px 0 14px;display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:start;}
-#agenda-overview > .ov-empty-msg{grid-column:1/-1;}
-.ov-stats{background:linear-gradient(135deg,#f7fafc 0%,#eef4fb 100%);border-radius:8px;padding:10px 12px;border:0.5px solid #dde3ed;}
-.ov-stats-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:11px;}
-.ov-stats-row + .ov-stats-row{border-top:0.5px dashed #cbd5e0;}
-.ov-stats-label{color:#5F5E5A;}
-.ov-stats-value{font-weight:700;color:#1a3f6f;font-size:12px;}
-.ov-stats-value.green{color:#0F6E56;}
-.ov-stats-value.amber{color:#854F0B;}
+/* === AGENDA OVERVIEW ======================================= */
+#agenda-overview{margin:10px 0 14px;display:flex;flex-direction:column;gap:10px;}
+/* PILLS DE ESTADÍSTICAS */
+.ov-pills-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.ov-pill{background:#fff;border-radius:12px;padding:12px 14px;cursor:pointer;border:1px solid #e8eef6;box-shadow:0 2px 10px rgba(26,63,111,.07);transition:all .15s;display:flex;flex-direction:column;gap:3px;}
+.ov-pill:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(26,63,111,.14);border-color:#b5c9e8;}
+.ov-pill-lbl{font-size:9px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.8px;}
+.ov-pill-val{font-size:30px;font-weight:200;color:#1a3f6f;line-height:1;}
+.ov-pill-sub{font-size:9px;color:#b0bac6;}
+.ov-pill.green .ov-pill-val{color:#0F6E56;}
+.ov-pill.amber .ov-pill-val{color:#854F0B;}
+/* PANEL ACTIVIDADES (modal) */
+.ov-acts-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9990;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+.ov-acts-overlay.open{display:flex;}
+.ov-acts-panel{background:#fff;border-radius:16px;width:520px;max-width:96vw;max-height:80vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.25);}
+.ov-acts-head{background:#1a3f6f;color:#fff;padding:14px 18px;border-radius:16px 16px 0 0;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.ov-acts-title{font-size:14px;font-weight:700;}
+.ov-acts-close{background:rgba(255,255,255,.15);border:none;color:#fff;font-size:20px;cursor:pointer;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:300;line-height:1;transition:background .15s;}
+.ov-acts-close:hover{background:rgba(255,255,255,.30);}
+.ov-acts-body{overflow-y:auto;padding:8px 14px 14px;flex:1;}
+.ov-acts-date-hdr{font-size:11px;font-weight:700;color:#1a3f6f;background:#f0f4ff;border-radius:6px;padding:5px 10px;margin:8px 0 4px;text-transform:capitalize;}
+.ov-acts-row{display:flex;gap:10px;align-items:flex-start;padding:7px 6px;border-bottom:0.5px solid #eef2f7;}
+.ov-acts-row:last-of-type{border-bottom:none;}
+.ov-acts-time{font-size:13px;font-weight:700;color:#0F6E56;min-width:44px;flex-shrink:0;padding-top:1px;}
+.ov-acts-info{flex:1;}
+.ov-acts-name{font-size:13px;font-weight:600;color:#2d3748;}
+.ov-acts-obs{font-size:10px;color:#718096;margin-top:2px;background:#fffde7;padding:2px 7px;border-radius:4px;display:inline-block;}
+.ov-acts-empty{text-align:center;padding:32px;color:#94a3b8;font-size:12px;font-style:italic;}
 
-.ov-cal{background:#f7fafc;border-radius:8px;padding:10px 11px;border:0.5px solid #dde3ed;}
-.ov-cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;padding:0 2px;}
-.cal-arrow-btn{width:24px;height:24px;border-radius:5px;background:#fff;border:0.5px solid #cbd5e0;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;color:#1a3f6f;font-weight:700;line-height:1;padding:0;font-family:inherit;}
-.cal-arrow-btn:hover{background:#eef4fb;border-color:#1a3f6f;}
-.ov-cal-title{font-size:11px;font-weight:700;color:#1a3f6f;letter-spacing:0.4px;text-transform:uppercase;}
-.ov-cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;}
-.ov-cal-cell{height:28px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;border-radius:4px;color:#5F5E5A;}
-.ov-cal-cell.dow{color:#94a3b8;font-size:9px;height:18px;font-weight:700;}
-.ov-cal-cell.day{color:#2d3748;cursor:pointer;transition:all 0.1s;position:relative;}
-.ov-cal-cell.day:hover{background:#dbe7f5;}
-.ov-cal-cell.today{background:#1a3f6f !important;color:#fff !important;}
-.ov-cal-cell.has-act{background:#E1F5EE;color:#0F6E56;font-weight:700;position:relative;}
-.ov-cal-cell.has-act.today{background:#0F6E56 !important;color:#fff !important;}
-.ov-cal-cell.has-act::after{content:"";position:absolute;bottom:1px;left:50%;transform:translateX(-50%);width:3px;height:3px;background:#0F6E56;border-radius:50%;}
+.ov-cal{background:#fff;border-radius:14px;padding:14px 14px 12px;border:none;box-shadow:0 4px 20px rgba(26,63,111,.10),0 1px 4px rgba(0,0,0,.05);}
+.ov-cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding:0 2px;}
+.cal-arrow-btn{width:30px;height:30px;border-radius:8px;background:#f0f4ff;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:17px;color:#1a3f6f;font-weight:700;line-height:1;padding:0;font-family:inherit;transition:all .15s;}
+.cal-arrow-btn:hover{background:#1a3f6f;color:#fff;}
+.ov-cal-title{font-size:14px;font-weight:800;color:#1a3f6f;letter-spacing:0.3px;text-transform:uppercase;}
+.ov-cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
+.ov-cal-cell{height:54px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600;border-radius:10px;color:#2d3748;position:relative;}
+.ov-cal-cell.dow{color:#94a3b8;font-size:11px;height:28px;font-weight:700;letter-spacing:0.5px;}
+.ov-cal-cell.day{cursor:pointer;transition:background .1s;}
+.ov-cal-cell.day:hover{background:#f0f4ff;}
+.ov-cal-cell.today{background:#1a3f6f !important;color:#fff !important;box-shadow:0 2px 8px rgba(26,63,111,.30);}
+.ov-cal-cell.has-act{background:#E1F5EE;color:#0F6E56;font-weight:700;}
+.ov-cal-cell.has-act.today{background:#0F6E56 !important;color:#fff !important;box-shadow:0 2px 8px rgba(15,110,86,.30);}
+.ov-cal-cell.has-act::after{content:"";position:absolute;bottom:4px;left:50%;transform:translateX(-50%);width:4px;height:4px;background:#0F6E56;border-radius:50%;}
 .ov-cal-cell.today.has-act::after{background:#fff;}
 .ov-cal-cell.feriado{color:#c62828 !important;font-weight:700;cursor:help;}
 .ov-cal-cell.feriado:hover{background:#fef2f2;}
-.ov-cal-cell.feriado::before{content:"";position:absolute;top:1px;right:2px;width:4px;height:4px;background:#c62828;border-radius:50%;}
-.ov-cal-cell.feriado.today{background:#c62828 !important;color:#fff !important;}
+.ov-cal-cell.feriado::before{content:"";position:absolute;top:4px;right:5px;width:5px;height:5px;background:#c62828;border-radius:50%;}
+.ov-cal-cell.feriado.today{background:#c62828 !important;color:#fff !important;box-shadow:0 2px 8px rgba(198,40,40,.30);}
 .ov-cal-cell.feriado.today::before{background:#fff;}
-.ov-cal-cell.other{color:#cbd5e0;}
+.ov-cal-cell.other{color:#dde3ed;}
+/* SELECTOR DE PAÍS */
+.cal-pais-wrap{position:relative;}
+.cal-pais-btn{background:#f0f4ff;border:1.5px solid #c6d4f0;border-radius:20px;padding:5px 12px;font-size:11px;font-weight:700;color:#1a3f6f;cursor:pointer;display:inline-flex;align-items:center;gap:5px;font-family:inherit;transition:all .15s;white-space:nowrap;line-height:1;}
+.cal-pais-btn:hover{background:#1a3f6f;color:#fff;border-color:#1a3f6f;}
+.cal-pais-dd{display:none;position:absolute;top:calc(100% + 6px);right:0;background:#fff;border:1px solid #dde3ed;border-radius:12px;min-width:190px;box-shadow:0 8px 28px rgba(0,0,0,.14);z-index:300;padding:5px;overflow:hidden;}
+.cal-pais-dd.open{display:block;}
+.cal-pais-item{display:flex;align-items:center;gap:8px;padding:8px 11px;cursor:pointer;border-radius:8px;font-size:12px;font-weight:600;color:#2d3748;transition:background .1s;font-family:inherit;}
+.cal-pais-item:hover{background:#f0f4ff;color:#1a3f6f;}
+.cal-pais-item.active{background:#eef3ff;color:#1a3f6f;}
+.cal-pais-flag{font-size:16px;line-height:1;}
 
 .ov-empty-msg{text-align:center;padding:10px 12px;background:linear-gradient(135deg,#fef3c7 0%,#fde8b3 100%);border-radius:8px;color:#78350f;font-size:11px;line-height:1.5;border:0.5px solid #f5c98a;}
 .ov-empty-msg strong{color:#5a3c00;font-size:11px;display:inline;margin-left:4px;}
@@ -300,7 +328,7 @@ body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100
 
 /* En pantallas más estrechas, apilar */
 @media (max-width: 900px){
-  #agenda-overview{grid-template-columns:1fr;}
+  .ov-pills-row{grid-template-columns:1fr 1fr 1fr;}
   .ov-cal{max-width:none;}
 }
 
@@ -2074,6 +2102,201 @@ function getFeriadosChile(year){
   return fer;
 }
 
+// ── CÁLCULO DE PASCUA (Meeus/Jones/Butcher) ──────────────────
+function getEaster(y){
+  const a=y%19,b=Math.floor(y/100),c=y%100,d=Math.floor(b/4),e=b%4,
+    f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3),h=(19*a+b-d-g+15)%30,
+    i=Math.floor(c/4),k=c%4,l=(32+2*e+2*i-h-k)%7,
+    m=Math.floor((a+11*h+22*l)/451),
+    mo=Math.floor((h+l-7*m+114)/31),
+    day=((h+l-7*m+114)%31)+1;
+  return new Date(y,mo-1,day);
+}
+function _dk(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function _addD(d,n){const r=new Date(d);r.setDate(r.getDate()+n);return r;}
+function _nextMon(d){const r=new Date(d);const dw=r.getDay();if(dw===1)return r;r.setDate(r.getDate()+(dw===0?1:8-dw));return r;}
+
+// ── FERIADOS POR PAÍS ─────────────────────────────────────────
+function getFeriadosAR(y){
+  const e=getEaster(y);
+  return {
+    [`${y}-01-01`]:'Año Nuevo',
+    [_dk(_addD(e,-48))]:'Carnaval',
+    [_dk(_addD(e,-47))]:'Carnaval',
+    [`${y}-03-24`]:'Día de la Memoria por la Verdad y la Justicia',
+    [_dk(_addD(e,-3))]:'Jueves Santo',
+    [_dk(_addD(e,-2))]:'Viernes Santo',
+    [`${y}-04-02`]:'Día del Veterano y los Caídos en Malvinas',
+    [`${y}-05-01`]:'Día del Trabajo',
+    [`${y}-05-25`]:'Revolución de Mayo',
+    [`${y}-06-20`]:'Paso a la Inmortalidad del Gral. Belgrano',
+    [`${y}-07-09`]:'Día de la Independencia',
+    [`${y}-08-17`]:'Paso a la Inmortalidad del Gral. San Martín',
+    [`${y}-10-12`]:'Día del Respeto a la Diversidad Cultural',
+    [`${y}-11-20`]:'Día de la Soberanía Nacional',
+    [`${y}-12-08`]:'Inmaculada Concepción',
+    [`${y}-12-25`]:'Navidad',
+  };
+}
+function getFeriadosES(y){
+  const e=getEaster(y);
+  return {
+    [`${y}-01-01`]:'Año Nuevo',
+    [`${y}-01-06`]:'Epifanía del Señor',
+    [_dk(_addD(e,-3))]:'Jueves Santo',
+    [_dk(_addD(e,-2))]:'Viernes Santo',
+    [`${y}-05-01`]:'Fiesta del Trabajo',
+    [`${y}-08-15`]:'Asunción de la Virgen',
+    [`${y}-10-12`]:'Fiesta Nacional de España',
+    [`${y}-11-01`]:'Todos los Santos',
+    [`${y}-12-06`]:'Día de la Constitución Española',
+    [`${y}-12-08`]:'Inmaculada Concepción',
+    [`${y}-12-25`]:'Navidad',
+  };
+}
+function getFeriadosBR(y){
+  const e=getEaster(y);
+  return {
+    [`${y}-01-01`]:'Ano Novo',
+    [_dk(_addD(e,-48))]:'Carnaval',
+    [_dk(_addD(e,-47))]:'Carnaval',
+    [_dk(_addD(e,-2))]:'Sexta-feira Santa',
+    [`${y}-04-21`]:'Tiradentes',
+    [`${y}-05-01`]:'Dia do Trabalho',
+    [_dk(_addD(e,60))]:'Corpus Christi',
+    [`${y}-09-07`]:'Independência do Brasil',
+    [`${y}-10-12`]:'Nossa Senhora Aparecida',
+    [`${y}-11-02`]:'Finados',
+    [`${y}-11-15`]:'Proclamação da República',
+    [`${y}-12-25`]:'Natal',
+  };
+}
+function getFeriadosMX(y){
+  const e=getEaster(y);
+  const d1=new Date(y,1,1);while(d1.getDay()!==1)d1.setDate(d1.getDate()+1);
+  const d3=new Date(y,2,1);while(d3.getDay()!==1)d3.setDate(d3.getDate()+1);d3.setDate(d3.getDate()+14);
+  return {
+    [`${y}-01-01`]:'Año Nuevo',
+    [_dk(d1)]:'Día de la Constitución',
+    [_dk(d3)]:'Natalicio de Benito Juárez',
+    [_dk(_addD(e,-2))]:'Viernes Santo',
+    [`${y}-05-01`]:'Día del Trabajo',
+    [`${y}-09-16`]:'Día de la Independencia',
+    [`${y}-11-20`]:'Día de la Revolución',
+    [`${y}-12-25`]:'Navidad',
+  };
+}
+function getFeriadosCO(y){
+  const e=getEaster(y);
+  return {
+    [`${y}-01-01`]:'Año Nuevo',
+    [_dk(_nextMon(new Date(y,0,6)))]:'Reyes Magos',
+    [_dk(_nextMon(new Date(y,2,19)))]:'San José',
+    [_dk(_addD(e,-3))]:'Jueves Santo',
+    [_dk(_addD(e,-2))]:'Viernes Santo',
+    [`${y}-05-01`]:'Día del Trabajo',
+    [_dk(_nextMon(_addD(e,39)))]:'Ascensión del Señor',
+    [_dk(_nextMon(_addD(e,60)))]:'Corpus Christi',
+    [_dk(_nextMon(_addD(e,68)))]:'Sagrado Corazón',
+    [`${y}-07-20`]:'Independencia de Colombia',
+    [`${y}-08-07`]:'Batalla de Boyacá',
+    [_dk(_nextMon(new Date(y,7,15)))]:'Asunción de la Virgen',
+    [_dk(_nextMon(new Date(y,9,12)))]:'Día de la Raza',
+    [_dk(_nextMon(new Date(y,10,1)))]:'Todos los Santos',
+    [_dk(_nextMon(new Date(y,10,11)))]:'Independencia de Cartagena',
+    [`${y}-12-08`]:'Inmaculada Concepción',
+    [`${y}-12-25`]:'Navidad',
+  };
+}
+function getFeriadosPE(y){
+  const e=getEaster(y);
+  return {
+    [`${y}-01-01`]:'Año Nuevo',
+    [_dk(_addD(e,-3))]:'Jueves Santo',
+    [_dk(_addD(e,-2))]:'Viernes Santo',
+    [`${y}-05-01`]:'Día del Trabajo',
+    [`${y}-06-29`]:'San Pedro y San Pablo',
+    [`${y}-07-28`]:'Fiestas Patrias',
+    [`${y}-07-29`]:'Fiestas Patrias',
+    [`${y}-08-30`]:'Santa Rosa de Lima',
+    [`${y}-10-08`]:'Combate de Angamos',
+    [`${y}-11-01`]:'Todos los Santos',
+    [`${y}-12-08`]:'Inmaculada Concepción',
+    [`${y}-12-25`]:'Navidad',
+  };
+}
+function getFeriadosUY(y){
+  const e=getEaster(y);
+  return {
+    [`${y}-01-01`]:'Año Nuevo',
+    [`${y}-01-06`]:'Reyes Magos',
+    [_dk(_addD(e,-48))]:'Carnaval',
+    [_dk(_addD(e,-47))]:'Carnaval',
+    [_dk(_addD(e,-3))]:'Semana de Turismo — Jueves',
+    [_dk(_addD(e,-2))]:'Semana de Turismo — Viernes',
+    [`${y}-04-19`]:'Declaración de los 33 Orientales',
+    [`${y}-05-01`]:'Día de los Trabajadores',
+    [`${y}-05-18`]:'Batalla de Las Piedras',
+    [`${y}-06-19`]:'Natalicio de Artigas',
+    [`${y}-07-18`]:'Jura de la Constitución',
+    [`${y}-08-25`]:'Declaración de la Independencia',
+    [`${y}-10-12`]:'Día de la Raza',
+    [`${y}-11-02`]:'Día de los Difuntos',
+    [`${y}-12-25`]:'Navidad',
+  };
+}
+
+// ── DISPATCHER + ESTADO ───────────────────────────────────────
+const PAISES = [
+  {cc:'CL',flag:'🇨🇱',name:'Chile'},
+  {cc:'AR',flag:'🇦🇷',name:'Argentina'},
+  {cc:'ES',flag:'🇪🇸',name:'España'},
+  {cc:'BR',flag:'🇧🇷',name:'Brasil'},
+  {cc:'MX',flag:'🇲🇽',name:'México'},
+  {cc:'CO',flag:'🇨🇴',name:'Colombia'},
+  {cc:'PE',flag:'🇵🇪',name:'Perú'},
+  {cc:'UY',flag:'🇺🇾',name:'Uruguay'},
+];
+let selectedCountry = localStorage.getItem('maah_pais') || 'CL';
+
+function getCountryHolidays(cc,year){
+  if(cc==='CL') return getFeriadosChile(year);
+  if(cc==='AR') return getFeriadosAR(year);
+  if(cc==='ES') return getFeriadosES(year);
+  if(cc==='BR') return getFeriadosBR(year);
+  if(cc==='MX') return getFeriadosMX(year);
+  if(cc==='CO') return getFeriadosCO(year);
+  if(cc==='PE') return getFeriadosPE(year);
+  if(cc==='UY') return getFeriadosUY(year);
+  return getFeriadosChile(year);
+}
+
+function togglePaisDD(e){
+  e.stopPropagation();
+  const dd=document.getElementById('cal-pais-dd');
+  if(dd) dd.classList.toggle('open');
+}
+function selectPais(cc){
+  selectedCountry=cc;
+  localStorage.setItem('maah_pais',cc);
+  const dd=document.getElementById('cal-pais-dd');
+  if(dd) dd.classList.remove('open');
+  const fecha=fmtDateKey(tlCurrent);
+  if(_agendaDataCache){
+    const acts=_agendaDataCache[fecha]?Object.keys(_agendaDataCache[fecha]).length:0;
+    renderAgendaOverview(tlCurrent,acts);
+    return;
+  }
+  db.ref('maah_agenda/'+currentUser.id+'/'+fecha).once('value').then(snap=>{
+    const data=snap.val();
+    renderAgendaOverview(tlCurrent,data?Object.values(data).length:0);
+  });
+}
+document.addEventListener('click',()=>{
+  const dd=document.getElementById('cal-pais-dd');
+  if(dd) dd.classList.remove('open');
+});
+
 // Estado del calendario: qué mes está mostrando (puede ser distinto al día seleccionado)
 let calendarMonthOffset = 0; // 0 = mes del día seleccionado, -1 = anterior, +1 = siguiente
 
@@ -2124,7 +2347,7 @@ function renderAgendaOverview(refDate, currentDayActsCount){
     const year = baseDate.getFullYear();
     const month = baseDate.getMonth();
 
-    const feriados = getFeriadosChile(year);
+    const feriados = getCountryHolidays(selectedCountry, year);
     const prefix = year+'-'+String(month+1).padStart(2,'0');
     const fechasConAct = new Set();
     let totalMes = 0, totalSemana = 0;
@@ -2152,23 +2375,43 @@ function renderAgendaOverview(refDate, currentDayActsCount){
     });
 
     // ── Construir HTML COMPLETO antes de tocar el DOM ──
+    const diasMes = new Set();
+    Object.keys(data).forEach(k=>{ if(k.startsWith(refMonthPrefix) && data[k] && Object.keys(data[k]).length>0) diasMes.add(k); });
+    const refMonthName = MESES_LARGO[refDate.getMonth()];
+    const refMonthShort = refMonthName.substring(0,3).toUpperCase();
+
     let html = '';
 
-    if(currentDayActsCount === 0){
-      const fechaLabel = fmtDateLabel(refDate);
-      html += `
-        <div class="ov-empty-msg">
-          <span class="ov-empty-icon">☀️</span>
-          <strong>Sin actividades el ${fechaLabel}</strong><br>
-          <span style="font-size:10px;opacity:0.85;">Agrega actividades desde la izquierda o selecciona otro día en el calendario.</span>
-        </div>`;
-    }
+    // ── PILLS (arriba del calendario) ──
+    html += '<div class="ov-pills-row">';
+    html += `<div class="ov-pill${currentDayActsCount>0?' green':''}" onclick="showActsPanel('hoy')">
+      <div class="ov-pill-lbl">ACT. HOY</div>
+      <div class="ov-pill-val">${currentDayActsCount}</div>
+      <div class="ov-pill-sub">actividad${currentDayActsCount!==1?'es':''}</div></div>`;
+    html += `<div class="ov-pill" onclick="showActsPanel('semana')">
+      <div class="ov-pill-lbl">SEMANA</div>
+      <div class="ov-pill-val">${totalSemana}</div>
+      <div class="ov-pill-sub">actividad${totalSemana!==1?'es':''}</div></div>`;
+    html += `<div class="ov-pill" onclick="showActsPanel('mes')">
+      <div class="ov-pill-lbl">TOTAL ACTIVIDADES ${refMonthName.toUpperCase()}</div>
+      <div class="ov-pill-val">${totalMes}</div>
+      <div class="ov-pill-sub">actividad${totalMes!==1?'es':''}</div></div>`;
+    html += '</div>';
 
+    // ── CALENDARIO (ancho completo) ──
+    const _pActual = PAISES.find(p=>p.cc===selectedCountry)||PAISES[0];
+    const _paisItems = PAISES.map(p=>`<div class="cal-pais-item${p.cc===selectedCountry?' active':''}" onclick="selectPais('${p.cc}')"><span class="cal-pais-flag">${p.flag}</span><span>${p.name}</span></div>`).join('');
     html += '<div class="ov-cal">';
     html += '<div class="ov-cal-head">';
+    html += '<div style="display:flex;align-items:center;gap:6px;">';
     html += '<button type="button" class="cal-arrow-btn" onclick="calNavMes(-1)" title="Mes anterior">‹</button>';
     html += '<div class="ov-cal-title">'+MESES_LARGO[month]+' '+year+'</div>';
     html += '<button type="button" class="cal-arrow-btn" onclick="calNavMes(1)" title="Mes siguiente">›</button>';
+    html += '</div>';
+    html += '<div class="cal-pais-wrap">';
+    html += `<button class="cal-pais-btn" onclick="togglePaisDD(event)">${_pActual.flag} ${_pActual.name} ▾</button>`;
+    html += `<div class="cal-pais-dd" id="cal-pais-dd">${_paisItems}</div>`;
+    html += '</div>';
     html += '</div>';
     html += '<div class="ov-cal-grid">';
     ['L','M','M','J','V','S','D'].forEach(d=>{
@@ -2198,16 +2441,6 @@ function renderAgendaOverview(refDate, currentDayActsCount){
     }
     html += '</div></div>';
 
-    const diasMes = new Set();
-    Object.keys(data).forEach(k=>{ if(k.startsWith(refMonthPrefix) && data[k] && Object.keys(data[k]).length>0) diasMes.add(k); });
-    const refMonthName = MESES_LARGO[refDate.getMonth()];
-    html += '<div class="ov-stats">';
-    html += '<div class="ov-stats-row"><span class="ov-stats-label">Hoy</span><span class="ov-stats-value '+(currentDayActsCount>0?'green':'')+'">'+currentDayActsCount+' actividad'+(currentDayActsCount!==1?'es':'')+'</span></div>';
-    html += '<div class="ov-stats-row"><span class="ov-stats-label">Esta semana</span><span class="ov-stats-value">'+totalSemana+' actividad'+(totalSemana!==1?'es':'')+'</span></div>';
-    html += '<div class="ov-stats-row"><span class="ov-stats-label">Días con actividad este mes</span><span class="ov-stats-value amber">'+diasMes.size+' día'+(diasMes.size!==1?'s':'')+'</span></div>';
-    html += '<div class="ov-stats-row"><span class="ov-stats-label">Total '+refMonthName+'</span><span class="ov-stats-value">'+totalMes+' actividad'+(totalMes!==1?'es':'')+'</span></div>';
-    html += '</div>';
-
     // Reemplazar contenido en UNA sola operación (sin parpadeo)
     ov.innerHTML = html;
   };
@@ -2231,6 +2464,77 @@ function renderAgendaOverview(refDate, currentDayActsCount){
     console.warn('[MAAH] Error cargando overview:', err);
     // No borrar nada en caso de error
   });
+}
+
+// ── PANEL DE ACTIVIDADES (al hacer clic en un pill) ──────────
+function showActsPanel(tipo){
+  if(!_agendaDataCache) return;
+  const ref = tlCurrent;
+  const refKey = fmtDateKey(ref);
+  const refMonthPrefix = ref.getFullYear()+'-'+String(ref.getMonth()+1).padStart(2,'0');
+  const monRef = tlGetMonday(ref);
+  const sunRef = new Date(monRef); sunRef.setDate(monRef.getDate()+6);
+  const monKey = fmtDateKey(monRef);
+  const sunKey = fmtDateKey(sunRef);
+  const DLONG = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+  const MLONG = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+
+  const titulos = {
+    hoy: 'Actividades de hoy — '+DLONG[ref.getDay()]+' '+ref.getDate()+' de '+MLONG[ref.getMonth()],
+    semana: 'Actividades de la semana',
+    diasmes: 'Días con actividades — '+MLONG[ref.getMonth()]+' '+ref.getFullYear(),
+    mes: 'Total de actividades — '+MLONG[ref.getMonth()]+' '+ref.getFullYear(),
+  };
+  const filtros = {
+    hoy: k => k === refKey,
+    semana: k => k >= monKey && k <= sunKey,
+    diasmes: k => k.startsWith(refMonthPrefix),
+    mes: k => k.startsWith(refMonthPrefix),
+  };
+
+  const fechas = Object.keys(_agendaDataCache)
+    .filter(k => filtros[tipo](k) && _agendaDataCache[k] && Object.keys(_agendaDataCache[k]).length > 0)
+    .sort();
+
+  let body = '';
+  if(fechas.length === 0){
+    body = '<div class="ov-acts-empty">No hay actividades registradas en este período.</div>';
+  } else {
+    fechas.forEach(fecha => {
+      const d = new Date(fecha+'T12:00:00');
+      body += `<div class="ov-acts-date-hdr">${DLONG[d.getDay()]} ${d.getDate()} de ${MLONG[d.getMonth()]} ${d.getFullYear()}</div>`;
+      const acts = Object.values(_agendaDataCache[fecha])
+        .filter(a => a && a.act)
+        .sort((a,b) => (a.hora||'').localeCompare(b.hora||''));
+      acts.forEach(act => {
+        body += `<div class="ov-acts-row">
+          <span class="ov-acts-time">${act.hora||'--:--'}</span>
+          <div class="ov-acts-info">
+            <div class="ov-acts-name">${act.act}</div>
+            ${act.obs ? `<div class="ov-acts-obs">${act.obs}</div>` : ''}
+          </div>
+        </div>`;
+      });
+    });
+  }
+
+  let overlay = document.getElementById('ov-acts-overlay');
+  if(!overlay){
+    overlay = document.createElement('div');
+    overlay.id = 'ov-acts-overlay';
+    overlay.className = 'ov-acts-overlay';
+    overlay.addEventListener('click', e => { if(e.target===overlay) overlay.classList.remove('open'); });
+    document.body.appendChild(overlay);
+  }
+  overlay.innerHTML = `
+    <div class="ov-acts-panel">
+      <div class="ov-acts-head">
+        <span class="ov-acts-title">${titulos[tipo]}</span>
+        <button class="ov-acts-close" onclick="document.getElementById('ov-acts-overlay').classList.remove('open')">×</button>
+      </div>
+      <div class="ov-acts-body">${body}</div>
+    </div>`;
+  overlay.classList.add('open');
 }
 
 function renderTLDia(){
