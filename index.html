@@ -688,7 +688,7 @@ body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100
 <body>
 
 <!-- LOGIN -->
-<div id="screen-login" class="screen">
+<div id="screen-login" class="screen active">
   <div class="login-card">
     <div class="login-logo">
       <div class="logo-circle">M</div>
@@ -709,7 +709,7 @@ body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100
 </div>
 
 <!-- APP -->
-<div id="screen-app" class="screen active">
+<div id="screen-app" class="screen">
 
   <div class="app-header">
     <h1>■&nbsp; SISTEMA MAAH</h1>
@@ -1360,8 +1360,8 @@ body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100
 </div>
 
 
-<script src="./index_files/firebase-app-compat.js.descargar"></script>
-<script src="./index_files/firebase-database-compat.js.descargar"></script>
+<script src="./2/index_files/firebase-app-compat.js.descargar"></script>
+<script src="./2/index_files/firebase-database-compat.js.descargar"></script>
 <script>
 // ── FIREBASE ─────────────────────────────────────────────────
 const FB_CONFIG={
@@ -1485,7 +1485,7 @@ function makePill(icon,val){const d=document.createElement('div');d.className='c
 function makeManPill(txt){const s=document.createElement('span');s.className='man-pill';s.textContent=txt;return s;}
 // ── CLIMA: Estado de la ciudad ─────────────────────────────
 // Ciudad por defecto: Punta Arenas, Chile
-const CIUDAD_DEFAULT = { name:'Punta Arenas, Chile', lat:-53.15, lon:-70.92, tz:'America/Santiago' };
+const CIUDAD_DEFAULT = { name:'Punta Arenas, Chile', lat:-53.15, lon:-70.92, tz:'America/Punta_Arenas' };
 let climaCiudad = CIUDAD_DEFAULT;
 
 // Cargar ciudad guardada (si existe)
@@ -2421,12 +2421,12 @@ function selectPais(cc){
   const fecha=fmtDateKey(tlCurrent);
   if(_agendaDataCache){
     const acts=_agendaDataCache[fecha]?Object.keys(_agendaDataCache[fecha]).length:0;
-    renderAgendaOverview(tlCurrent,acts);
+    renderAgendaOverview(tlCurrent,acts,true);
     return;
   }
   db.ref('maah_agenda/'+currentUser.id+'/'+fecha).once('value').then(snap=>{
     const data=snap.val();
-    renderAgendaOverview(tlCurrent,data?Object.values(data).length:0);
+    renderAgendaOverview(tlCurrent,data?Object.values(data).length:0,true);
   });
 }
 document.addEventListener('click',()=>{
@@ -2464,7 +2464,7 @@ const AGENDA_CACHE_MS = 30000; // 30 segundos
 // ── AGENDA OVERVIEW: mini-calendario + estadísticas ──
 // Pinta encima del timeline cuando estamos en modo "Día".
 // Lee Firebase para saber qué días tienen actividades en el mes mostrado.
-function renderAgendaOverview(refDate, currentDayActsCount){
+function renderAgendaOverview(refDate, currentDayActsCount, forceRepaint){
   const ov = document.getElementById('agenda-overview');
   if(!ov || !currentUser) return;
 
@@ -2581,8 +2581,8 @@ function renderAgendaOverview(refDate, currentDayActsCount){
 
   // ── Estrategia de carga: cache primero, Firebase si está vencido ──
   const ahora = Date.now();
-  if(_agendaDataCache && (ahora - _agendaDataCacheTime) < AGENDA_CACHE_MS){
-    // Cache válido: pintar al instante (sin parpadeo)
+  if(_agendaDataCache && (forceRepaint || (ahora - _agendaDataCacheTime) < AGENDA_CACHE_MS)){
+    // Cache válido o repintado forzado (ej: cambio de país): pintar al instante
     pintar(_agendaDataCache);
     return;
   }
