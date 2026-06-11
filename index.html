@@ -1443,6 +1443,7 @@ body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script>
 // ── FIREBASE ─────────────────────────────────────────────────
 const FB_CONFIG={
@@ -1457,8 +1458,18 @@ const FB_CONFIG={
 firebase.initializeApp(FB_CONFIG);
 const db=firebase.database();
 
+// ── SESIÓN FIREBASE ──────────────────────────────────────────
+// Las reglas RTDB exigen auth != null. Sesión anónima SOLO si no hay
+// sesión real (las 3 apps comparten origen y proyecto Firebase).
+let _fbAuthResolve;
+const fbAuthReady=new Promise(res=>{_fbAuthResolve=res;});
+firebase.auth().onAuthStateChanged(u=>{
+  if(!u){ firebase.auth().signInAnonymously().catch(e=>console.warn('Auth anónima falló:',e)); }
+  else { _fbAuthResolve(u); }
+});
+
 // ── TELEGRAM ─────────────────────────────────────────────────
-let TG_TOKEN=null; db.ref('maah_agenda/maah_config').once('value',s=>{TG_TOKEN=s.val();});
+let TG_TOKEN=null; fbAuthReady.then(()=>{db.ref('maah_agenda/maah_config').once('value',s=>{TG_TOKEN=s.val();});});
 const TG_ADMIN_CHATID='8290529563';
 
 // Envía mensaje nuevo y guarda el message_id en Firebase con la fecha correcta
@@ -1985,6 +1996,7 @@ function doLogin(){
   const user=document.getElementById('login-user').value.trim().toUpperCase();
   const pass=document.getElementById('login-pass').value.trim();
   if(!user||!pass){showLoginErr('Complete los campos.');return;}
+  fbAuthReady.then(()=>{
   db.ref('maah_usuarios').orderByChild('nombre').equalTo(user).once('value',snap=>{
     if(!snap.exists()){showLoginErr('Usuario o contraseña incorrectos');return;}
     let found=null;
@@ -2022,6 +2034,7 @@ function doLogin(){
         }
       });
     }
+  },err=>{console.warn(err);showLoginErr('Error de conexión. Intenta de nuevo.');});
   });
 }
 function showLoginErr(msg){const e=document.getElementById('login-error');e.textContent=msg;e.style.display='block';setTimeout(()=>e.style.display='none',3000);}
@@ -5146,8 +5159,10 @@ function closeModal(id){document.getElementById(id).classList.remove('open');}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.modal-overlay.open').forEach(m=>m.classList.remove('open'));});
 
 // ── ADMIN INICIAL ─────────────────────────────────────────────
-db.ref('maah_usuarios').once('value',snap=>{
-  if(!snap.exists()) db.ref('maah_usuarios').push({nombre:'ADMIN',pass:'1996',rol:'admin',tgid:TG_ADMIN_CHATID});
+fbAuthReady.then(()=>{
+  db.ref('maah_usuarios').once('value',snap=>{
+    if(!snap.exists()) db.ref('maah_usuarios').push({nombre:'ADMIN',pass:'1996',rol:'admin',tgid:TG_ADMIN_CHATID});
+  });
 });
 
 
