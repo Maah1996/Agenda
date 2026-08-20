@@ -3537,11 +3537,10 @@ function renderTimelineMulti(acts){
   }).join('');
 }
 
-// NAV SEMANA (usada al guardar para actualizar la vista)
-function renderWeekNav(refDate){
-  tlCurrent=new Date(refDate);
-  if(tlMode==='dia') renderTLDia();
-}
+// Fix (punto 7): existían dos funciones renderWeekNav() — esta primera
+// versión quedaba sobrescrita por la de más abajo (la que realmente pinta
+// la barra de días de la semana) y nunca se ejecutaba. Se elimina como
+// código muerto para no confundir futuras ediciones.
 
 // Hacer que el textarea crezca automáticamente según el contenido
 function autoGrow(el){
@@ -4165,9 +4164,14 @@ function buildAndSendAgenda(fecha, chatId, inclFrase){
       });
     }
 
-    msg+='\n──────────────────\n';
-    msg+=`📖 <i>${proverbio}</i>\n\n`;
-    msg+=`🧠 <i>${estoica.replace(/<[^>]+>/g,'')}</i>`;
+    // Fix (punto 8): el parámetro inclFrase se recibía pero nunca se usaba,
+    // así que el proverbio y la frase estoica se agregaban siempre aunque
+    // el usuario desmarcara "Incluir frase". Ahora sí respeta el checkbox.
+    if(inclFrase){
+      msg+='\n──────────────────\n';
+      msg+=`📖 <i>${proverbio}</i>\n\n`;
+      msg+=`🧠 <i>${estoica.replace(/<[^>]+>/g,'')}</i>`;
+    }
 
     sendOrEditTG(chatId, msg, fecha);
   });
