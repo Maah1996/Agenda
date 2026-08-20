@@ -2,7 +2,12 @@ name: Notificacion Mañana 05:00
 
 on:
   schedule:
+    # Chile alterna UTC-3 (horario de verano) / UTC-4 (invierno), así que un solo
+    # horario UTC fijo no cae siempre a las 05:00 de Chile. Se dispara dos veces
+    # (08:00 y 09:00 UTC, una para cada caso) y el propio script decide cuál de
+    # las dos ejecuciones es la correcta según la hora real de Santiago.
     - cron: '0 8 * * *'
+    - cron: '0 9 * * *'
   workflow_dispatch:
 
 jobs:

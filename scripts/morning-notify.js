@@ -32,11 +32,30 @@ function sendTelegram(chatId, message) {
   });
 }
 
+// Fix (punto 6): antes restaba 3h fijas asumiendo siempre UTC-3. Chile alterna
+// UTC-3 (verano) / UTC-4 (invierno), así que ese offset fijo quedaba mal la
+// mitad del año. Ahora se calcula con la zona horaria real de Santiago, y el
+// workflow dispara dos veces (08:00 y 09:00 UTC) para cubrir ambos casos —
+// esta función decide cuál de las dos ejecuciones es la correcta y descarta
+// la otra, para no enviar el mensaje duplicado.
+function horaYFechaChile(now) {
+  const fmt = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/Santiago', year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', hour12: false
+  });
+  const partes = {};
+  fmt.formatToParts(now).forEach(p => { if (p.type !== 'literal') partes[p.type] = p.value; });
+  return { fecha: `${partes.year}-${partes.month}-${partes.day}`, hora: partes.hour };
+}
+
 async function main() {
   const now = new Date();
-  const chile = new Date(now.getTime() - 3 * 60 * 60 * 1000);
-  const fecha = chile.toISOString().split('T')[0];
-  console.log(`Fecha Chile: ${fecha}`);
+  const { fecha, hora } = horaYFechaChile(now);
+  console.log(`Fecha Chile: ${fecha} — hora Chile: ${hora}h`);
+  if (hora !== '05') {
+    console.log(`No son las 05:00 en Chile (son las ${hora}h) — esta ejecución no envía nada.`);
+    return;
+  }
 
   const usuarios = await fetchJSON(`${DB_URL}/maah_usuarios.json`);
   if (!usuarios) { console.log('Sin usuarios'); return; }
