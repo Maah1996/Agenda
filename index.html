@@ -962,7 +962,7 @@ body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100
     <td><button class="del-r" onclick="this.closest(&#39;tr&#39;).remove()">✕</button></td></tr></tbody>
         </table>
         <button class="btn-addrow" onclick="addActRow()">+ Agregar otra actividad</button>
-        <button class="btn-guardar" onclick="guardarAgenda()">✓ Guardar agenda del día</button>
+        <button class="btn-guardar" id="btn-guardar-agenda" onclick="guardarAgenda()">✓ Guardar agenda del día</button>
 
         <!-- EFEMÉRIDES -->
         <div class="efem-card">
@@ -2392,6 +2392,13 @@ function guardarAgenda(){
   // Las que van a la Gantt llevan los flags; se sincronizan después de guardar la agenda.
   const ganttActs=rowData.filter(a=>a.sendGantt||a.sendSemanal||a.sendMensual||a.sendAnual||a.priori);
 
+  // Fix 20-ago-2026: bloquear el botón mientras se guarda evita que un doble clic
+  // (o dos guardados casi simultáneos) dispare dos lecturas del mismo estado en
+  // sincronizarAGantt() y una pise a la otra al escribir (condición de carrera).
+  const btnGuardar=document.getElementById('btn-guardar-agenda');
+  if(btnGuardar){ if(btnGuardar.disabled) return; btnGuardar.disabled=true; btnGuardar.style.opacity='0.5'; }
+  const reactivarBtn=()=>{ if(btnGuardar){ btnGuardar.disabled=false; btnGuardar.style.opacity=''; } };
+
   // Lee las actividades existentes y las combina con las nuevas
   db.ref(`maah_agenda/${currentUser.id}/${fecha}`).once('value',snap=>{
     const existing=snap.val()?Object.values(snap.val()):[];
@@ -2404,7 +2411,9 @@ function guardarAgenda(){
     combined.sort((a,b)=>a.hora.localeCompare(b.hora));
     const obj=combined.reduce((o,a,i)=>{o[i]=a;return o;},{});
 
-    db.ref(`maah_agenda/${currentUser.id}/${fecha}`).set(obj,()=>{
+    db.ref(`maah_agenda/${currentUser.id}/${fecha}`).set(obj,(err)=>{
+      reactivarBtn();
+      if(err){ console.error('Error guardando agenda:',err); alert('No se pudo guardar la agenda:\n'+err.message); return; }
       // Invalidar cache del overview para que refleje cambios
       _agendaDataCache = null; _ganttDataCache = null;
       // Sincronizar las marcadas a la Carta Gantt (no bloquea el flujo de la agenda).
@@ -2423,6 +2432,10 @@ function guardarAgenda(){
         setTimeout(()=>buildAndSendAgenda(fecha, chatId, inclFrase), 800);
       }
     });
+  },(err)=>{
+    reactivarBtn();
+    console.error('Error leyendo agenda existente:',err);
+    alert('No se pudo leer la agenda para guardar:\n'+err.message);
   });
 }
 
@@ -3441,9 +3454,19 @@ function renderTimeline(fecha,acts,showDay){
 }
 function openEditActBtn(el){openEditAct(el.dataset.fecha,el.dataset.hora,el.dataset.act,el.dataset.obs);}
 function deleteActBtn(el){deleteAct(el.dataset.fecha,el.dataset.hora,el.dataset.act,el.dataset.obs);}
-function enviarActAGanttBtn(el){enviarActAGantt(el.dataset.fecha,el.dataset.hora,el.dataset.act,el.dataset.obs);}
-function enviarActAGantt(fecha,hora,act,obs){
+// Fix 20-ago-2026: se deshabilita el botón mientras se procesa para evitar
+// que un doble clic dispare dos lecturas del mismo estado y una pise el ID
+// que calculó la otra (condición de carrera, mismo problema que en guardarAgenda).
+function enviarActAGanttBtn(el){
+  if(el.disabled) return;
+  el.disabled=true; el.style.opacity='0.5';
+  enviarActAGantt(el.dataset.fecha,el.dataset.hora,el.dataset.act,el.dataset.obs,()=>{
+    el.disabled=false; el.style.opacity='';
+  });
+}
+function enviarActAGantt(fecha,hora,act,obs,onDone){
   const ganttRef=db.ref('gantt_maah/actividades_por_usuario/'+currentUser.id);
+  const terminar=()=>{ if(onDone) onDone(); };
   ganttRef.once('value',snap=>{
     const data=snap.val()||{};
     const titulo=(hora?hora+' — ':'')+act+(obs?' · '+obs:'');
@@ -3452,7 +3475,7 @@ function enviarActAGantt(fecha,hora,act,obs){
       if(v && v.agendaFecha===fecha && (v.agendaHora||'')===(hora||'')){existingKey=k;break;}
     }
     if(existingKey){
-      ganttRef.child(existingKey).update({act:titulo.toUpperCase().trim(),obs:(obs||'').toUpperCase().trim()});
+      ganttRef.child(existingKey).update({act:titulo.toUpperCase().trim(),obs:(obs||'').toUpperCase().trim()},terminar);
     } else {
       let maxId=0;
       Object.values(data).forEach(a=>{if(a&&typeof a.id==='number'&&a.id>maxId)maxId=a.id;});
@@ -3461,10 +3484,10 @@ function enviarActAGantt(fecha,hora,act,obs){
       const reg={id,act:titulo.toUpperCase().trim(),obs:(obs||'').toUpperCase().trim(),
         type:'revision',freq:'puntual',fecha:new Date(yr,mo-1,da,12,0,0).toISOString(),
         fromAgenda:true,agendaFecha:fecha,agendaHora:hora||''};
-      ganttRef.child(id).set(reg);
+      ganttRef.child(id).set(reg,terminar);
     }
     _ganttDataCache=null;
-  });
+  },terminar);
 }
 
 function renderTimelineMulti(acts){
@@ -3573,6 +3596,12 @@ function saveEditAct(){
   if(!act){alert('Ingrese una descripción.');return;}
   if(!nuevaFecha){alert('Seleccione una fecha.');return;}
 
+  // Fix 20-ago-2026: el guard de openEditAct solo cubre la carga inicial del modal;
+  // un doble clic en "Guardar" acá seguía disparando dos lecturas-cálculo-escritura
+  // en paralelo (mismo tipo de condición de carrera que en guardarAgenda).
+  const saveBtnAct=document.querySelector('#modal-edit-act .btn-save-m');
+  if(saveBtnAct){ if(saveBtnAct.disabled) return; saveBtnAct.disabled=true; saveBtnAct.style.opacity='0.5'; }
+
   const fechaDestino=nuevaFecha;
   const [yr,mo,da]=fechaDestino.split('-').map(Number);
   const fechaLocal=new Date(yr,mo-1,da,12,0,0);
@@ -3633,6 +3662,7 @@ function saveEditAct(){
   }
 
   Promise.all([agendaWrite,ganttWrite]).then(()=>{
+    if(saveBtnAct){ saveBtnAct.disabled=false; saveBtnAct.style.opacity=''; }
     _agendaDataCache=null; _ganttDataCache=null;
     closeModal('modal-edit-act');
     loadAgendaForDate(fechaDestino);
@@ -3643,7 +3673,11 @@ function saveEditAct(){
       const inclFrase=document.getElementById('tg-frase').checked;
       buildAndSendAgenda(hoy,chatId,inclFrase);
     }
-  }).catch(e=>console.warn('saveEditAct error:',e));
+  }).catch(e=>{
+    if(saveBtnAct){ saveBtnAct.disabled=false; saveBtnAct.style.opacity=''; }
+    console.warn('saveEditAct error:',e);
+    alert('No se pudo guardar los cambios:\n'+e.message);
+  });
 }
 
 // ELIMINAR ACTIVIDAD
