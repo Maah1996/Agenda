@@ -4186,8 +4186,8 @@ function enviarTelegram(){
 }
 
 // ── GASTOS (NUEVO MÓDULO) ───────────────────────────────────
-// Mantengo función loadGastos() por compatibilidad pero ya no se usa
-function loadGastos(){} // stub vacío
+// Fix (punto 9): loadGastos() era un stub vacío sin ningún llamado en todo
+// el archivo — se elimina como código muerto confirmado.
 
 // Estado del módulo gastos
 let gFijosPlantilla=[];
