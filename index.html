@@ -1300,17 +1300,6 @@ body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100
         <button class="btn-primary" onclick="crearUsuario()">+ Crear usuario</button>
         <div id="admin-msg" style="margin-top:10px;font-size:12px;text-align:center;display:none;padding:8px 12px;border-radius:6px;font-weight:700;"></div>
       </div>
-      <div class="admin-card">
-        <div class="card-title">📋 Tablero Gantt "PERSONAL"</div>
-        <p style="font-size:11px;color:#4a5568;margin:0 0 10px;line-height:1.5;">
-          Crea el tablero "PERSONAL" en la Carta Gantt (o lo deja listo si ya existe) y traslada ahí las
-          actividades que la Agenda ya había enviado a tu Gantt personal. Desde ahora, todo lo que la
-          Agenda envíe a la Gantt llegará directo a ese tablero, separado de tu Gantt de administrador,
-          y aparecerá como un tablero más junto a los demás cuando entres a la Carta Gantt.
-        </p>
-        <button class="btn-primary" onclick="migrarAgendaAGanttPersonal()">🔀 Crear / migrar tablero PERSONAL</button>
-        <div id="migrar-personal-msg" style="margin-top:10px;font-size:12px;text-align:center;display:none;padding:8px 12px;border-radius:6px;font-weight:700;"></div>
-      </div>
       <div class="admin-card users-card">
         <div class="card-title" style="border-bottom-color:#0F6E56;">
           <span style="flex:1;">🧑‍💼 Usuarios del sistema</span>
@@ -1352,6 +1341,17 @@ body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100
           <button class="ubtn del" onclick="deleteUser(&#39;-Oqh7ryVVKXE6Iz7ibpi&#39;,&#39;BB&#39;)" title="Eliminar">✕</button>
         </div>
       </div></div>
+      <div class="admin-card admin-card-personal" style="grid-column:1 / -1;padding:14px 20px;">
+        <div class="card-title" style="font-size:13px;margin-bottom:8px;padding-bottom:6px;">📋 Tablero Gantt "PERSONAL"</div>
+        <p style="font-size:11px;color:#4a5568;margin:0 0 10px;line-height:1.5;">
+          Crea el tablero "PERSONAL" en la Carta Gantt (o lo deja listo si ya existe) y traslada ahí las
+          actividades que la Agenda ya había enviado a tu Gantt personal. Desde ahora, todo lo que la
+          Agenda envíe a la Gantt llegará directo a ese tablero, separado de tu Gantt de administrador,
+          y aparecerá como un tablero más junto a los demás cuando entres a la Carta Gantt.
+        </p>
+        <button class="btn-primary" style="width:auto;padding:8px 18px;" onclick="migrarAgendaAGanttPersonal()">🔀 Crear / migrar tablero PERSONAL</button>
+        <div id="migrar-personal-msg" style="margin-top:10px;font-size:12px;text-align:center;display:none;padding:8px 12px;border-radius:6px;font-weight:700;"></div>
+      </div>
       </div>
     </div>
   </div>
