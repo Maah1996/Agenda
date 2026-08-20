@@ -5158,10 +5158,16 @@ async function migrarAgendaAGanttPersonal(){
   if(!currentUser||currentUser.rol!=='admin'){ showMsg('Solo el administrador puede hacer esto.',false); return; }
   showMsg('Procesando...', true);
   try{
+    // PERSONAL es solo un tablero de datos, nunca una cuenta con la que alguien
+    // inicia sesión — se fuerza rol:'user' y se quita cualquier acceso de login
+    // (authUid/passHash) cada vez que se ejecuta, sin importar cómo haya quedado
+    // antes (por ejemplo si alguien lo creó a mano desde "+Nuevo Usuario").
     const uSnap=await db.ref('maah_usuarios/'+AGENDA_GANTT_ID).once('value');
-    if(!uSnap.exists()){
-      await db.ref('maah_usuarios/'+AGENDA_GANTT_ID).set({nombre:AGENDA_GANTT_ID, rol:'user'});
+    const uData=uSnap.val()||{};
+    if(uData.authUid){
+      await db.ref('maah_auth_index/'+uData.authUid).remove().catch(()=>{});
     }
+    await db.ref('maah_usuarios/'+AGENDA_GANTT_ID).set({nombre:AGENDA_GANTT_ID, rol:'user', permisos:{}});
     const propioRef=db.ref('gantt_maah/actividades_por_usuario/'+currentUser.id);
     const snap=await propioRef.once('value');
     const data=snap.val()||{};
