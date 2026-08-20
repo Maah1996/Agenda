@@ -1620,7 +1620,6 @@ function updateClock(){
   }
 }
 let _tgAutoLastSent='';
-let _tgPrioriLastSent='';
 setInterval(()=>{
   updateClock();
   if(!currentUser) return;
@@ -1641,32 +1640,13 @@ setInterval(()=>{
     }
   }
 
-  // ── Envío automático 05:00 AM solo si hay actividades con prioridad ──
-  const prioriKey=hoy+'_05:00';
-  if(hhmm==='05:00' && prioriKey!==_tgPrioriLastSent){
-    _tgPrioriLastSent=prioriKey;
-    db.ref(`maah_agenda/${currentUser.id}/${hoy}`).once('value',snap=>{
-      const data=snap.val();
-      if(!data) return;
-      const prioriActs=Object.values(data).filter(a=>a&&a.priori);
-      if(!prioriActs.length) return;
-      prioriActs.sort((a,b)=>a.hora.localeCompare(b.hora));
-      const dias=['DOMINGO','LUNES','MARTES','MIÉRCOLES','JUEVES','VIERNES','SÁBADO'];
-      const meses=['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'];
-      const d=new Date(hoy+'T12:00:00');
-      const {proverbio,estoica}=getFrasesHoy();
-      let msg=`🚨 <b>ACTIVIDADES PRIORITARIAS HOY:\n${dias[d.getDay()]} ${d.getDate()} DE ${meses[d.getMonth()]} DEL ${d.getFullYear()}</b>\n\n`;
-      prioriActs.forEach(a=>{
-        msg+=`⭐ <b>${a.hora}</b> — ${a.act}`;
-        if(a.obs) msg+=` <i>(${a.obs})</i>`;
-        msg+='\n';
-      });
-      msg+='\n──────────────────\n';
-      msg+=`📖 <i>${proverbio}</i>\n\n`;
-      msg+=`🧠 <i>${estoica.replace(/<[^>]+>/g,'')}</i>`;
-      sendTG(chatId, msg, hoy+'_priori');
-    });
-  }
+  // Fix (puntos 4 y 5): se quitó el envío automático de las 05:00 AM desde
+  // el navegador. Quedaba duplicado con el workflow de GitHub Actions
+  // (scripts/morning-notify.js) — si la Agenda estaba abierta justo a esa
+  // hora, el usuario recibía el aviso de prioridades dos veces. Ahora ese
+  // envío vive únicamente en GitHub Actions, que además ya no depende de
+  // que el navegador esté abierto y no necesita el token del bot en el
+  // cliente para esta función.
 },1000);
 
 // ── CLIMA ─────────────────────────────────────────────────────
