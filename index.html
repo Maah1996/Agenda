@@ -1300,6 +1300,17 @@ body{font-family:'Times New Roman',Times,serif;background:#eef2f7;min-height:100
         <button class="btn-primary" onclick="crearUsuario()">+ Crear usuario</button>
         <div id="admin-msg" style="margin-top:10px;font-size:12px;text-align:center;display:none;padding:8px 12px;border-radius:6px;font-weight:700;"></div>
       </div>
+      <div class="admin-card">
+        <div class="card-title">📋 Tablero Gantt "PERSONAL"</div>
+        <p style="font-size:11px;color:#4a5568;margin:0 0 10px;line-height:1.5;">
+          Crea el tablero "PERSONAL" en la Carta Gantt (o lo deja listo si ya existe) y traslada ahí las
+          actividades que la Agenda ya había enviado a tu Gantt personal. Desde ahora, todo lo que la
+          Agenda envíe a la Gantt llegará directo a ese tablero, separado de tu Gantt de administrador,
+          y aparecerá como un tablero más junto a los demás cuando entres a la Carta Gantt.
+        </p>
+        <button class="btn-primary" onclick="migrarAgendaAGanttPersonal()">🔀 Crear / migrar tablero PERSONAL</button>
+        <div id="migrar-personal-msg" style="margin-top:10px;font-size:12px;text-align:center;display:none;padding:8px 12px;border-radius:6px;font-weight:700;"></div>
+      </div>
       <div class="admin-card users-card">
         <div class="card-title" style="border-bottom-color:#0F6E56;">
           <span style="flex:1;">🧑‍💼 Usuarios del sistema</span>
@@ -1457,6 +1468,12 @@ const FB_CONFIG={
 };
 firebase.initializeApp(FB_CONFIG);
 const db=firebase.database();
+
+// Fix 20-ago-2026: todo lo que la Agenda envía/lee de la Carta Gantt ahora
+// vive en un tablero propio "PERSONAL" (gantt_maah/actividades_por_usuario/PERSONAL),
+// separado del tablero personal del administrador en la Gantt. Aparece como
+// un chip más junto a los demás tableros que ve el admin (ver migrarAgendaAGanttPersonal()).
+const AGENDA_GANTT_ID='PERSONAL';
 
 // ── SESIÓN FIREBASE (auth real, mismo mecanismo que Carta Gantt) ──
 // Fix 20-ago-2026: las reglas RTDB ahora exigen que auth.uid esté
@@ -2447,7 +2464,7 @@ function guardarAgenda(){
 //   "anchor year" sólo para reportes.
 // - sendAnual=false → actividad puntual con la fecha del día de la agenda.
 function sincronizarAGantt(fecha, items){
-  const ref=db.ref(`gantt_maah/actividades_por_usuario/${currentUser.id}`);
+  const ref=db.ref(`gantt_maah/actividades_por_usuario/${AGENDA_GANTT_ID}`);
   ref.once('value', snap=>{
     const data=snap.val()||{};
     // Calcular el siguiente id libre
@@ -2998,7 +3015,7 @@ function renderAgendaOverview(refDate, currentDayActsCount, forceRepaint){
 
   Promise.all([
     db.ref('maah_agenda/'+currentUser.id).once('value'),
-    db.ref('gantt_maah/actividades_por_usuario/'+currentUser.id).once('value')
+    db.ref('gantt_maah/actividades_por_usuario/'+AGENDA_GANTT_ID).once('value')
   ]).then(function(snaps){
     const data=snaps[0].val()||{};
     const ganttData=snaps[1].val()||{};
@@ -3336,7 +3353,7 @@ function renderTLDia(){
 
   Promise.all([
     db.ref(`maah_agenda/${currentUser.id}/${fecha}`).once('value'),
-    db.ref(`gantt_maah/actividades_por_usuario/${currentUser.id}`).once('value')
+    db.ref(`gantt_maah/actividades_por_usuario/${AGENDA_GANTT_ID}`).once('value')
   ]).then(function(snaps){
     var snapA=snaps[0], snapG=snaps[1];
     var data=snapA.val();
@@ -3361,7 +3378,7 @@ function renderTLSemana(){
   const keys=Array.from({length:7},(_,i)=>{const d=new Date(mon);d.setDate(mon.getDate()+i);return d;});
   Promise.all([
     Promise.all(keys.map(function(d){return db.ref(`maah_agenda/${currentUser.id}/${fmtDateKey(d)}`).once('value').then(function(s){return {d:d,data:s.val()};});})),
-    db.ref(`gantt_maah/actividades_por_usuario/${currentUser.id}`).once('value')
+    db.ref(`gantt_maah/actividades_por_usuario/${AGENDA_GANTT_ID}`).once('value')
   ]).then(function(res){
     var results=res[0], snapG=res[1];
     var ganttData=snapG.val()||{};
@@ -3398,7 +3415,7 @@ function renderTLMes(){
 
   Promise.all([
     Promise.all(days.map(function(d){return db.ref(`maah_agenda/${currentUser.id}/${fmtDateKey(d)}`).once('value').then(function(s){return {d:d,data:s.val()};});})),
-    db.ref(`gantt_maah/actividades_por_usuario/${currentUser.id}`).once('value')
+    db.ref(`gantt_maah/actividades_por_usuario/${AGENDA_GANTT_ID}`).once('value')
   ]).then(function(res){
     var results=res[0], snapG=res[1];
     var ganttData=snapG.val()||{};
@@ -3465,7 +3482,7 @@ function enviarActAGanttBtn(el){
   });
 }
 function enviarActAGantt(fecha,hora,act,obs,onDone){
-  const ganttRef=db.ref('gantt_maah/actividades_por_usuario/'+currentUser.id);
+  const ganttRef=db.ref('gantt_maah/actividades_por_usuario/'+AGENDA_GANTT_ID);
   const terminar=()=>{ if(onDone) onDone(); };
   ganttRef.once('value',snap=>{
     const data=snap.val()||{};
@@ -3549,7 +3566,7 @@ function openEditAct(fecha,hora,act,obs){
   const saveBtn=document.querySelector('#modal-edit-act .btn-save-m');
   if(saveBtn){ saveBtn.disabled=true; saveBtn.style.opacity='0.5'; }
   // Buscar en Gantt para pre-marcar los checkboxes
-  db.ref('gantt_maah/actividades_por_usuario/'+currentUser.id).once('value',snap=>{
+  db.ref('gantt_maah/actividades_por_usuario/'+AGENDA_GANTT_ID).once('value',snap=>{
     const gd=snap.val()||{};
     const parts=fecha.split('-');
     const da=+parts[2],mo=+parts[1];
@@ -3605,7 +3622,7 @@ function saveEditAct(){
   const fechaDestino=nuevaFecha;
   const [yr,mo,da]=fechaDestino.split('-').map(Number);
   const fechaLocal=new Date(yr,mo-1,da,12,0,0);
-  const ganttRef=db.ref('gantt_maah/actividades_por_usuario/'+currentUser.id);
+  const ganttRef=db.ref('gantt_maah/actividades_por_usuario/'+AGENDA_GANTT_ID);
 
   // 1. Actualizar entrada en Agenda (si cambió la fecha: borrar del origen y crear en destino)
   const priori=document.getElementById('edit-chk-priori').checked;
@@ -3700,7 +3717,7 @@ function confirmDeleteAct(){
 
   Promise.all([
     db.ref('maah_agenda/'+currentUser.id+'/'+fecha).once('value'),
-    db.ref('gantt_maah/actividades_por_usuario/'+currentUser.id).once('value')
+    db.ref('gantt_maah/actividades_por_usuario/'+AGENDA_GANTT_ID).once('value')
   ]).then(function(snaps){
     const agendaData=snaps[0].val()||{};
     const ganttData=snaps[1].val()||{};
@@ -3719,7 +3736,7 @@ function confirmDeleteAct(){
       const isMensual=v.mensual===true && v.dia===da && vHora===hora;
       const isSemanal=v.semanal===true && (v.dow===dateObj.getDay()||v.diaSemana===dateObj.getDay()) && vHora===hora;
       if(isPuntual||isAnual||isMensual||isSemanal)
-        dels.push(db.ref('gantt_maah/actividades_por_usuario/'+currentUser.id+'/'+k).remove());
+        dels.push(db.ref('gantt_maah/actividades_por_usuario/'+AGENDA_GANTT_ID+'/'+k).remove());
     });
     return Promise.all(dels);
   }).then(function(){
@@ -5125,6 +5142,47 @@ function crearUsuario(){
     });
   });
 }
+// ── TABLERO GANTT "PERSONAL" (20-ago-2026) ───────────────────
+// Crea (si no existe) el usuario/tablero "PERSONAL" en la base compartida
+// con Carta Gantt, y traslada ahí las actividades que la Agenda ya había
+// enviado al tablero propio del administrador. Idempotente: si se vuelve
+// a ejecutar y ya no queda nada por mover, simplemente no hace nada.
+async function migrarAgendaAGanttPersonal(){
+  const msg=document.getElementById('migrar-personal-msg');
+  const showMsg=(txt,ok)=>{
+    if(!msg) return;
+    msg.textContent=txt; msg.style.display='block';
+    msg.style.background=ok?'#f0fff4':'#ffebee';
+    msg.style.color=ok?'#2e7d32':'#c62828';
+  };
+  if(!currentUser||currentUser.rol!=='admin'){ showMsg('Solo el administrador puede hacer esto.',false); return; }
+  showMsg('Procesando...', true);
+  try{
+    const uSnap=await db.ref('maah_usuarios/'+AGENDA_GANTT_ID).once('value');
+    if(!uSnap.exists()){
+      await db.ref('maah_usuarios/'+AGENDA_GANTT_ID).set({nombre:AGENDA_GANTT_ID, rol:'user'});
+    }
+    const propioRef=db.ref('gantt_maah/actividades_por_usuario/'+currentUser.id);
+    const snap=await propioRef.once('value');
+    const data=snap.val()||{};
+    const aMover=Object.entries(data).filter(([k,v])=>v && v.fromAgenda===true);
+    if(!aMover.length){
+      showMsg('✔ Tablero PERSONAL listo. No había actividades de la Agenda en tu Gantt personal para mover.', true);
+      return;
+    }
+    const updates={};
+    aMover.forEach(([k,v])=>{
+      updates['gantt_maah/actividades_por_usuario/'+AGENDA_GANTT_ID+'/'+k]=v;
+      updates['gantt_maah/actividades_por_usuario/'+currentUser.id+'/'+k]=null;
+    });
+    await db.ref().update(updates);
+    showMsg('✔ Listo: '+aMover.length+' actividad(es) trasladadas al tablero PERSONAL.', true);
+  }catch(e){
+    console.error('migrarAgendaAGanttPersonal:',e);
+    showMsg('Error: '+e.message, false);
+  }
+}
+
 function showAdminMsg(msg,color){
   const e=document.getElementById('admin-msg');
   e.textContent=msg;
