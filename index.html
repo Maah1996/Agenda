@@ -1458,18 +1458,46 @@ const FB_CONFIG={
 firebase.initializeApp(FB_CONFIG);
 const db=firebase.database();
 
-// ── SESIÓN FIREBASE ──────────────────────────────────────────
-// Las reglas RTDB exigen auth != null. Sesión anónima SOLO si no hay
-// sesión real (las 3 apps comparten origen y proyecto Firebase).
-let _fbAuthResolve;
-const fbAuthReady=new Promise(res=>{_fbAuthResolve=res;});
-firebase.auth().onAuthStateChanged(u=>{
-  if(!u){ firebase.auth().signInAnonymously().catch(e=>console.warn('Auth anónima falló:',e)); }
-  else { _fbAuthResolve(u); }
-});
+// ── SESIÓN FIREBASE (auth real, mismo mecanismo que Carta Gantt) ──
+// Fix 20-ago-2026: las reglas RTDB ahora exigen que auth.uid esté
+// mapeado en maah_auth_index al dueño de los datos (o sea admin) —
+// la sesión anónima que se usaba antes ya no da acceso a nada útil
+// (ni siquiera a leer la lista de usuarios para hacer login) y quedaba
+// expuesta a cualquier visitante. Se reemplaza por el mismo login con
+// email sintético "userId@maah.app" que ya usa Carta Gantt, sobre la
+// MISMA base de usuarios compartida (maah_usuarios).
+function loginIndexKey(v){
+  return String(v||'').trim().toUpperCase().normalize('NFD')
+    .replace(/[̀-ͯ]/g,'').replace(/[^A-Z0-9]+/g,'_')
+    .replace(/^_|_$/g,'').toLowerCase();
+}
+function authEmailFromUserId(id){ return String(id||'').toLowerCase()+'@maah.app'; }
+function authPasswordFromClave(c){ return String(c||'')+'@@maah'; } // sufijo fijo: mínimo 6 caracteres de Firebase
+async function hashClaveUsuario(userId, clave){
+  const raw='gantt-maah-v1|'+String(userId||'').toLowerCase()+'|'+String(clave||'');
+  const bytes=new TextEncoder().encode(raw);
+  const digest=await crypto.subtle.digest('SHA-256', bytes);
+  return Array.from(new Uint8Array(digest)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+// Compatibilidad con cuentas aún no migradas a Firebase Auth real (clave vieja en texto plano)
+async function claveLegacyValida(userId, clave, userData){
+  const passDB=String((userData&&userData.pass)||'').trim();
+  if(passDB && passDB===clave) return true;
+  const passHash=String((userData&&userData.passHash)||'').trim();
+  if(passHash){ const h=await hashClaveUsuario(userId, clave); return h===passHash; }
+  return false;
+}
+async function asegurarIndicesUsuario(userId, nombre, authUid){
+  if(!userId||!authUid) return;
+  try{ await db.ref('maah_auth_index/'+authUid).set(userId); }catch(e){ console.warn('No se pudo actualizar maah_auth_index:',e); }
+  if(nombre){ try{ await db.ref('maah_login_index/'+loginIndexKey(nombre)).set(userId); }catch(e){ console.warn('No se pudo actualizar maah_login_index:',e); } }
+}
 
 // ── TELEGRAM ─────────────────────────────────────────────────
-let TG_TOKEN=null; fbAuthReady.then(()=>{db.ref('maah_agenda/maah_config').once('value',s=>{TG_TOKEN=s.val();});});
+// TG_TOKEN se carga recién tras un login real exitoso (ver startApp);
+// las reglas actuales exigen sesión no-anónima para leer maah_config.
+let TG_TOKEN=null;
+function cargarTgToken(){ db.ref('maah_agenda/maah_config').once('value',s=>{TG_TOKEN=s.val();}).catch(e=>console.warn('No se pudo leer TG_TOKEN:',e)); }
 const TG_ADMIN_CHATID='8290529563';
 
 // Envía mensaje nuevo y guarda el message_id en Firebase con la fecha correcta
@@ -1993,56 +2021,109 @@ function fmtDateLabel(d){return String(d.getDate()).padStart(2,'0')+'/'+MSHORT[d
 function fmt$(n){return '$'+Math.round(n).toLocaleString('es-CL');}
 function getWeekNum(d){const j=new Date(d.getFullYear(),0,1);return Math.ceil((((d-j)/86400000)+j.getDay()+1)/7);}
 
-// ── LOGIN ─────────────────────────────────────────────────────
-function doLogin(){
-  const user=document.getElementById('login-user').value.trim().toUpperCase();
-  const pass=document.getElementById('login-pass').value.trim();
-  if(!user||!pass){showLoginErr('Complete los campos.');return;}
-  fbAuthReady.then(()=>{
-  db.ref('maah_usuarios').orderByChild('nombre').equalTo(user).once('value',snap=>{
-    if(!snap.exists()){showLoginErr('Usuario o contraseña incorrectos');return;}
-    let found=null;
-    snap.forEach(c=>{if(c.val().pass===pass)found={id:c.key,...c.val()};});
-    if(!found){showLoginErr('Usuario o contraseña incorrectos');return;}
-    if(found.bloqueado){showLoginErr('Tu cuenta está bloqueada. Contacta al administrador.');return;}
+// ── LOGIN (auth real Firebase, igual mecanismo que Carta Gantt) ──
+// Fix 20-ago-2026: reemplaza la consulta directa a maah_usuarios (ya
+// bloqueada por las reglas RTDB actuales para sesiones anónimas) por
+// signInWithEmailAndPassword con el email sintético "userId@maah.app",
+// con respaldo automático a la clave antigua en texto plano para
+// cuentas que aún no se han migrado a Firebase Auth real.
+async function doLogin(){
+  const nombreTxt=document.getElementById('login-user').value.trim().toUpperCase();
+  const clave=document.getElementById('login-pass').value.trim();
+  if(!nombreTxt||!clave){showLoginErr('Complete los campos.');return;}
 
-    // ── PERMISOS ──
-    // Admin: SIEMPRE tiene todos los servicios
-    // Usuario: lo que tenga en Firebase (o {} si nunca se le asignó nada)
-    if(found.rol === 'admin'){
-      const all = {};
-      SERVICIOS_MAAH.forEach(s => all[s.key] = true);
-      found.permisos = all;
-    } else {
-      found.permisos = found.permisos || {};
+  let userId;
+  try{
+    const idxSnap=await db.ref('maah_login_index/'+loginIndexKey(nombreTxt)).once('value');
+    userId=idxSnap.val();
+  }catch(e){ console.warn(e); showLoginErr('Error de conexión. Intenta de nuevo.'); return; }
+  if(!userId){ showLoginErr('Usuario o contraseña incorrectos'); return; }
+  userId=String(userId);
+
+  const syntheticEmail=authEmailFromUserId(userId);
+  const fbPass=authPasswordFromClave(clave);
+  let cred=null;
+
+  try{
+    cred=await firebase.auth().signInWithEmailAndPassword(syntheticEmail, fbPass);
+  }catch(err){
+    const esPrimerIngreso = err.code==='auth/user-not-found' || err.code==='auth/invalid-credential' || err.code==='auth/wrong-password';
+    if(!esPrimerIngreso){
+      showLoginErr(err.code==='auth/too-many-requests' ? 'Demasiados intentos. Espera unos minutos.' : 'Usuario o contraseña incorrectos');
+      return;
     }
-
-    currentUser=found;
-    startApp();
-
-    // ── ESCUCHAR CAMBIOS de permisos en tiempo real ──
-    // Si el admin activa/desactiva un servicio mientras este usuario está logueado,
-    // los cambios se reflejan al instante y se bloquea/desbloquea automáticamente.
-    if(currentUser.rol !== 'admin'){
-      db.ref('maah_usuarios/'+currentUser.id+'/permisos').on('value', psnap=>{
-        currentUser.permisos = psnap.val() || {};
-        actualizarVisibilidadPestañas();
-      });
-      // También escuchar si lo bloquean para sacarlo automáticamente
-      db.ref('maah_usuarios/'+currentUser.id+'/bloqueado').on('value', bsnap=>{
-        if(bsnap.val() === true){
-          alert('Tu cuenta ha sido bloqueada por el administrador. Cerrando sesión.');
-          doLogout();
-        }
-      });
+    // Cuenta aún no migrada a Firebase Auth real: validar contra la clave antigua
+    let userData;
+    try{
+      const snap=await db.ref('maah_usuarios/'+userId).once('value');
+      userData=snap.val()||{};
+    }catch(e){ console.warn(e); showLoginErr('Error de conexión. Intenta de nuevo.'); return; }
+    const okLegacy = !userData.authUid && await claveLegacyValida(userId, clave, userData);
+    if(!okLegacy){ showLoginErr('Usuario o contraseña incorrectos'); return; }
+    try{
+      cred=await firebase.auth().createUserWithEmailAndPassword(syntheticEmail, fbPass);
+    }catch(createErr){
+      console.warn(createErr);
+      showLoginErr('No se pudo activar tu cuenta. Contacta al administrador.');
+      return;
     }
-  },err=>{console.warn(err);showLoginErr('Error de conexión. Intenta de nuevo.');});
-  });
+  }
+
+  if(cred && cred.user){
+    await db.ref('maah_usuarios/'+userId+'/authUid').set(cred.user.uid).catch(e=>console.warn('No se pudo guardar authUid:',e));
+    await asegurarIndicesUsuario(userId, nombreTxt, cred.user.uid);
+  }
+
+  let found;
+  try{
+    const snap=await db.ref('maah_usuarios/'+userId).once('value');
+    found = snap.exists() ? {id:userId, ...snap.val()} : null;
+  }catch(e){
+    console.warn(e); showLoginErr('No se pudo cargar tu perfil. Intenta de nuevo.');
+    firebase.auth().signOut(); return;
+  }
+  if(!found){ showLoginErr('No existe tu perfil de usuario.'); firebase.auth().signOut(); return; }
+  if(found.bloqueado){ showLoginErr('Tu cuenta está bloqueada. Contacta al administrador.'); firebase.auth().signOut(); return; }
+
+  // ── PERMISOS ──
+  // Admin: SIEMPRE tiene todos los servicios
+  // Usuario: lo que tenga en Firebase (o {} si nunca se le asignó nada)
+  if(found.rol === 'admin'){
+    const all = {};
+    SERVICIOS_MAAH.forEach(s => all[s.key] = true);
+    found.permisos = all;
+  } else {
+    found.permisos = found.permisos || {};
+  }
+
+  currentUser=found;
+  startApp();
+
+  // ── ESCUCHAR CAMBIOS de permisos en tiempo real ──
+  // Si el admin activa/desactiva un servicio mientras este usuario está logueado,
+  // los cambios se reflejan al instante y se bloquea/desbloquea automáticamente.
+  if(currentUser.rol !== 'admin'){
+    db.ref('maah_usuarios/'+currentUser.id+'/permisos').on('value', psnap=>{
+      currentUser.permisos = psnap.val() || {};
+      actualizarVisibilidadPestañas();
+    });
+    // También escuchar si lo bloquean para sacarlo automáticamente
+    db.ref('maah_usuarios/'+currentUser.id+'/bloqueado').on('value', bsnap=>{
+      if(bsnap.val() === true){
+        alert('Tu cuenta ha sido bloqueada por el administrador. Cerrando sesión.');
+        doLogout();
+      }
+    });
+  }
 }
 function showLoginErr(msg){const e=document.getElementById('login-error');e.textContent=msg;e.style.display='block';setTimeout(()=>e.style.display='none',3000);}
-function doLogout(){currentUser=null;document.getElementById('screen-app').classList.remove('active');document.getElementById('screen-login').classList.add('active');document.getElementById('login-user').value='';document.getElementById('login-pass').value='';}
+function doLogout(){
+  firebase.auth().signOut().catch(()=>{});
+  currentUser=null;document.getElementById('screen-app').classList.remove('active');document.getElementById('screen-login').classList.add('active');document.getElementById('login-user').value='';document.getElementById('login-pass').value='';
+}
 
 function startApp(){
+  cargarTgToken();
   document.getElementById('screen-login').classList.remove('active');
   document.getElementById('screen-app').classList.add('active');
   document.getElementById('header-username').textContent=currentUser.nombre+(currentUser.rol==='admin'?' ★':'');
@@ -5160,12 +5241,12 @@ function deleteUser(id,nombre){
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.modal-overlay.open').forEach(m=>m.classList.remove('open'));});
 
-// ── ADMIN INICIAL ─────────────────────────────────────────────
-fbAuthReady.then(()=>{
-  db.ref('maah_usuarios').once('value',snap=>{
-    if(!snap.exists()) db.ref('maah_usuarios').push({nombre:'ADMIN',pass:'1996',rol:'admin',tgid:TG_ADMIN_CHATID});
-  });
-});
+// Fix 20-ago-2026: se quitó el bloque "ADMIN INICIAL" que creaba
+// automáticamente un usuario ADMIN con clave fija "1996" en texto
+// plano. Dependía de fbAuthReady (ya no existe, ver login real más
+// arriba) y de todos modos las reglas RTDB actuales ya no permiten
+// leer maah_usuarios sin sesión de administrador. El usuario ADMIN
+// real ya existe en la base compartida con Carta Gantt.
 
 
 </script>
