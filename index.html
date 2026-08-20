@@ -1986,7 +1986,9 @@ const MSHORT=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov',
 const DNAMES=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
 const DSHORT=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
 
-function fmtDateKey(d){return d.toISOString().slice(0,10);}
+// Fix 20-ago-2026: antes usaba toISOString() (UTC), lo que hacía que "hoy" cambiara
+// de fecha desde ~20-21h hora Chile. Ahora se calcula en hora real de Santiago.
+function fmtDateKey(d){return new Intl.DateTimeFormat('en-CA',{timeZone:'America/Santiago',year:'numeric',month:'2-digit',day:'2-digit'}).format(d);}
 function fmtDateLabel(d){return String(d.getDate()).padStart(2,'0')+'/'+MSHORT[d.getMonth()]+'/'+String(d.getFullYear()).slice(2);}
 function fmt$(n){return '$'+Math.round(n).toLocaleString('es-CL');}
 function getWeekNum(d){const j=new Date(d.getFullYear(),0,1);return Math.ceil((((d-j)/86400000)+j.getDay()+1)/7);}
