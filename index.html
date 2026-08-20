@@ -1509,6 +1509,13 @@ async function asegurarIndicesUsuario(userId, nombre, authUid){
   try{ await db.ref('maah_auth_index/'+authUid).set(userId); }catch(e){ console.warn('No se pudo actualizar maah_auth_index:',e); }
   if(nombre){ try{ await db.ref('maah_login_index/'+loginIndexKey(nombre)).set(userId); }catch(e){ console.warn('No se pudo actualizar maah_login_index:',e); } }
 }
+// Guarda una clave como hash (nunca en texto plano). Sirve como respaldo legacy
+// para cuentas que aún no tienen Firebase Auth real, o para que un admin deje
+// una clave temporal a otro usuario (ver saveEditUser).
+async function guardarClaveMigracion(userId, clave){
+  const passHash=await hashClaveUsuario(userId, clave);
+  return db.ref('maah_usuarios/'+userId).update({passHash, passVersion:'sha256-v1'});
+}
 
 // ── TELEGRAM ─────────────────────────────────────────────────
 // TG_TOKEN se carga recién tras un login real exitoso (ver startApp);
@@ -5093,29 +5100,54 @@ function openChangePass(){
   document.getElementById('modal-change-pass').classList.add('open');
   setTimeout(()=>document.getElementById('cp-actual').focus(),100);
 }
-function doChangePass(){
+// Fix 20-ago-2026 (punto 3): ya no compara ni guarda la clave en texto plano.
+// Si la sesión es real (Firebase Auth, ver login), reautentica y cambia la
+// clave real. Si la cuenta aún no está migrada, valida contra la clave legacy
+// y guarda un hash — igual mecanismo que usa Carta Gantt.
+async function doChangePass(){
   const actual=document.getElementById('cp-actual').value.trim();
   const nueva=document.getElementById('cp-nueva').value.trim();
   const nueva2=document.getElementById('cp-nueva2').value.trim();
   const msg=document.getElementById('cp-msg');
   function mostrar(txt,color,bg){msg.textContent=txt;msg.style.color=color;msg.style.background=bg;msg.style.display='block';}
   if(!actual||!nueva||!nueva2){mostrar('Complete todos los campos.','#c62828','#ffebee');return;}
-  if(actual!==currentUser.pass){mostrar('La clave actual es incorrecta.','#c62828','#ffebee');return;}
   if(nueva.length<4){mostrar('La nueva clave debe tener al menos 4 caracteres.','#c62828','#ffebee');return;}
   if(nueva!==nueva2){mostrar('Las nuevas claves no coinciden.','#c62828','#ffebee');return;}
   if(nueva===actual){mostrar('La nueva clave debe ser distinta a la actual.','#c62828','#ffebee');return;}
-  db.ref(`maah_usuarios/${currentUser.id}`).update({pass:nueva},err=>{
-    if(err){mostrar('Error al guardar: '+err.message,'#c62828','#ffebee');return;}
-    currentUser.pass=nueva;
+
+  const fbUser=firebase.auth().currentUser;
+  const synEmail=authEmailFromUserId(currentUser.id);
+  const esSesionReal = fbUser && !fbUser.isAnonymous && fbUser.email===synEmail;
+
+  try{
+    if(esSesionReal){
+      const cred=firebase.auth.EmailAuthProvider.credential(synEmail, authPasswordFromClave(actual));
+      await fbUser.reauthenticateWithCredential(cred);
+      await fbUser.updatePassword(authPasswordFromClave(nueva));
+    } else {
+      const snap=await db.ref('maah_usuarios/'+currentUser.id).once('value');
+      const okLegacy=await claveLegacyValida(currentUser.id, actual, snap.val()||{});
+      if(!okLegacy){ mostrar('La clave actual es incorrecta.','#c62828','#ffebee'); return; }
+      await guardarClaveMigracion(currentUser.id, nueva);
+    }
     mostrar('✓ Clave cambiada correctamente.','#2f855a','#f0fff4');
     setTimeout(()=>closeModal('modal-change-pass'),1500);
-  });
+  }catch(e){
+    console.warn('doChangePass:',e);
+    mostrar('La clave actual es incorrecta o la sesión expiró.','#c62828','#ffebee');
+  }
 }
 
 
 
 // ── USUARIOS ─────────────────────────────────────────────────
-function crearUsuario(){
+// Fix 20-ago-2026 (punto 3 de la revisión): antes se guardaba la clave del
+// usuario nuevo en texto plano (campo "pass"). Ahora se crea de una vez una
+// cuenta real de Firebase Auth (mismo mecanismo que Carta Gantt) usando una
+// app secundaria de Firebase para no cerrar la sesión del admin — así el
+// usuario puede iniciar sesión de inmediato y nunca se guarda su clave en
+// texto plano en ningún momento.
+async function crearUsuario(){
   const nombre=document.getElementById('nu-nombre').value.trim().toUpperCase();
   const pass=document.getElementById('nu-pass').value.trim();
   const rol=document.getElementById('nu-rol').value;
@@ -5123,24 +5155,46 @@ function crearUsuario(){
   if(!nombre){showAdminMsg('Falta el nombre del usuario.','#c62828');return;}
   if(!pass){showAdminMsg('Falta la contraseña.','#c62828');return;}
   if(pass.length<4){showAdminMsg('La contraseña debe tener al menos 4 caracteres.','#c62828');return;}
-  db.ref('maah_usuarios').orderByChild('nombre').equalTo(nombre).once('value',snap=>{
-    if(snap.exists()){showAdminMsg('Ya existe un usuario con ese nombre.','#c62828');return;}
+
+  const dupSnap=await db.ref('maah_usuarios').orderByChild('nombre').equalTo(nombre).once('value');
+  if(dupSnap.exists()){showAdminMsg('Ya existe un usuario con ese nombre.','#c62828');return;}
+
+  // ID legible a partir del nombre (mismo criterio que usa Carta Gantt)
+  let userId=nombre.normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^A-Z0-9]/g,'_').replace(/_+/g,'_').replace(/^_|_$/g,'');
+  let base=userId, suf=2;
+  while((await db.ref('maah_usuarios/'+userId).once('value')).exists()){ userId=base+'_'+suf; suf++; }
+
+  showAdminMsg('Creando usuario...','#4a5568');
+  const synEmail=authEmailFromUserId(userId);
+  const fbPass=authPasswordFromClave(pass);
+  try{
+    // App secundaria de Firebase: crea la cuenta de acceso sin afectar la sesión del admin
+    const sec=firebase.initializeApp(firebase.app().options,'um_new_'+Date.now());
+    const secAuth=sec.auth();
+    await secAuth.createUserWithEmailAndPassword(synEmail,fbPass);
+    const uid=secAuth.currentUser.uid;
+    await sec.delete();
+
     // Por defecto, los usuarios nuevos tienen acceso solo a Gantt.
     // El admin puede activar más servicios después con clic en los iconos.
     const permisosIniciales = { gantt: true };
-    const userData={nombre,pass,rol,tgid:tgid||'',bloqueado:false,permisos:permisosIniciales};
-    db.ref('maah_usuarios').push(userData).then(()=>{
-      showAdminMsg('✓ Usuario '+nombre+' creado. Revisa la lista a la derecha →','#2e7d32');
-      document.getElementById('nu-nombre').value='';
-      document.getElementById('nu-pass').value='';
-      document.getElementById('nu-tgid').value='';
-      document.getElementById('nu-rol').value='usuario';
-      // Forzar recarga inmediata de la lista
-      loadUserList();
-    }).catch(err=>{
+    const userData={nombre,rol,tgid:tgid||'',bloqueado:false,permisos:permisosIniciales,authUid:uid};
+    await db.ref('maah_usuarios/'+userId).set(userData);
+    await asegurarIndicesUsuario(userId, nombre, uid);
+
+    showAdminMsg('✓ Usuario '+nombre+' creado con clave segura. Revisa la lista a la derecha →','#2e7d32');
+    document.getElementById('nu-nombre').value='';
+    document.getElementById('nu-pass').value='';
+    document.getElementById('nu-tgid').value='';
+    document.getElementById('nu-rol').value='usuario';
+    loadUserList();
+  }catch(err){
+    if(err.code==='auth/email-already-in-use'){
+      showAdminMsg('Ya existe un registro de acceso con el nombre "'+nombre+'" (de una cuenta eliminada antes). Entra a Firebase Console → Authentication → busca '+synEmail+' → elimínalo, o usa otro nombre.','#c62828');
+    } else {
       showAdminMsg('Error al crear: '+err.message,'#c62828');
-    });
-  });
+    }
+  }
 }
 // ── TABLERO GANTT "PERSONAL" (20-ago-2026) ───────────────────
 // Crea (si no existe) el usuario/tablero "PERSONAL" en la base compartida
@@ -5323,15 +5377,37 @@ function openEditUser(id,nombre,rol,tgid){
   document.getElementById('eu-pass').value='';
   document.getElementById('modal-edit-user').classList.add('open');
 }
-function saveEditUser(){
+// Fix 20-ago-2026 (punto 3): ya no se guarda la clave en texto plano ("pass").
+// Si el admin ingresa una clave nueva, se guarda como hash (passHash/passVersion).
+// Nota honesta: si ese usuario YA tiene una cuenta real de Firebase Auth
+// (authUid), esta clave temporal NO reemplaza su clave real — Firebase no
+// permite cambiar la clave de otra cuenta desde el cliente sin conocer la
+// actual. En ese caso se avisa al admin para que el usuario la cambie él
+// mismo con "Cambiar mi clave" una vez conectado.
+async function saveEditUser(){
   const nombre=document.getElementById('eu-nombre').value.trim().toUpperCase();
   const pass=document.getElementById('eu-pass').value.trim();
   const rol=document.getElementById('eu-rol').value;
   const tgid=document.getElementById('eu-tgid').value.trim();
   if(!nombre){alert('Ingrese un nombre.');return;}
+  if(pass && pass.length<4){alert('La contraseña debe tener al menos 4 caracteres.');return;}
   const upd={nombre,rol,tgid};
-  if(pass) upd.pass=pass;
-  db.ref('maah_usuarios/'+editingUserId).update(upd,()=>closeModal('modal-edit-user'));
+  try{
+    let avisoAuthReal=false;
+    if(pass){
+      const uSnap=await db.ref('maah_usuarios/'+editingUserId).once('value');
+      avisoAuthReal=!!(uSnap.val()&&uSnap.val().authUid);
+      await guardarClaveMigracion(editingUserId, pass);
+    }
+    await db.ref('maah_usuarios/'+editingUserId).update(upd);
+    closeModal('modal-edit-user');
+    loadUserList();
+    if(avisoAuthReal){
+      alert('Guardado. Este usuario ya tiene una cuenta de acceso activa: la clave temporal que ingresaste no reemplaza su clave real. Si no puede entrar, dile que use "Cambiar mi clave" una vez conectado, o contacta soporte.');
+    }
+  }catch(e){
+    alert('Error al guardar: '+e.message);
+  }
 }
 function deleteUser(id,nombre){
   if(id===currentUser.id){alert('No puedes eliminar tu propio usuario.');return;}
