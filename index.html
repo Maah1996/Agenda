@@ -5205,6 +5205,9 @@ function loadUserList(){
     const users=[];
     if(snap.exists()){
       snap.forEach(c=>{
+        // "PERSONAL" es solo el tablero de datos donde cae la Gantt de la
+        // Agenda, no una persona — no pertenece a esta lista de usuarios.
+        if(c.key===AGENDA_GANTT_ID) return;
         const data=c.val()||{};
         users.push({
           id:c.key,
